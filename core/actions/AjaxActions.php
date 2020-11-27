@@ -17,13 +17,10 @@ class AjaxActions extends LocalActions
    */
   public static function dealWithAjax()
   {
-    switch ($_POST[self::AJAX_ACTION]) {
-      case self::AJAX_GETNEWMATIERE   :
-        $returned = CompteRenduActions::dealWithStatic($_POST);
-      break;
-      default              :
-        $returned  = 'Erreur dans le $_POST['.self::AJAX_ACTION.'] : '.$_POST[self::AJAX_ACTION].'<br>';
-      break;
+    if ($_POST[self::AJAX_ACTION]==self::AJAX_GETNEWMATIERE) {
+      $returned = CompteRenduActions::dealWithStatic($_POST);
+    } else {
+      $returned  = 'Erreur dans le $_POST['.self::AJAX_ACTION.'] : '.$_POST[self::AJAX_ACTION].'<br>';
     }
     return $returned;
   }

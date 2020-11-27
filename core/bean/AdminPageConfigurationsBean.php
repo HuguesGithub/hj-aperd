@@ -14,7 +14,7 @@ class AdminPageConfigurationsBean extends AdminPageBean
   /**
    * Class Constructor
    */
-  public function __construct($id=null)
+  public function __construct()
   {
     parent::__construct();
     $this->title = 'Configurations';
@@ -57,7 +57,7 @@ class AdminPageConfigurationsBean extends AdminPageBean
       $this->Administration->setNomTitulaire($urlParams[self::FIELD_NOMTITULAIRE]);
       $this->Administration->setLabelPoste($urlParams[self::FIELD_LABELPOSTE]);
       $this->AdministrationServices->updateLocal($this->Administration);
-    } elseif ($urlParams[self::CST_POSTACTION] == 'Création') {
+    } elseif ($urlParams[self::CST_POSTACTION]==self::CST_CREATION) {
       $this->Administration = new Administration();
       $this->Administration->setNomTitulaire($urlParams[self::FIELD_NOMTITULAIRE]);
       $this->Administration->setLabelPoste($urlParams[self::FIELD_LABELPOSTE]);
@@ -73,7 +73,7 @@ class AdminPageConfigurationsBean extends AdminPageBean
       $this->AnneeScolaire = $this->AnneeScolaireServices->selectLocal($id);
       $this->AnneeScolaire->setAnneeScolaire($urlParams[self::FIELD_ANNEESCOLAIRE]);
       $this->AnneeScolaireServices->updateLocal($this->AnneeScolaire);
-    } elseif ($urlParams[self::CST_POSTACTION] == 'Création') {
+    } elseif ($urlParams[self::CST_POSTACTION]==self::CST_CREATION) {
       $this->AnneeScolaire = new AnneeScolaire();
       $this->AnneeScolaire->setAnneeScolaire($urlParams[self::FIELD_ANNEESCOLAIRE]);
       $this->AnneeScolaireServices->insertLocal($this->AnneeScolaire);
@@ -109,7 +109,7 @@ class AdminPageConfigurationsBean extends AdminPageBean
       // Liste des Administratifs - 1
       $strAdminRows,
       // Titre du bloc de Création / Edition - 2
-      $this->Administration==null ? 'Création' : 'Edition',
+      $this->Administration==null ? self::CST_CREATION : 'Edition',
       // Valeur du Nom du Titulaire sélectionné - 3
       $this->Administration==null ? '' : $this->Administration->getNomTitulaire(),
       // Libellé du Poste - 4
@@ -123,7 +123,7 @@ class AdminPageConfigurationsBean extends AdminPageBean
       // Liste des Années Scolaires - 8
       $strAdminRowsAnneeScolaire,
       // Titre du bloc de Création / Edition pour Année Scolaire - 9
-      $this->AnneeScolaire==null ? 'Création' : 'Edition',
+      $this->AnneeScolaire==null ? self::CST_CREATION : 'Edition',
       // Libellé de l'année Scolaire - 10
       $this->AnneeScolaire==null ? '' : $this->AnneeScolaire->getAnneeScolaire(),
       // Identifiant de l'élément sélectionné - 11

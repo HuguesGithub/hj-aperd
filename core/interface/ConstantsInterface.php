@@ -29,6 +29,7 @@ interface ConstantsInterface
 
   /////////////////////////////////////////////////
   // On conserve malgré tout quelques constantes
+  const CST_CREATION         = 'Création';
   const CST_DEFAULT_SELECT   = 'Choisir...';
   const CST_EDIT             = 'edit';
   const CST_FORMCONTROL      = 'form-control';

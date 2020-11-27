@@ -36,14 +36,11 @@ class CompteRenduBean extends LocalBean
     );
 
     $status = $this->CompteRendu->getStatus();
-    switch ($status) {
-      case 'archived' :
+    if ($status=='archived') {
       // Il faudrait un lien vers le PDF;
-        $linkToCr = $status;
-      break;
-      default :
-        $linkToCr = '<a href="/compte-rendu/?crKey='.$this->CompteRendu->getCrKey().'">'.$status.'</a>';
-      break;
+      $linkToCr = $status;
+    } else {
+      $linkToCr = '<a href="/compte-rendu/?crKey='.$this->CompteRendu->getCrKey().'">'.$status.'</a>';
     }
 
 

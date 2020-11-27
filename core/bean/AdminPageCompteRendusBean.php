@@ -14,7 +14,7 @@ class AdminPageCompteRendusBean extends AdminPageBean
   /**
    * Class Constructor
    */
-  public function __construct($id=null)
+  public function __construct()
   {
     parent::__construct();
     $this->title = 'Comptes-Rendus';
@@ -30,27 +30,14 @@ class AdminPageCompteRendusBean extends AdminPageBean
     $Bean = new AdminPageCompteRendusBean();
     if (isset($urlParams[self::CST_POSTACTION])) {
       $Bean->dealWithPostAction($urlParams);
-    /*
-      $id = $urlParams[self::FIELD_ID];
-      $Bean = new AdminPageMatieresBean($id);
-      if (isset($urlParams['Edition'])) {
-        $Bean->update($urlParams);
-      } elseif (isset($urlParams['Création'])) {
-        $Bean->insert($urlParams);
-      }
-    * */
     }
     return $Bean->getListingPage($urlParams);
   }
   public function dealWithPostAction($urlParams)
   {
     $this->msgErreur = '';
-    switch ($urlParams['type']) {
-      case 'generateCdc' :
-        $this->dealWithGenerateCdcAction($urlParams);
-      break;
-      default :
-      break;
+    if ($urlParams['type']=='generateCdc') {
+      $this->dealWithGenerateCdcAction($urlParams);
     }
   }
   private function dealWithGenerateCdcAction($urlParams)

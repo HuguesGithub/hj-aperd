@@ -14,7 +14,7 @@ class AdminPageClassesBean extends AdminPageBean
   /**
    * Class Constructor
    */
-  public function __construct($id=null)
+  public function __construct()
   {
     parent::__construct();
     $this->title = 'Classes';
@@ -66,7 +66,6 @@ class AdminPageClassesBean extends AdminPageBean
   }
   private function dealWithCompoClasseAction($urlParams)
   {
-    $id = $urlParams[self::FIELD_ID];
     if ($urlParams[self::CST_POSTACTION] == 'Upload') {
       // On veut mettre à jour l'ensemble des données de l'année pour chaque classe, les couples Matière/Enseignant.
       // Le format attendu est "
@@ -222,7 +221,7 @@ class AdminPageClassesBean extends AdminPageBean
         $strAdminRowsCompoClasses .= $Bean->getRowForAdminPage();
       }
     }
-    $urlCancelClasse = $Bean->getQueryArg(array(self::CST_ONGLET=>self::PAGE_CLASSE, 'type'=>'ClasseScolaire'));
+    $urlCancelCompoClasse = $Bean->getQueryArg(array(self::CST_ONGLET=>self::PAGE_CLASSE, 'type'=>'ClasseScolaire'));
     /////////////////////////////////////////////////////////////////////////////
     $strFiltres = '';
     $AnneeScolaireBean = new AnneeScolaireBean();
@@ -252,7 +251,7 @@ class AdminPageClassesBean extends AdminPageBean
       // Message d'erreur en cas d'upload de profs principaux foireux - 7
       (!empty($this->msgErreur) ? '<div class="alert alert-danger" role="alert">'.$this->msgErreur.'</div>' : ''),
       // Url pour annuler l'action - 8
-      $Bean->getQueryArg(array(self::CST_ONGLET=>self::PAGE_CLASSE, 'type'=>'ClasseScolaire')),
+      $urlCancelCompoClasse,
       // Liste des Compo Scolaires - 9
       $strAdminRowsCompoClasses,
       // Filtre de l'onglet Classe Scolaire - 10

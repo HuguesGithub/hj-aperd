@@ -43,7 +43,6 @@ class AdminPageMatieresBean extends AdminPageBean
       $Bean = new AdminPageMatieresBean();
     }
     return $Bean->getListingPage();
-    //return $Bean->returnPostActionPage($urlParams);
   }
   public function update($urlParams)
   {

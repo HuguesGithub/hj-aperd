@@ -39,13 +39,10 @@ class WpPageBean extends MainPageBean
    */
   public function getContentPage()
   {
-    switch ($this->WpPage->getPostName()) {
-      case self::PAGE_COMPTE_RENDU      :
-        $Bean = new WpPageCompteRendusBean($this->WpPage);
-      break;
-      default                          :
-        $Bean = new WpPageError404Bean();
-      break;
+    if($this->WpPage->getPostName()==self::PAGE_COMPTE_RENDU) {
+      $Bean = new WpPageCompteRendusBean($this->WpPage);
+    } else {
+      $Bean = new WpPageError404Bean();
     }
     return $Bean->getContentPage();
   }

@@ -14,7 +14,7 @@ class AdminPageEnseignantsBean extends AdminPageBean
   /**
    * Class Constructor
    */
-  public function __construct($id=null)
+  public function __construct()
   {
     parent::__construct();
     $this->title = 'Enseignants';
@@ -59,7 +59,7 @@ class AdminPageEnseignantsBean extends AdminPageBean
       $this->Enseignant->setMatiereId($urlParams[self::FIELD_MATIERE_ID]);
       $this->Enseignant->setStatus($urlParams[self::FIELD_STATUS]);
       $this->EnseignantServices->updateLocal($this->Enseignant);
-    } elseif ($urlParams[self::CST_POSTACTION] == 'Création') {
+    } elseif ($urlParams[self::CST_POSTACTION] == self::CST_CREATION) {
       $this->Enseignant = new Enseignant();
       $this->Enseignant->setNomEnseignant($urlParams[self::FIELD_NOMENSEIGNANT]);
       $this->Enseignant->setMatiereId($urlParams[self::FIELD_MATIERE_ID]);
@@ -77,7 +77,7 @@ class AdminPageEnseignantsBean extends AdminPageBean
       $this->ProfPrincipal->setClasseId($urlParams[self::FIELD_CLASSE_ID]);
       $this->ProfPrincipal->setEnseignantId($urlParams[self::FIELD_ENSEIGNANT_ID]);
       $this->ProfPrincipalServices->updateLocal($this->ProfPrincipal);
-    } elseif ($urlParams[self::CST_POSTACTION] == 'Création') {
+    } elseif ($urlParams[self::CST_POSTACTION] == self::CST_CREATION) {
       $this->ProfPrincipal = new ProfPrincipal();
       $this->ProfPrincipal->setAnneeScolaireId($urlParams[self::FIELD_ANNEESCOLAIRE_ID]);
       $this->ProfPrincipal->setClasseId($urlParams[self::FIELD_CLASSE_ID]);
@@ -99,7 +99,7 @@ class AdminPageEnseignantsBean extends AdminPageBean
           continue;
         }
         list($anneeScolaire, $labelClasse, $nomEnseignant) = explode (';', $line);
-        if (empty(trim($anneeScolaire)) || empty(trim($anneeScolaire)) || empty(trim($anneeScolaire))) {
+        if (empty(trim($anneeScolaire)) || empty(trim($labelClasse)) || empty(trim($nomEnseignant))) {
           $bln_uploadOkay = false;
         }
         if ($bln_uploadOkay) {
@@ -165,8 +165,6 @@ class AdminPageEnseignantsBean extends AdminPageBean
       $filterStatusId = -1;
     }
     $strRows = '';
-    $Enseignant = new Enseignant();
-    $Bean = new EnseignantBean();
     $Enseignants = $this->EnseignantServices->getEnseignantsWithFilters($args);
     if (empty($Enseignants)) {
       $strRows = '<tr><td colspan="4"><em>Aucun résultat</em></td></tr>';
@@ -186,7 +184,6 @@ class AdminPageEnseignantsBean extends AdminPageBean
       $args[self::FIELD_ANNEESCOLAIRE_ID] = $anneeScolaireId;
     }
     $strRowsProfPrincipaux = '';
-    $ProfPrincipal = new ProfPrincipal();
     $Bean = new ProfPrincipalBean();
     $ProfPrincipaux = $this->ProfPrincipalServices->getProfPrincipalsWithFilters($args);
     if (empty($ProfPrincipaux)) {
@@ -209,7 +206,7 @@ class AdminPageEnseignantsBean extends AdminPageBean
       // Liste des enseignants affichés - 1
       $strRows,
       // Type d'action : Création ou Edition - 2
-      $this->Enseignant==null ? 'Création' : 'Edition',
+      $this->Enseignant==null ? self::CST_CREATION : 'Edition',
       // Libellé de la matière éditée - 3
       $this->Enseignant==null ? '' : $this->Enseignant->getNomEnseignant(),
       // Url d'annulation - 4
@@ -229,7 +226,7 @@ class AdminPageEnseignantsBean extends AdminPageBean
       // Liste des profs principaux affichés - 11
       $strRowsProfPrincipaux,
       // Type d'action : Création ou Edition - 12
-      $this->ProfPrincipal==null ? 'Création' : 'Edition',
+      $this->ProfPrincipal==null ? self::CST_CREATION : 'Edition',
       // Select des Années Scolaires - 13
       $AnneeScolaireBean->getSelect(self::FIELD_ANNEESCOLAIRE_ID, self::CST_DEFAULT_SELECT, ($this->ProfPrincipal==null ? -1 : $this->ProfPrincipal->getAnneeScolaireId())),
       // Select des Classes - 14

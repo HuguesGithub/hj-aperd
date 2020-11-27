@@ -21,7 +21,7 @@
               <input type="submit" name="filter_action" class="btn btn-info" value="Filtrer">
             </div>
           </div>
-          <table class="table table-striped table-bordered table-hover table-sm">
+          <table class="table table-striped table-bordered table-hover table-sm" aria-describeby="Liste des Enseignants avec leurs Matières et leur statut">
             <thead>
               <tr>
                 <td id="cb" class="manage-column column-cb check-column"><input id="cb-select-all-1" type="checkbox"></td>
@@ -81,7 +81,7 @@
               <input type="submit" name="filter_action" class="btn btn-info" value="Filtrer">
             </div>
           </div>
-          <table class="table table-striped table-bordered table-hover table-sm">
+          <table class="table table-striped table-bordered table-hover table-sm" aria-describeby="Liste des profs principaux">
             <thead>
               <tr>
                 <td id="cb" class="manage-column column-cb check-column"><input id="cb-select-all-1" type="checkbox"></td>
