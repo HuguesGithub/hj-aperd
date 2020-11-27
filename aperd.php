@@ -80,11 +80,11 @@ function aperd_menu()
     add_menu_page($pluginName, $pluginName, $uploadFiles, $urlRoot, '', plugins_url('/hj-aperd/web/rsc/img/icons/aperd.png'));
     if (function_exists('add_submenu_page')) {
       $arrUrlSubMenu = array(
-        'classe'        => 'Classes',
-        'compte-rendu'  => 'Compte-Rendus',
-        'configuration' => 'Configuration',
-        'enseignant'    => 'Enseignants',
-        'matiere'       => 'Matières',
+        'classe'         => 'Classes',
+        'compte-rendu'   => 'Compte-Rendus',
+        'configuration'  => 'Configuration',
+        'enseignant'     => 'Enseignants',
+        'matiere'        => 'Matières',
       );
       foreach ($arrUrlSubMenu as $key => $value) {
         $urlSubMenu = $urlRoot.'&amp;onglet='.$key;
