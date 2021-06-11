@@ -36,18 +36,21 @@ class AperdPDF extends FPDF implements ConstantsInterface
     $trim = $this->CompteRendu->getValue(self::FIELD_TRIMESTRE);
     $frmtTrimestre = $trim.($trim==1 ? 'er' : 'ème');
     $this->headerLine1 = 'Compte-rendu du conseil de classe du '.$frmtTrimestre.' trimestre';
-    $this->headerLine2 = 'Classe de : '.str_replace('0', 'è', $this->CompteRendu->getClasseScolaire()->getLabelClasse()).'. Effectif de la classe : '.$this->CompteRendu->getValue(self::FIELD_NBELEVES).' élèves';
+    $this->headerLine2 = 'Classe de : '.str_replace('0', 'è', $this->CompteRendu->getDivision()->getLabelDivision()).'. Effectif de la classe : '.$this->CompteRendu->getValue(self::FIELD_NBELEVES).' élèves';
     $this->headerLine3 = "Le conseil de classe s'est tenu le ".$this->CompteRendu->getValue(self::FIELD_DATECONSEIL)." sous la présidence de ".utf8_decode($this->CompteRendu->getAdministration()->getFullInfo());
     $this->headerLine3 .= ", en présence de ".utf8_decode($this->CompteRendu->getEnseignant()->getProfPrincipal()).", des autres professeurs de la classe, ";
     $this->headerLine3 .= utf8_decode($this->CompteRendu->getStrParentsDelegues());
     $this->headerLine3 .= utf8_decode($this->CompteRendu->getStrElevesDelegues());
 
     $this->conclusion1 = "Réunions mensuelles : L'association des Parents d'Élèves se réunit un mercredi par mois (hors vacances scolaires). Vous pouvez également découvrir la vie du collège et les actions de l'association sur son site internet.";
-    $this->conclusion2 = "Compte rendu fait le ".$this->CompteRendu->getValue(self::FIELD_DATEREDACTION)." par ".utf8_decode($this->CompteRendu->getValue(self::FIELD_AUTEURREDACTION)).", sous sa responsabilité.";
+    $this->conclusion2 = "Compte rendu fait le ".$this->CompteRendu->getValue(self::FIELD_DATEREDACTION)." par ".utf8_decode($this->CompteRendu->getValue(self::FIELD_AUTEURREDACTION)).", sous ".(strpos($this->CompteRendu->getValue(self::FIELD_AUTEURREDACTION), ' et ')!==false ? 'leur' : 'sa')." responsabilité.";
 
     $this->footerLine1 = '74 bis, rue Mazenod 69003 Lyon';
+    /*
     $this->footerLine21 = 'Site : ';
     $this->footerLine22 = ' - Email : ';
+    */
+    $this->footerLine22 = 'Email : ';
 
     $this->urlLogo = dirname(__FILE__).'/../../web/rsc/img/Logo-APERD-3.png';
   }
@@ -85,25 +88,23 @@ class AperdPDF extends FPDF implements ConstantsInterface
     $pdf->buildBilanAndAttributions();
 
     // Export du fichier
-    $url = dirname(__FILE__).'/../../web/rsc/pdf-files/'.$CompteRendu->getValue(self::FIELD_CRKEY).'.pdf';
+    $dir_name = dirname(__FILE__).'/../../web/rsc/pdf-files/';
+    $pdf_name = $CompteRendu->getValue(self::FIELD_CRKEY).'.pdf';
+    $url = $dir_name.$pdf_name;
+    $pdf->Output('F', $url);
+
+    $dir_name = dirname(__FILE__).'/../../../../../Storage/Aperd/';
+    $str_annee_scolaire = $CompteRendu->getAnneeScolaire()->getAnneeScolaire();
+    $str_trimestre = 'T'.$CompteRendu->getValue(self::FIELD_TRIMESTRE);
+    $str_division  = $CompteRendu->getDivision()->getLabelDivision();
+    $pdf_name = $str_annee_scolaire.'-'.$str_trimestre.'-'.$str_division.'.pdf';
+    $url = $dir_name.$pdf_name;
     $pdf->Output('F', $url);
     return $pdf->PageNo();
   }
-  /**
-   * @version 1.00.01
-   * @since 1.00.01
-   */
-  public function buildBilanGeneral()
+
+  private function addAttributions()
   {
-    $this->Ln();
-    // Bilan Prof Principal
-    $this->setColorBlue();
-    $this->Write(5, 'Bilan Général de la Classe');
-    $this->Ln();
-    $this->Ln();
-    $this->setColorDefault(0);
-    $this->MultiCell(190, 5, utf8_decode($this->CompteRendu->getValue(self::FIELD_BILANPROFPRINCIPAL)), 0, 1);
-    $this->Ln();
     // Attributions
     $this->setColorBlue();
     $this->Write(5, 'Attributions du conseil de classe');
@@ -125,13 +126,21 @@ class AperdPDF extends FPDF implements ConstantsInterface
     $this->Cell(80, 5, 'Mise en garde Comportement et Travail : ', 0, 0, 'R');
     $this->Cell(10, 5, $this->CompteRendu->getValue(self::FIELD_NBMGCPTTVL), 0, 0, 'L');
     $this->Ln();
+  }
+
+  private function addBilanGeneral()
+  {
+    // Bilan Prof Principal
+    $this->setColorBlue();
+    $this->Write(5, 'Bilan Général de la Classe');
+    $this->Ln();
+    $this->Ln();
+    $this->setColorDefault(0);
+    $this->MultiCell(190, 5, utf8_decode($this->CompteRendu->getValue(self::FIELD_BILANPROFPRINCIPAL)), 0, 1);
     $this->Ln();
   }
-  /**
-   * @version 1.00.00
-   * @since 1.00.00
-   */
-  public function buildBilanAndAttributions()
+
+  private function addInterventionDelegues()
   {
     // Bilan Délégués Elèves
     $this->setColorBlue();
@@ -141,6 +150,10 @@ class AperdPDF extends FPDF implements ConstantsInterface
     $this->setColorDefault(0);
     $this->MultiCell(190, 5, utf8_decode($this->CompteRendu->getValue(self::FIELD_BILANELEVES)), 0, 1);
     $this->Ln();
+  }
+
+  private function addInterventionParents()
+  {
     // Bilan Délégués Parents
     $this->setColorBlue();
     $this->Write(5, 'Intervention des délégués parents');
@@ -149,6 +162,10 @@ class AperdPDF extends FPDF implements ConstantsInterface
     $this->setColorDefault(0);
     $this->MultiCell(190, 5, utf8_decode($this->CompteRendu->getValue(self::FIELD_BILANPARENTS)), 0, 1);
     $this->Ln();
+  }
+
+  private function addInformationsGenerales()
+  {
     // Conclusion
     $this->setColorBlue();
     $this->SetY(-55);
@@ -158,6 +175,28 @@ class AperdPDF extends FPDF implements ConstantsInterface
     $this->setColorDefault(0);
     $this->MultiCell(190, 5, $this->conclusion1, 0, 1);
     $this->MultiCell(190, 5, $this->conclusion2, 0, 1);
+  }
+
+  /**
+   * @version 1.00.01
+   * @since 1.00.01
+   */
+  public function buildBilanGeneral()
+  {
+    $this->Ln();
+    $this->addBilanGeneral();
+    $this->addAttributions();
+    $this->Ln();
+  }
+  /**
+   * @version 1.00.00
+   * @since 1.00.00
+   */
+  public function buildBilanAndAttributions()
+  {
+    $this->addInterventionDelegues();
+    $this->addInterventionParents();
+    $this->addInformationsGenerales();
   }
   /**
    * @version 1.00.00
@@ -185,11 +224,13 @@ class AperdPDF extends FPDF implements ConstantsInterface
     $this->Ln(3);
     $this->Write(5, $this->footerLine1);
     $this->Ln(3);
+    /*
     $this->Write(5, $this->footerLine21);
     $this->putLink('http://asso-parents-dufy.org');
+    */
     $this->Write(5, $this->footerLine22);
     $this->SetTextColor(0, 0, 255);
-    $this->Write(5, 'contact@asso-parents-dufy.org');
+    $this->Write(5, 'secretariat.aperd.lyon@gmail.com');
     $this->setColorDefault(0);
     $this->Write(5, '                                                                                                                            Page '.$this->PageNo().'/{nb}');
   }
@@ -236,7 +277,7 @@ class AperdPDF extends FPDF implements ConstantsInterface
         continue;
       }
       $BilanMatiere = array_shift($BilanMatieres);
-      $nomEnseignant = $BilanMatiere->getEnseignant()->getNomEnseignant();
+      $nomEnseignant = $BilanMatiere->getEnseignant()->getGenre().' '.$BilanMatiere->getEnseignant()->getNomEnseignant();
       $args = array(
         utf8_decode($Matiere->getLabelMatiere()."\r\n".$nomEnseignant),
         utf8_decode($BilanMatiere->getStrStatut()),

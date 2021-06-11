@@ -19,33 +19,48 @@ class EnseignantBean extends LocalBean
    */
   public function __construct($Enseignant='')
   {
-    parent::__construct();
     $this->EnseignantServices = new EnseignantServices();
+    $this->ProfPrincipalServices = new ProfPrincipalServices();
     $this->Enseignant = ($Enseignant=='' ? new Enseignant() : $Enseignant);
   }
   /**
    */
-  public function getRowForAdminPage($args=array())
+  public function getRowForAdminPage($checked=false)
   {
     $queryArgs = array(
-      self::CST_ONGLET=>self::PAGE_ENSEIGNANT,
-      self::CST_POSTACTION=>self::CST_EDIT,
-      self::FIELD_ID=>$this->Enseignant->getId(),
-      self::ATTR_TYPE=>'Enseignants',
+      self::CST_ONGLET     => self::PAGE_ENSEIGNANT,
+      self::CST_POSTACTION => self::CST_EDIT,
+      self::FIELD_ID       => $this->Enseignant->getId(),
     );
-    $queryArgs = array_merge($queryArgs, $args);
+    $urlEdition = $this->getQueryArg($queryArgs);
+
+    $queryArgs = array(
+      self::CST_ONGLET     => self::PAGE_ENSEIGNANT,
+      self::CST_POSTACTION => self::CST_DELETE,
+      self::FIELD_ID       => $this->Enseignant->getId(),
+    );
+    $urlSuppression = $this->getQueryArg($queryArgs);
+
+    $ProfPrincipals = $this->ProfPrincipalServices->getProfPrincipalsWithFilters(array(self::FIELD_ENSEIGNANT_ID=>$this->Enseignant->getId()));
+    $ProfPrincipal  = (empty($ProfPrincipals) ? new ProfPrincipal() : array_shift($ProfPrincipals));
 
     $attributes = array(
       // Identifiant de l'Enseignant
       $this->Enseignant->getId(),
       // Url d'édition de l'Enseignant
-      $this->getQueryArg($queryArgs),
+      $urlEdition,
       // Nom de l'Enseignant - 3
-      $this->Enseignant->getNomEnseignant(),
+      $this->Enseignant->getFullName(),
       // Matière de l'Enseignant - 4
       $this->Enseignant->getMatiere()->getLabelMatiere(),
-      // Statut de l'Enseignant - 5
-      $this->Enseignant->getStatus()==1 ? 'Actif' : 'Inactif',
+      // Url de Suppression - 5
+      $urlSuppression,
+      // Checked or not checked - 6
+      $checked ? ' checked' : '',
+      // Division de l'enseignant s'il est Prof Principal - 7
+      $ProfPrincipal->getDivision()->getLabelDivision(),
+      // Année Scolaire de l'enseignant s'il est Prof Principal - 8
+      $ProfPrincipal->getAnneeScolaire()->getAnneeScolaire(),
     );
     return $this->getRender($this->urlTemplateRowAdmin, $attributes);
   }
@@ -57,10 +72,10 @@ class EnseignantBean extends LocalBean
    * @version 1.00.00
    * @since 1.00.00
    */
-  public function getSelect($tagId=self::CST_ID, $label=self::CST_DEFAULT_SELECT, $selectedId=-1, $isMandatory=false)
+  public function getSelect($tagId=self::CST_ID, $label=self::CST_DEFAULT_SELECT, $selectedId=-1, $isMandatory=false, $isAjaxUpload=false)
   {
     $Enseignants = $this->EnseignantServices->getEnseignantsWithFilters();
-    return $this->getLocalSelect($Enseignants, $tagId, $label, $selectedId, $isMandatory);
+    return $this->getLocalSelect($Enseignants, $tagId, $label, $selectedId, $isMandatory, $isAjaxUpload);
   }
   /**
    * @param mixed $selectedId

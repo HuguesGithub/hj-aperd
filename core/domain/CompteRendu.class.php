@@ -5,11 +5,14 @@ if (!defined('ABSPATH')) {
 /**
  * Classe CompteRendu
  * @author Hugues
- * @version 1.00.01
- * @since 1.00.00
+ * @version 1.21.06.04
+ * @since 1.21.06.04
  */
 class CompteRendu extends LocalDomain
 {
+  //////////////////////////////////////////////////:
+  // ATTRIBUTES
+  //////////////////////////////////////////////////:
   /**
    * Id technique de la donnée
    * @var int $id
@@ -18,7 +21,7 @@ class CompteRendu extends LocalDomain
   protected $crKey;
   protected $anneeScolaireId;
   protected $trimestre;
-  protected $classeId;
+  protected $divisionId;
   protected $nbEleves;
   protected $dateConseil;
   protected $administrationId;
@@ -40,20 +43,54 @@ class CompteRendu extends LocalDomain
   protected $auteurRedaction;
   protected $mailContact;
   protected $status;
+
+  //////////////////////////////////////////////////
+  // GETTERS & SETTERS
+  //////////////////////////////////////////////////
+  public function getCrKey()
+  { return $this->crKey; }
+  public function getAnneeScolaireId()
+  { return $this->anneeScolaireId; }
+  public function getDivisionId()
+  { return $this->divisionId; }
+  public function getTrimestre()
+  { return $this->trimestre; }
+  public function getStatus()
+  { return $this->status; }
+  public function getDateConseil()
+  { return $this->dateConseil; }
+  public function getAdministrationId()
+  { return $this->administrationId; }
+
+  public function setCrKey($crKey)
+  { $this->crKey=$crKey; }
+  public function setStatus($status)
+  { $this->status = $status; }
+  public function setDateConseil($dateConseil)
+  { $this->dateConseil = $dateConseil; }
+  public function setAdministrationId($administrationId)
+  { $this->administrationId = $administrationId; }
+
+  //////////////////////////////////////////////////
+  // CONSTRUCT - CLASSVARS - CONVERT - BEAN
+  //////////////////////////////////////////////////
   /**
+   * @param array $attributes
+   * @version 1.21.06.04
+   * @since 1.21.06.04
    */
-  public function __construct()
+  public function __construct($attributes=array())
   {
-    parent::__construct();
+    parent::__construct($attributes);
     $this->AdministrationServices = new AdministrationServices();
     $this->AnneeScolaireServices = new AnneeScolaireServices();
-    $this->ClasseScolaireServices = new ClasseScolaireServices();
+    $this->DivisionServices = new DivisionServices();
     $this->EnseignantServices = new EnseignantServices();
 
     $this->mandatoryFields = array(
       self::FIELD_ANNEESCOLAIRE_ID,
       self::FIELD_TRIMESTRE,
-      self::FIELD_CLASSE_ID,
+      self::FIELD_DIVISION_ID,
       self::FIELD_ADMINISTRATION_ID,
       self::FIELD_ENSEIGNANT_ID,
       self::FIELD_PARENT1,
@@ -69,40 +106,12 @@ class CompteRendu extends LocalDomain
       self::FIELD_NBMGCPTTVL,
       self::FIELD_DATEREDACTION,
       self::FIELD_AUTEURREDACTION,
-      self::FIELD_MAILCONTACT,
     );
   }
   /**
-   * @return int
-   * @version 1.00.00
-   * @since 1.00.00
-   */
-  public function getId()
-  { return $this->id; }
-
-  public function getCrKey()
-  { return $this->crKey; }
-  public function getAnneeScolaireId()
-  { return $this->anneeScolaireId; }
-  public function getTrimestre()
-  { return $this->trimestre; }
-  public function getStatus()
-  { return $this->status; }
-  /**
-   * @param int $id
-   * @version 1.00.00
-   * @since 1.00.00
-   */
-  public function setId($id)
-  { $this->id=$id; }
-  public function setCrKey($crKey)
-  { $this->crKey=$crKey; }
-  public function setStatus($status)
-  { $this->status = $status; }
-  /**
    * @return array
-   * @version 1.00.00
-   * @since 1.00.00
+   * @version 1.21.06.04
+   * @since 1.21.06.04
    */
   public function getClassVars()
   { return get_class_vars('CompteRendu'); }
@@ -111,15 +120,26 @@ class CompteRendu extends LocalDomain
    * @param string $a
    * @param string $b
    * @return CompteRendu
-   * @version 1.00.00
-   * @since 1.00.00
+   * @version 1.21.06.04
+   * @since 1.21.06.04
    */
   public static function convertElement($row, $a='', $b='')
   { return parent::convertElement(new CompteRendu(), self::getClassVars(), $row); }
   /**
+   * @return CompteRenduBean
+   * @version 1.21.06.04
+   * @since 1.21.06.04
+   */
+  public function getBean()
+  { return new CompteRenduBean($this); }
+
+  //////////////////////////////////////////////////
+  // GETTERS OBJETS LIES
+  //////////////////////////////////////////////////
+  /**
    * @return AnneeScolaire
-   * @version 1.00.00
-   * @since 1.00.00
+   * @version 1.21.06.04
+   * @since 1.21.06.04
    */
   public function getAnneeScolaire()
   {
@@ -130,20 +150,20 @@ class CompteRendu extends LocalDomain
   }
   /**
    * @return ClasseScolaire
-   * @version 1.00.01
-   * @since 1.00.00
+   * @version 1.21.06.04
+   * @since 1.21.06.04
    */
-  public function getClasseScolaire()
+  public function getDivision()
   {
-    if ($this->ClasseScolaire==null) {
-      $this->ClasseScolaire = $this->ClasseScolaireServices->selectLocal($this->classeId);
+    if ($this->Division==null) {
+      $this->Division = $this->DivisionServices->selectLocal($this->divisionId);
     }
-    return $this->ClasseScolaire;
+    return $this->Division;
   }
   /**
    * @return Administration
-   * @version 1.00.01
-   * @since 1.00.00
+   * @version 1.21.06.04
+   * @since 1.21.06.04
    */
   public function getAdministration()
   {
@@ -154,8 +174,8 @@ class CompteRendu extends LocalDomain
   }
   /**
    * @return Enseignant
-   * @version 1.00.00
-   * @since 1.00.00
+   * @version 1.21.06.04
+   * @since 1.21.06.04
    */
   public function getEnseignant()
   {
@@ -164,23 +184,27 @@ class CompteRendu extends LocalDomain
     }
     return $this->Enseignant;
   }
-  /**
-   * @return CompteRenduBean
-   * @version 1.00.00
-   * @since 1.00.00
-   */
-  public function getBean()
-  { return new CompteRenduBean($this); }
+
+  //////////////////////////////////////////////////
+  // METHODS
+  //////////////////////////////////////////////////
+
+
+
+
+
+
   /**
    * @return boolean
-   * @version 1.00.00
-   * @since 1.00.00
+   * @version 1.21.06.04
+   * @since 1.21.06.04
    */
-  public function checkMandatory()
+  public function checkMandatory(&$strErrors='')
   {
     while (!empty($this->mandatoryFields)) {
       $field = array_shift($this->mandatoryFields);
       if ($this->{$field}=='' || $this->{$field}==self::CST_DEFAULT_SELECT) {
+        $strErrors = $field;
         return false;
       }
     }
@@ -189,15 +213,18 @@ class CompteRendu extends LocalDomain
   /**
    * @param string $field
    * @return mixed
-   * @version 1.00.00
-   * @since 1.00.00
+   * @version 1.21.06.04
+   * @since 1.21.06.04
    */
   public function getValue($field)
   { return $this->{$field}; }
+
+  public function setValue($field, $value)
+  { $this->{$field} = $value; }
   /**
    * @param array $post
-   * @version 1.00.00
-   * @since 1.00.00
+   * @version 1.21.06.04
+   * @since 1.21.06.04
    */
   public function setByPost($post)
   {
@@ -214,12 +241,14 @@ class CompteRendu extends LocalDomain
 
   /**
    * @return string
-   * @version 1.00.00
-   * @since 1.00.00
+   * @version 1.21.06.04
+   * @since 1.21.06.04
    */
   public function getStrParentsDelegues()
   {
-    if ($this->parent2=='') {
+    if ($this->parent1=='') {
+      $str = '';
+    } elseif ($this->parent2=='') {
       $str = "du parent délégué ".$this->parent1;
     } else {
       $str = "des parents délégués ".$this->parent1." et ".$this->parent2;
@@ -229,8 +258,8 @@ class CompteRendu extends LocalDomain
 
   /**
    * @return string
-   * @version 1.00.01
-   * @since 1.00.00
+   * @version 1.21.06.04
+   * @since 1.21.06.04
    */
   public function getStrElevesDelegues()
   {
@@ -248,15 +277,15 @@ class CompteRendu extends LocalDomain
 
   /**
    * @return string
-   * @version 1.00.00
-   * @since 1.00.00
+   * @version 1.21.06.04
+   * @since 1.21.06.04
    */
   public function getNotifications()
   { return $this->notifications; }
   /**
    * @param string $notifications
-   * @version 1.00.00
-   * @since 1.00.00
+   * @version 1.21.06.04
+   * @since 1.21.06.04
    */
   public function setNotifications($notifications)
   { $this->notifications = $notifications; }

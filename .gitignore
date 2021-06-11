@@ -2,3 +2,4 @@
 .gitattributes
 *.bat
 web/rsc/img/Logo-APERD-3.png
+.scannerwork/*

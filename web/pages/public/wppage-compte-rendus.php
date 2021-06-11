@@ -1,23 +1,6 @@
 <section id="page-compte-rendus" class="container">
   <section id="notifications" class="row">%7$s</section>
 
-  <section id="searchCr" class="row">
-    <fieldset>
-      <legend>Saisissez l'identifiant de votre Compte-Rendu</legend>
-      <form method="post" action="#" id="lookForCr">
-        <div class="input-group input-group-sm mb-3">
-          <div class="input-group-prepend">
-            <span class="input-group-text">Identifiant</span>
-          </div>
-          <input type="text" class="form-control" aria-label="Identifiant" name="crKey">
-          <div class="input-group-append">
-            <button class="btn btn-outline-secondary" type="submit" name="search">Rechercher</button>
-          </div>
-        </div>
-      </form>
-    </fieldset>
-  </section>
-
   <section id="formCr" class="row">
     <fieldset>
       <legend>Éditez votre Compte-Rendu</legend>
@@ -66,6 +49,7 @@
                   <label for="eleve2">&nbsp;</label>%13$s
                 </div>
                 <!-- Fin Parents & Elèves Délégués -->
+                <div id="renduStep1" class="form-group col-md-12"></div>
               </div>
             </div>
           </li>
@@ -81,6 +65,7 @@
                 <!-- Row Matière 01 -->
                 %5$s
                 <!-- Fin Matière 01 -->
+                <div id="renduStep2" class="form-group col-md-12"></div>
               </div>
             </div>
           </li>
@@ -97,6 +82,7 @@
                 </div>
               </div>
               <!-- Fin Compte-rendus -->
+              <div id="renduStep3" class="form-group col-md-12"></div>
             </div>
           </li>
           <li class="step">
@@ -125,6 +111,7 @@
                 </div>
               </div>
               <!-- Fin Attributions & Mises en garde -->
+              <div id="renduStep4" class="form-group col-md-12"></div>
             </div>
           </li>
           <li class="step">
@@ -143,18 +130,22 @@
                 </div>
               </div>
               <!-- Fin Rédaction -->
+              <div id="renduStep5" class="form-group col-md-12"></div>
             </div>
           </li>
           <li class="step">
             <div class="step-title waves-effect waves-dark">Validation</div>
             <div class="step-new-content">
               <div class="form-row">
+                <input type="hidden" name="crKey" value="%26$s">
                 <button class="btn btn-primary btn-sm" type="submit" name="save">Envoyer</button>
               </div>
+              <div id="renduStep6" class="form-group col-md-12"></div>
             </div>
           </li>
         </ul>
       </form>
     </fieldset>
   </section>
+
 </section>

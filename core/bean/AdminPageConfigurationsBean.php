@@ -20,7 +20,6 @@ class AdminPageConfigurationsBean extends AdminPageBean
     $this->title = 'Configurations';
     $this->AdministrationServices = new AdministrationServices();
     $this->AnneeScolaireServices = new AnneeScolaireServices();
-    $this->ClasseScolaireServices = new ClasseScolaireServices();
   }
   /**
    * @param array $urlParams

@@ -5,25 +5,42 @@ if (!defined('ABSPATH')) {
 /**
  * Classe AnneeScolaireServices
  * @author Hugues
- * @version 1.00.00
- * @since 1.00.00
+ * @version 1.21.06.04
+ * @since 1.21.06.04
  */
 class AnneeScolaireServices extends LocalServices
 {
+  //////////////////////////////////////////////////
+  // ATTRIBUTES
+  //////////////////////////////////////////////////
   /**
    * L'objet Dao pour faire les requêtes
    * @var AnneeScolaireDaoImpl $Dao
    */
   protected $Dao;
+
+  //////////////////////////////////////////////////
+  // CONSTRUCT
+  //////////////////////////////////////////////////
   /**
    * Class constructor
+   * @version 1.21.06.04
+   * @since 1.21.06.04
    */
   public function __construct()
   {
-    parent::__construct();
     $this->Dao = new AnneeScolaireDaoImpl();
   }
 
+  //////////////////////////////////////////////////
+  // METHODS
+  //////////////////////////////////////////////////
+  /**
+   * @param array $arrFilters
+   * @return array
+   * @version 1.21.06.04
+   * @since 1.21.06.04
+   */
   private function buildFilters($arrFilters)
   {
     $arrParams = array();
@@ -35,6 +52,8 @@ class AnneeScolaireServices extends LocalServices
    * @param string $orderby
    * @param string $order
    * @return array
+   * @version 1.21.06.04
+   * @since 1.21.06.04
    */
   public function getAnneeScolairesWithFilters($arrFilters=array(), $orderby=self::FIELD_ANNEESCOLAIRE, $order=self::ORDER_ASC)
   {
@@ -43,27 +62,10 @@ class AnneeScolaireServices extends LocalServices
     return $this->Dao->selectEntriesWithFilters(__FILE__, __LINE__, $arrParams);
   }
   /**
-   * @param int $id
-   * @return AnneeScolaire
-   * @version 1.00.00
-   * @since 1.00.00
+   * @param string $ins
+   * @version 1.21.06.10
+   * @since 1.21.06.10
    */
-  public function selectLocal($id)
-  { return $this->select(__FILE__, __LINE__, $id); }
-  /**
-   * @param AnneeScolaire $AnneeScolaire
-   * @return AnneeScolaire
-   * @version 1.00.01
-   * @since 1.00.01
-   */
-  public function updateLocal($AnneeScolaire)
-  { return $this->update(__FILE__, __LINE__, $AnneeScolaire); }
-  /**
-   * @param AnneeScolaire $AnneeScolaire
-   * @return AnneeScolaire
-   * @version 1.00.01
-   * @since 1.00.01
-   */
-  public function insertLocal($AnneeScolaire)
-  { return $this->insert(__FILE__, __LINE__, $AnneeScolaire); }
+  public function deleteIn($ins)
+  { $this->Dao->deleteIn($ins); }
 }

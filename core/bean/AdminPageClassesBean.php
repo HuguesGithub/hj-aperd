@@ -3,14 +3,14 @@ if (!defined('ABSPATH')) {
   die('Forbidden');
 }
 /**
- * AdminPageClassesBean
+ * AdminPageDivisionsBean
  * @author Hugues
  * @version 1.00.01
  * @since 1.00.01
  */
-class AdminPageClassesBean extends AdminPageBean
+class AdminPageDivisionsBean extends AdminPageBean
 {
-  protected $urlTemplatePageClasseAdmin = 'web/pages/admin/board-classes.php';
+  protected $urlTemplatePageDivisionAdmin = 'web/pages/admin/board-divisions.php';
   /**
    * Class Constructor
    */
@@ -30,7 +30,7 @@ class AdminPageClassesBean extends AdminPageBean
    */
   public static function getStaticContentPage($urlParams)
   {
-    $Bean = new AdminPageClassesBean();
+    $Bean = new AdminPageDivisionsBean();
     if (isset($urlParams[self::CST_POSTACTION])) {
       $Bean->dealWithPostAction($urlParams);
     }
@@ -39,8 +39,8 @@ class AdminPageClassesBean extends AdminPageBean
   public function dealWithPostAction($urlParams)
   {
     switch ($urlParams['type']) {
-      case 'Classe' :
-        $this->dealWithClasseScolaireAction($urlParams);
+      case self::TYPE_DIVISION :
+        $this->dealWithDivisionScolaireAction($urlParams);
       break;
       case 'ClasseScolaire' :
         $this->dealWithCompoClasseAction($urlParams);
@@ -49,19 +49,19 @@ class AdminPageClassesBean extends AdminPageBean
       break;
     }
   }
-  private function dealWithClasseScolaireAction($urlParams)
+  private function dealWithDivisionScolaireAction($urlParams)
   {
     $id = $urlParams[self::FIELD_ID];
     if ($urlParams[self::CST_POSTACTION] == 'edit') {
-      $this->ClasseScolaire = $this->ClasseScolaireServices->selectLocal($id);
+      $this->Division = $this->DivisionServices->selectLocal($id);
     } elseif ($urlParams[self::CST_POSTACTION] == 'Edition') {
-      $this->ClasseScolaire = $this->ClasseScolaireServices->selectLocal($id);
-      $this->ClasseScolaire->setLabelClasse($urlParams[self::FIELD_LABELCLASSE]);
-      $this->ClasseScolaireServices->updateLocal($this->ClasseScolaire);
-    } elseif ($urlParams[self::CST_POSTACTION] == 'Création') {
-      $this->ClasseScolaire = new ClasseScolaire();
-      $this->ClasseScolaire->setLabelClasse($urlParams[self::FIELD_LABELCLASSE]);
-      $this->ClasseScolaireServices->insertLocal($this->ClasseScolaire);
+      $this->Division = $this->DivisionServices->selectLocal($id);
+      $this->Division->setLabelDivision($urlParams[self::FIELD_LABELDIVISION]);
+      $this->DivisionServices->updateLocal($this->Division);
+    } elseif ($urlParams[self::CST_POSTACTION] == self::CST_CREATION) {
+      $this->Division = new Division();
+      $this->Division->setLabelDivision($urlParams[self::FIELD_LABELDIVISION]);
+      $this->DivisionServices->insertLocal($this->Division);
     }
   }
   private function dealWithCompoClasseAction($urlParams)
@@ -127,16 +127,16 @@ class AdminPageClassesBean extends AdminPageBean
           continue;
         }
         $arrEnseignants = explode(';', $line);
-        // La première donnée de la ligne est le libellé de la Classe, on vérifie son existence
-        $labelClasse = array_shift($arrEnseignants);
-        $ClasseScolaires = $this->ClasseScolaireServices->getClasseScolairesWithFilters(array(self::FIELD_LABELCLASSE=>$labelClasse));
-        if (empty($ClasseScolaires)) {
+        // La première donnée de la ligne est le libellé de la Division, on vérifie son existence
+        $labelDivision = array_shift($arrEnseignants);
+        $Divisions = $this->DivisionServices->getDivisionsWithFilters(array(self::FIELD_LABELDIVISION=>$labelDivision));
+        if (empty($Divisions)) {
           // Elle n'existe pas.
-          $this->msgErreur .= 'Il est nécessaire de créer la classe <strong>'.$labelClasse.'</strong>.<br>';
+          $this->msgErreur .= 'Il est nécessaire de créer la division <strong>'.$labelDivision.'</strong>.<br>';
           $bln_uploadOkay = false;
         } else {
-          // On récupère la classe
-          $ClasseScolaire = array_shift($ClasseScolaires);
+          // On récupère la Division
+          $Division = array_shift($Divisions);
         }
 
         // On parcourt les Enseignants
@@ -155,7 +155,7 @@ class AdminPageClassesBean extends AdminPageBean
           } else {
             $Enseignant = array_shift($Enseignants);
             $Matiere = $arrMatieresOrdonnees[$rk];
-            $arrInsert[] = '('.$AnneeReference->getId().','.$ClasseScolaire->getId().','.$Matiere->getId().','.$Enseignant->getId().')';
+            $arrInsert[] = '('.$AnneeReference->getId().','.$Division->getId().','.$Matiere->getId().','.$Enseignant->getId().')';
           }
           $rk++;
         }
@@ -178,15 +178,15 @@ class AdminPageClassesBean extends AdminPageBean
   public function getListingPage($urlParams)
   {
     /////////////////////////////////////////////////////////////////////////////
-    // Onglet Classe
-    $strAdminRowsClasse = '';
-    $ClasseScolaires = $this->ClasseScolaireServices->getClasseScolairesWithFilters();
-    while (!empty($ClasseScolaires)) {
-      $ClasseScolaire = array_shift($ClasseScolaires);
-      $Bean = $ClasseScolaire->getBean();
-      $strAdminRowsClasse .= $Bean->getRowForAdminPage();
+    // Onglet Division
+    $strAdminRowsDivision = '';
+    $Divisions = $this->DivisionServices->getDivisionsWithFilters();
+    while (!empty($Divisions)) {
+      $Division = array_shift($Divisions);
+      $Bean = $Division->getBean();
+      $strAdminRowsDivision .= $Bean->getRowForAdminPage();
     }
-    $urlCancelClasse = $Bean->getQueryArg(array(self::CST_ONGLET=>self::PAGE_CLASSE, 'type'=>'Classe'));
+    $urlCancelDivision = $Bean->getQueryArg(array(self::CST_ONGLET=>self::PAGE_DIVISION, self::ATTR_TYPE=>self::TYPE_DIVISION));
 
     /////////////////////////////////////////////////////////////////////////////
     // Onglet Classe Scolaire
@@ -226,8 +226,8 @@ class AdminPageClassesBean extends AdminPageBean
     $strFiltres = '';
     $AnneeScolaireBean = new AnneeScolaireBean();
     $strFiltres .= $AnneeScolaireBean->getSelect(self::FIELD_ANNEESCOLAIRE_ID, 'Toutes les années scolaires', $anneeScolaireId);
-    $ClasseScolaireBean = new ClasseScolaireBean();
-    $strFiltres .= $ClasseScolaireBean->getSelect(self::FIELD_CLASSE_ID, 'Toutes les classes', $filterClasseId);
+    $DivisionBean = new DivisionBean();
+    $strFiltres .= $DivisionBean->getSelect(self::FIELD_CLASSE_ID, 'Toutes les divisions', $filterClasseId);
     $MatiereBean = new MatiereBean();
     $strFiltres .= $MatiereBean->getSelect(self::FIELD_MATIERE_ID, 'Toutes les matières', $filterMatiereId);
     $EnseignantBean = new EnseignantBean();
@@ -237,17 +237,17 @@ class AdminPageClassesBean extends AdminPageBean
     // On restitue le template enrichi.
     $attibutes = array(
       // Onglet actuel - 1
-      'tab'.(isset($urlParams['type']) ? $urlParams['type'] : 'Classe'),
+      'tab'.(isset($urlParams[self::ATTR_TYPE]) ? $urlParams[self::ATTR_TYPE] : self::TYPE_DIVISION),
       // Liste des Classes Scolaires - 2
-      $strAdminRowsClasse,
+      $strAdminRowsDivision,
       // Titre du bloc de Création / Edition pour Classe Scolaire - 3
-      $this->ClasseScolaire==null ? 'Création' : 'Edition',
+      $this->Division==null ? self::CST_CREATION : 'Edition',
       // Libellé de la Classe Scolaire - 4
-      $this->ClasseScolaire==null ? '' : $this->ClasseScolaire->getLabelClasse(),
+      $this->Division==null ? '' : $this->Division->getLabelDivision(),
       // Identifiant de l'élément sélectionné - 5
-      $this->ClasseScolaire==null ? '' : $this->ClasseScolaire->getId(),
+      $this->Division==null ? '' : $this->Division->getId(),
       // Url pour Annuler l'action - 6
-      $urlCancelClasse,
+      $urlCancelDivision,
       // Message d'erreur en cas d'upload de profs principaux foireux - 7
       (!empty($this->msgErreur) ? '<div class="alert alert-danger" role="alert">'.$this->msgErreur.'</div>' : ''),
       // Url pour annuler l'action - 8
@@ -261,6 +261,6 @@ class AdminPageClassesBean extends AdminPageBean
       '','','','','','','',
       '','','','','','','',
     );
-    return $this->getRender($this->urlTemplatePageClasseAdmin, $attibutes);
+    return $this->getRender($this->urlTemplatePageDivisionAdmin, $attibutes);
   }
 }

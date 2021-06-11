@@ -11,6 +11,7 @@ if (!defined('ABSPATH')) {
 class WpPageCompteRendusBean extends WpPageBean
 {
   protected $urlTemplate = 'web/pages/public/wppage-compte-rendus.php';
+  protected $urlTemplateIdentification = 'web/pages/public/wppage-compte-rendus-identification.php';
   protected $urlFragmentNotification = 'web/pages/public/fragments/fragment-notification.php';
   /**
    * Class Constructor
@@ -21,8 +22,12 @@ class WpPageCompteRendusBean extends WpPageBean
   public function __construct($WpPage='')
   {
     parent::__construct($WpPage);
-    $this->CompteRenduServices = new CompteRenduServices();
-    $this->BilanMatiereServices = new BilanMatiereServices();
+    $this->AnneeScolaireServices = new AnneeScolaireServices();
+    $this->BilanMatiereServices  = new BilanMatiereServices();
+    $this->CompoDivisionServices = new CompoDivisionServices();
+    $this->CompteRenduServices   = new CompteRenduServices();
+    $this->EleveServices         = new EleveServices();
+    $this->ProfPrincipalServices = new ProfPrincipalServices();
   }
   /**
    * @return string
@@ -37,18 +42,25 @@ class WpPageCompteRendusBean extends WpPageBean
       if (isset($_POST[self::AJAX_SAVE])) {
         $post = array_merge($_POST, array(self::AJAX_ACTION=>self::AJAX_SAVE));
         $this->CompteRendu = CompteRenduActions::dealWithStatic($post);
-        $this->CompteRendu->setId(MySQL::getLastInsertId());
+        $post = array(self::AJAX_ACTION=>self::AJAX_SEARCH, self::FIELD_CRKEY=>$crKey);
+        $this->CompteRendu = CompteRenduActions::dealWithStatic($post);
       } elseif (isset($_POST[self::AJAX_SEARCH])) {
         $post = array_merge($_POST, array(self::AJAX_ACTION=>self::AJAX_SEARCH, self::FIELD_CRKEY=>$crKey));
         $this->CompteRendu = CompteRenduActions::dealWithStatic($post);
       }
     } elseif ($crKey!=-1) {
-      $post = array_merge($_POST, array(self::AJAX_ACTION=>self::AJAX_SEARCH, self::FIELD_CRKEY=>$crKey));
+      $post = array(self::AJAX_ACTION=>self::AJAX_SEARCH, self::FIELD_CRKEY=>$crKey);
       $this->CompteRendu = CompteRenduActions::dealWithStatic($post);
     } else {
       $this->CompteRendu = new CompteRendu();
+      return $this->getContentIdentification();
     }
     return $this->getContent();
+  }
+  public function getContentIdentification()
+  {
+    $args = array('');
+    return $this->getRender($this->urlTemplateIdentification, $args);
   }
   /**
    * @return string
@@ -57,80 +69,162 @@ class WpPageCompteRendusBean extends WpPageBean
    */
   public function getContent()
   {
+    $update = false;
     //////////////////////////////////////////////////////////////////
-    // Initialisation des Beans pour construire les listes déroulantes.
-    $AnneeScolaireBean = new AnneeScolaireBean();
-    $ClasseScolaireBean = new ClasseScolaireBean();
-    $AdministrationBean = new AdministrationBean();
-    $EnseignantBean = new EnseignantBean();
-    $BilanMatiereBean = new BilanMatiereBean();
-
+    // On peut faire des contrôles de valeurs pour les initialiser si nécessaire
+    //////////////////////////////////////////////////////////////////
+    // Prof Principal :
+    $profPrincId = $this->CompteRendu->getValue(self::FIELD_ENSEIGNANT_ID);
+    if ($profPrincId==0) {
+      // S'il n'est pas défini, on peut regarder en base et faire une proposition...
+      $args = array(
+        self::FIELD_ANNEESCOLAIRE_ID => $this->CompteRendu->getAnneeScolaireId(),
+        self::FIELD_DIVISION_ID      => $this->CompteRendu->getDivisionId(),
+      );
+      $ProfPrincipals = $this->ProfPrincipalServices->getProfPrincipalsWithFilters($args);
+      if (!empty($ProfPrincipals)) {
+        $ProfPrincipal = array_shift($ProfPrincipals);
+        $profPrincId = $ProfPrincipal->getEnseignantId();
+        $this->CompteRendu->setValue(self::FIELD_ENSEIGNANT_ID, $profPrincId);
+        $update = true;
+      }
+    }
+    // Nb d'élèves :
+    $nbEleves = $this->CompteRendu->getValue(self::FIELD_NBELEVES);
+    if ($nbEleves==0) {
+      // Si le nombre d'élèves est à 0, on peut regarder en base et faire une proposition...
+      $args = array(
+        self::FIELD_DIVISION_ID      => $this->CompteRendu->getDivisionId(),
+      );
+      $Eleves = $this->EleveServices->getElevesWithFilters($args);
+      $this->CompteRendu->setValue(self::FIELD_NBELEVES, count($Eleves));
+      $update = true;
+    }
     //////////////////////////////////////////////////////////////////
     // Récupération des Bilans par Matières existants et restitution
+    $strNewObservationsByMatieres = '';
+
+    $strButtonMatieres = '';
+    $strPanelMatieres  = '';
+    $isFirstButton = true;
+
     $strObservationsByMatieres = '';
     if ($this->CompteRendu->getId()!='') {
       $attributes = array(self::FIELD_COMPTERENDU_ID=>$this->CompteRendu->getId());
       $BilanMatieres = $this->BilanMatiereServices->getBilanMatieresWithFilters($attributes);
-      while (!empty($BilanMatieres)) {
-        $BilanMatiere = array_shift($BilanMatieres);
-        $strObservationsByMatieres .= $BilanMatiere->getBean()->getFragmentObservationMatiere();
+      if (!empty($BilanMatieres)) {
+        while (!empty($BilanMatieres)) {
+          $BilanMatiere = array_shift($BilanMatieres);
+          $strObservationsByMatieres .= $BilanMatiere->getBean()->getFragmentObservationMatiere();
+          $BilanMatiere->getBean()->getBilanMatiere($strButtonMatieres, $strPanelMatieres, $isFirstButton);
+        }
+      } else {
+        $args = array(
+          self::FIELD_ANNEESCOLAIRE_ID => $this->CompteRendu->getAnneeScolaireId(),
+          self::FIELD_DIVISION_ID      => $this->CompteRendu->getDivisionId(),
+        );
+        $CompoClasses = $this->CompoDivisionServices->getCompoDivisionsWithFilters($args);
+        while (!empty($CompoClasses)) {
+          $CompoClasse = array_shift($CompoClasses);
+          $BilanMatiere = new BilanMatiere();
+          $BilanMatiere->setCompteRenduId($this->CompteRendu->getId());
+          $BilanMatiere->setMatiereId($CompoClasse->getMatiereId());
+          $BilanMatiere->setEnseignantId($CompoClasse->getEnseignantId());
+          $strObservationsByMatieres .= $BilanMatiere->getBean()->getFragmentObservationMatiere();
+          $BilanMatiere->getBean()->getBilanMatiere($strButtonMatieres, $strPanelMatieres, $isFirstButton);
+        }
       }
     }
+    $BilanMatiereBean = new BilanMatiereBean();
     $strObservationsByMatieres .= $BilanMatiereBean->getFragmentObservationMatiere();
+
+    $strNewObservationsByMatieres .= '<div class="form-row" style="width:100%;">';
+    $strNewObservationsByMatieres .= '<div class="form-group col-md-3 btn-group-vertical btn-group-sm">';
+    $strNewObservationsByMatieres .= $strButtonMatieres;
+    $strNewObservationsByMatieres .= '</div>';
+    $strNewObservationsByMatieres .= '<div class="form-group col-md-9">';
+    $strNewObservationsByMatieres .= '  <div class="tab-content" id="v-pills-tabContent">';
+    $strNewObservationsByMatieres .= $strPanelMatieres;
+    /*
+    $strNewObservationsByMatieres .= '    <div class="tab-pane fade show active" id="v-pills-home" role="tabpanel" aria-labelledby="v-pills-home-tab">Tab Home</div>';
+    $strNewObservationsByMatieres .= '    <div class="tab-pane fade" id="v-pills-profile" role="tabpanel" aria-labelledby="v-pills-profile-tab">Tab Profile</div>';
+    $strNewObservationsByMatieres .= '    <div class="tab-pane fade" id="v-pills-messages" role="tabpanel" aria-labelledby="v-pills-messages-tab">Tab Messages</div>';
+    $strNewObservationsByMatieres .= '    <div class="tab-pane fade" id="v-pills-settings" role="tabpanel" aria-labelledby="v-pills-settings-tab">Tab Settings</div>';
+    */
+    $strNewObservationsByMatieres .= '  </div>';
+    $strNewObservationsByMatieres .= '</div>';
+    $strNewObservationsByMatieres .= '</div>';
+
+
+    //////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////
+    // Initialisation des Beans pour construire les listes déroulantes.
+    $AnneeScolaireBean = new AnneeScolaireBean();
+    $DivisionBean = new DivisionBean();
+    $AdministrationBean = new AdministrationBean();
+    $EnseignantBean = new EnseignantBean();
+
+    if ($update) {
+      $this->CompteRenduServices->updateLocal($this->CompteRendu);
+    }
 
     //////////////////////////////////////////////////////////////////
     // On enrichi le template puis on le restitue.
     $args = array(
       // Menu déroulant Année Scolaire - 1
-      $AnneeScolaireBean->getSelect(self::FIELD_ANNEESCOLAIRE_ID, $this->CompteRendu->getValue(self::FIELD_ANNEESCOLAIRE_ID), true),
+      $AnneeScolaireBean->getSelect(self::FIELD_ANNEESCOLAIRE_ID, self::CST_DEFAULT_SELECT, $this->CompteRendu->getAnneeScolaireId(), false, true),
       // Menu déroulant Classe Scolaire - 2
-      $ClasseScolaireBean->getSelect(self::FIELD_CLASSE_ID, $this->CompteRendu->getValue(self::FIELD_CLASSE_ID), true),
+      $DivisionBean->getSelect(self::FIELD_DIVISION_ID, self::CST_DEFAULT_SELECT, $this->CompteRendu->getDivisionId(), false, true),
       // Menu déroulant Présidence - 3
-      $AdministrationBean->getSelect(self::FIELD_ADMINISTRATION_ID, $this->CompteRendu->getValue(self::FIELD_ADMINISTRATION_ID), true),
+      $AdministrationBean->getSelect(self::FIELD_ADMINISTRATION_ID, self::CST_DEFAULT_SELECT, $this->CompteRendu->getValue(self::FIELD_ADMINISTRATION_ID), true, true),
       // Menu déroulant Prof Principal - 4
-      $EnseignantBean->getSelect(self::FIELD_ENSEIGNANT_ID, $this->CompteRendu->getValue(self::FIELD_ENSEIGNANT_ID), true),
+      $EnseignantBean->getSelect(self::FIELD_ENSEIGNANT_ID, self::CST_DEFAULT_SELECT, $profPrincId, true, true),
       // Premier bloc d'observations par matière - 5
-      $strObservationsByMatieres,
+      (self::isAdmin() ? $strNewObservationsByMatieres : $strObservationsByMatieres),
       // Menu déroulant pour le trimestre - 6
-      $this->getSelectTrimestre(true),
+      //$this->getSelectTrimestre(true),
+      $this->getInput(self::FIELD_TRIMESTRE, true, array(self::ATTR_READONLY=>'')),
       // Notifications éventuelles - 7
       $this->CompteRendu->getNotifications(),
       // Input NbEleves - 8
-      $this->getInput(self::FIELD_NBELEVES, true),
+      $this->getInput(self::FIELD_NBELEVES, true, array(), true),
       // Input DateConseil - 9
-      $this->getInput(self::FIELD_DATECONSEIL, true, array(self::ATTR_PLACEHOLDER=>self::FORMAT_DATE_JJMMAAAA)),
+      $this->getInput(self::FIELD_DATECONSEIL, true, array(self::ATTR_PLACEHOLDER=>self::FORMAT_DATE_JJMMAAAA), true),
       // Input Premier Parent - 10
-      $this->getInput(self::FIELD_PARENT1, true),
+      $this->getInput(self::FIELD_PARENT1, true, array(), true),
       // Input Deuxième Parent - 11
-      $this->getInput(self::FIELD_PARENT2),
+      $this->getInput(self::FIELD_PARENT2, false, array(), true),
       // Input Premier Elève - 12
-      $this->getInput(self::FIELD_ENFANT1, true),
+      $this->getInput(self::FIELD_ENFANT1, true, array(), true),
       // Input Deuxième Elève - 13
-      $this->getInput(self::FIELD_ENFANT2),
+      $this->getInput(self::FIELD_ENFANT2, false, array(), true),
       // Textarea Bilan Prof Principal - 14
-      $this->getTextArea(self::FIELD_BILANPROFPRINCIPAL, true),
+      $this->getTextArea(self::FIELD_BILANPROFPRINCIPAL, true, true),
       // Textarea Bilan Délégués Elèves - 15
-      $this->getTextArea(self::FIELD_BILANELEVES, true),
+      $this->getTextArea(self::FIELD_BILANELEVES, true, true),
       // Textarea Bilan Délégués Parents - 16
-      $this->getTextArea(self::FIELD_BILANPARENTS, true),
+      $this->getTextArea(self::FIELD_BILANPARENTS, true, true),
       // Input Nb Encouragements - 17
-      $this->getInput(self::FIELD_NBENCOURAGEMENTS, true),
+      $this->getInput(self::FIELD_NBENCOURAGEMENTS, true, array(), true),
       // Input Nb Compliments - 18
-      $this->getInput(self::FIELD_NBCOMPLIMENTS, true),
+      $this->getInput(self::FIELD_NBCOMPLIMENTS, true, array(), true),
       // Input Nb Felicitations - 19
-      $this->getInput(self::FIELD_NBFELICITATIONS, true),
+      $this->getInput(self::FIELD_NBFELICITATIONS, true, array(), true),
       // Input Nb MGC - 20
-      $this->getInput(self::FIELD_NBMGCPT, true),
+      $this->getInput(self::FIELD_NBMGCPT, true, array(), true),
       // Input Nb MGT - 21
-      $this->getInput(self::FIELD_NBMGTVL, true),
+      $this->getInput(self::FIELD_NBMGTVL, true, array(), true),
       // Input Nb MGCT - 22
-      $this->getInput(self::FIELD_NBMGCPTTVL, true),
+      $this->getInput(self::FIELD_NBMGCPTTVL, true, array(), true),
       // Input Date Rédaction - 23
-      $this->getInput(self::FIELD_DATEREDACTION, true, array(self::ATTR_PLACEHOLDER=>self::FORMAT_DATE_JJMMAAAA)),
+      $this->getInput(self::FIELD_DATEREDACTION, true, array(self::ATTR_PLACEHOLDER=>self::FORMAT_DATE_JJMMAAAA), true),
       // Input Auteur Rédaction - 24
-      $this->getInput(self::FIELD_AUTEURREDACTION, true),
+      $this->getInput(self::FIELD_AUTEURREDACTION, true, array(), true),
       // Input Mail de Contact - 25
-      $this->getInput(self::FIELD_MAILCONTACT, true),
+      $this->getInput(self::FIELD_MAILCONTACT, false),
+      // CrKey - 26
+      $this->CompteRendu->getCrKey(),
     );
     return $this->getRender($this->urlTemplate, $args);
   }
@@ -142,14 +236,14 @@ class WpPageCompteRendusBean extends WpPageBean
    * @version 1.00.00
    * @since 1.00.00
    */
-  public function getTextArea($field, $isMandatory=false)
+  public function getTextArea($field, $isMandatory=false, $isAjaxUpload=false)
   {
     $id = $this->CompteRendu->getId();
     $value = $this->CompteRendu->getValue($field);
     $classe = self::CST_MD_TEXTAREA.($isMandatory && $value=='' && $id!='' ? ' '.self::NOTIF_IS_INVALID : '');
     $args = array(
       self::ATTR_ID => $field,
-      self::ATTR_CLASS => $classe,
+      self::ATTR_CLASS => $classe.($isAjaxUpload ? ' '.self::AJAX_UPLOAD : ''),
       self::ATTR_ROWS =>5,
       self::ATTR_NAME =>$field,
     );
@@ -163,20 +257,31 @@ class WpPageCompteRendusBean extends WpPageBean
    * @param string $field
    * @param boolean $isMandatory
    * @param array $extraArgs
+   * @param boolean $isAjaxUpload
    * @return string
    * @version 1.00.00
    * @since 1.00.00
    */
-  public function getInput($field, $isMandatory=false, $extraArgs=array())
+  public function getInput($field, $isMandatory=false, $extraArgs=array(), $isAjaxUpload=false)
   {
     $id = $this->CompteRendu->getId();
-    $value = $this->CompteRendu->getValue($field);
+    switch ($field) {
+      case self::FIELD_ANNEESCOLAIRE_ID :
+        $value = $this->CompteRendu->getAnneeScolaire()->getAnneeScolaire();
+      break;
+      case self::FIELD_DIVISION_ID :
+        $value = $this->CompteRendu->getDivision()->getLabelDivision();
+      break;
+      default :
+        $value = $this->CompteRendu->getValue($field);
+      break;
+    }
     $classe = self::CST_FORMCONTROL.($isMandatory && $value=='' && $id!='' ? ' '.self::NOTIF_IS_INVALID : '');
     $args = array(
-      self::ATTR_TYPE => self::CST_TEXT,
-      self::ATTR_CLASS => $classe,
-      self::ATTR_ID => $field,
-      self::ATTR_NAME =>$field,
+      self::ATTR_TYPE  => self::CST_TEXT,
+      self::ATTR_CLASS => $classe.($isAjaxUpload ? ' '.self::AJAX_UPLOAD : ''),
+      self::ATTR_ID    => $field,
+      self::ATTR_NAME  => $field,
       self::ATTR_VALUE => $value,
     );
     if ($isMandatory) {

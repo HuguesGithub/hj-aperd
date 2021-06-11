@@ -69,7 +69,7 @@ class LocalBean extends UtilitiesBean implements ConstantsInterface
    * @version 1.00.00
    * @since 1.00.00
    */
-  public function getLocalSelect($Objs, $tagId, $label='', $selectedId=-1, $isMandatory=false)
+  public function getLocalSelect($Objs, $tagId, $label='', $selectedId=-1, $isMandatory=false, $isAjaxUpload=false, $isReadOnly=false)
   {
     $strOptions = $this->getDefaultOption($selectedId, $label);
     while (!empty($Objs)) {
@@ -79,7 +79,7 @@ class LocalBean extends UtilitiesBean implements ConstantsInterface
     }
     $bFlag = $isMandatory && ($selectedId==-1||$selectedId==self::CST_DEFAULT_SELECT);
     $attributes = array(
-      self::ATTR_CLASS => self::CST_MD_SELECT.($bFlag ? ' '.self::NOTIF_IS_INVALID : ''),
+      self::ATTR_CLASS => self::CST_MD_SELECT.' form-control-sm'.($bFlag ? ' '.self::NOTIF_IS_INVALID : '').($isAjaxUpload ? ' '.self::AJAX_UPLOAD : ''),
       self::ATTR_NAME  => $tagId,
     );
     if (strpos($tagId, '[]')===false) {
@@ -88,6 +88,33 @@ class LocalBean extends UtilitiesBean implements ConstantsInterface
     if ($isMandatory) {
       $attributes[self::ATTR_REQUIRED] = '';
     }
+    if ($isReadOnly) {
+      $attributes[self::ATTR_READONLY] = '';
+    }
     return $this->getBalise(self::TAG_SELECT, $strOptions, $attributes);
+  }
+
+  protected function getTdCheckbox($Obj)
+  {
+    $attributes = array(
+      self::FIELD_ID   => 'cb-select-'.$Obj->getId(),
+      self::ATTR_NAME  => 'post[]',
+      self::ATTR_VALUE => $Obj->getId(),
+      self::ATTR_TYPE  => 'checkbox',
+    );
+    return $this->getBalise(self::TAG_TD, $this->getBalise(self::TAG_INPUT, '', $attributes));
+  }
+
+  protected function getTdStandard($label)
+  { return $this->getBalise(self::TAG_TD, $label); }
+
+  protected function getTdParentActions($label, $href)
+  {
+    $link   = $this->getBalise(self::TAG_A, $label, array(self::ATTR_CLASS=>'row-title', self::ATTR_HREF=>$href));
+    $strong = $this->getBalise(self::TAG_STRONG, $link);
+    $link   = $this->getBalise(self::TAG_A, 'Modifier', array(self::ATTR_HREF=>$href));
+    $span   = $this->getBalise(self::TAG_SPAN, $link, array(self::ATTR_CLASS=>'edit'));
+    $divActions = $this->getBalise(self::TAG_DIV, $span,  array(self::ATTR_CLASS=>'row-actions'));
+    return $this->getBalise(self::TAG_TD, $strong.$divActions);
   }
 }

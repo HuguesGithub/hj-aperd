@@ -19,7 +19,6 @@ class ProfPrincipalBean extends LocalBean
    */
   public function __construct($ProfPrincipal='')
   {
-    parent::__construct();
     $this->ProfPrincipalServices = new ProfPrincipalServices();
     $this->ProfPrincipal = ($ProfPrincipal=='' ? new ProfPrincipal() : $ProfPrincipal);
   }
@@ -28,10 +27,10 @@ class ProfPrincipalBean extends LocalBean
   public function getRowForAdminPage($args=array())
   {
     $queryArgs = array(
-      self::CST_ONGLET=>self::PAGE_ENSEIGNANT,
-      self::CST_POSTACTION=>self::CST_EDIT,
-      self::FIELD_ID=>$this->ProfPrincipal->getId(),
-      self::ATTR_TYPE=>'ProfsPrincipaux',
+      self::CST_ONGLET     => self::PAGE_ENSEIGNANT,
+      self::CST_POSTACTION => self::CST_EDIT,
+      self::FIELD_ID       => $this->ProfPrincipal->getId(),
+      self::ATTR_TYPE      => 'ProfsPrincipaux',
     );
     $queryArgs = array_merge($queryArgs, $args);
 
@@ -43,7 +42,7 @@ class ProfPrincipalBean extends LocalBean
       // Année Scolaire - 3
       $this->ProfPrincipal->getAnneeScolaire()->getAnneeScolaire(),
       // Classe de l'Enseignant - 4
-      $this->ProfPrincipal->getClasseScolaire()->getLabelClasse(),
+      $this->ProfPrincipal->getDivision()->getLabelDivision(),
       // Nom de l'Enseignant - 5
       $this->ProfPrincipal->getEnseignant()->getNomEnseignant(),
     );

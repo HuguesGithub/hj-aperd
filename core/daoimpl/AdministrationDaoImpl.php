@@ -5,8 +5,8 @@ if (!defined('ABSPATH')) {
 /**
  * Classe AdministrationDaoImpl
  * @author Hugues
- * @version 1.00.00
- * @since 1.00.00
+ * @version 1.21.06.10
+ * @since 1.21.06.10
  */
 class AdministrationDaoImpl extends LocalDaoImpl
 {
@@ -37,4 +37,14 @@ class AdministrationDaoImpl extends LocalDaoImpl
    */
   public function select($file, $line, $arrParams)
   { return parent::localSelect($arrParams, new Administration()); }
+  /**
+   * @param string $ins
+   * @version 1.21.06.10
+   * @since 1.21.06.10
+   */
+  public function deleteIn($ins)
+  {
+    $request = $this->delete.$this->fromRequest.'WHERE id IN ('.$ins.');';
+    MySQL::wpdbQuery($request);
+  }
 }

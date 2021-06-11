@@ -19,8 +19,11 @@ class AjaxActions extends LocalActions
   {
     if ($_POST[self::AJAX_ACTION]==self::AJAX_GETNEWMATIERE) {
       $returned = CompteRenduActions::dealWithStatic($_POST);
+    } elseif ($_POST[self::AJAX_ACTION]==self::AJAX_UPLOAD) {
+      $returned = CompteRenduActions::dealWithStatic($_POST);
     } else {
-      $returned  = 'Erreur dans le $_POST['.self::AJAX_ACTION.'] : '.$_POST[self::AJAX_ACTION].'<br>';
+      $saisie = stripslashes($_POST[self::AJAX_ACTION]);
+      $returned  = 'Erreur dans le $_POST['.self::AJAX_ACTION.'] : '.$saisie.'<br>';
     }
     return $returned;
   }

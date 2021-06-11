@@ -5,11 +5,14 @@ if (!defined('ABSPATH')) {
 /**
  * Classe ProfPrincipal
  * @author Hugues
- * @version 1.00.00
- * @since 1.00.00
+ * @version 1.21.06.04
+ * @since 1.21.06.04
  */
 class ProfPrincipal extends LocalDomain
 {
+  //////////////////////////////////////////////////:
+  // ATTRIBUTES
+  //////////////////////////////////////////////////:
   /**
    * Id technique de la donnée
    * @var int $id
@@ -21,84 +24,87 @@ class ProfPrincipal extends LocalDomain
    */
   protected $anneeScolaireId;
   /**
-   * Id technique de la classe
-   * @var int $classeId
+   * Id technique de la division
+   * @var int $divisionId
    */
-  protected $classeId;
+  protected $divisionId;
   /**
    * Id technique de l'enseignant
    * @var int $enseignantId
    */
   protected $enseignantId;
 
-  public function __construct()
-  {
-    parent::__construct();
-    $this->AnneeScolaireServices = new AnneeScolaireServices();
-    $this->ClasseScolaireServices = new ClasseScolaireServices();
-    $this->EnseignantServices = new EnseignantServices();
-  }
-
+  //////////////////////////////////////////////////:
+  // GETTERS & SETTERS
+  //////////////////////////////////////////////////:
   /**
    * @return int
-   * @version 1.00.00
-   * @since 1.00.00
-   */
-  public function getId()
-  { return $this->id; }
-  /**
-   * @return int
-   * @version 1.00.00
-   * @since 1.00.00
+   * @version 1.21.06.04
+   * @since 1.21.06.04
    */
   public function getAnneeScolaireId()
   { return $this->anneeScolaireId; }
   /**
    * @return int
-   * @version 1.00.00
-   * @since 1.00.00
+   * @version 1.21.06.04
+   * @since 1.21.06.04
    */
-  public function getClasseId()
-  { return $this->classeId; }
+  public function getDivisionId()
+  { return $this->divisionId; }
   /**
    * @return int
-   * @version 1.00.00
-   * @since 1.00.00
+   * @version 1.21.06.04
+   * @since 1.21.06.04
    */
   public function getEnseignantId()
   { return $this->enseignantId; }
   /**
-   * @param int $id
-   * @version 1.00.00
-   * @since 1.00.00
-   */
-  public function setId($id)
-  { $this->id=$id; }
-  /**
    * @param int $anneeScolaireId
-   * @version 1.00.00
-   * @since 1.00.00
+   * @version 1.21.06.04
+   * @since 1.21.06.04
    */
   public function setAnneeScolaireId($anneeScolaireId)
-  { $this->anneeScolaireId=$anneeScolaireId; }
+  { $this->anneeScolaireId = $anneeScolaireId; }
   /**
-   * @param int $classeId
-   * @version 1.00.00
-   * @since 1.00.00
+   * @param int $divisionId
+   * @version 1.21.06.04
+   * @since 1.21.06.04
    */
-  public function setClasseId($classeId)
-  { $this->classeId=$classeId; }
+  public function setDivisionId($divisionId)
+  { $this->divisionId = $divisionId; }
   /**
    * @param int $enseignantId
-   * @version 1.00.00
-   * @since 1.00.00
+   * @version 1.21.06.04
+   * @since 1.21.06.04
    */
   public function setEnseignantId($enseignantId)
-  { $this->enseignantId=$enseignantId; }
+  { $this->enseignantId = $enseignantId; }
+
+  //////////////////////////////////////////////////:
+  // CONSTRUCT - CLASSVARS - CONVERT - BEAN
+  //////////////////////////////////////////////////:
+  /**
+   * @param array $attributes
+   * @version 1.21.06.04
+   * @since 1.21.06.04
+   */
+  public function __construct($attributes=array())
+  {
+    parent::__construct($attributes);
+    $this->AnneeScolaireServices = new AnneeScolaireServices();
+    $this->DivisionServices = new DivisionServices();
+    $this->EnseignantServices = new EnseignantServices();
+
+    $this->mandatoryFields = array(
+      self::FIELD_ANNEESCOLAIRE_ID,
+      self::FIELD_DIVISION_ID,
+      self::FIELD_ENSEIGNANT_ID,
+    );
+  }
   /**
    * @return array
-   * @version 1.00.00
-   * @since 1.00.00
+   * @version 1.21.06.04
+   * @since 1.21.06.04
    */
   public function getClassVars()
   { return get_class_vars('ProfPrincipal'); }
@@ -107,19 +113,27 @@ class ProfPrincipal extends LocalDomain
    * @param string $a
    * @param string $b
    * @return ProfPrincipal
-   * @version 1.00.00
-   * @since 1.00.00
+   * @version 1.21.06.04
+   * @since 1.21.06.04
    */
   public static function convertElement($row, $a='', $b='')
   { return parent::convertElement(new ProfPrincipal(), self::getClassVars(), $row); }
   /**
    * @return ProfPrincipalBean
-   * @version 1.00.00
-   * @since 1.00.00
+   * @version 1.21.06.04
+   * @since 1.21.06.04
    */
   public function getBean()
   { return new ProfPrincipalBean($this); }
 
+  //////////////////////////////////////////////////
+  // GETTERS OBJETS LIES
+  //////////////////////////////////////////////////
+  /**
+   * @return AnneeScolaire
+   * @version 1.21.06.04
+   * @since 1.21.06.04
+   */
   public function getAnneeScolaire()
   {
     if ($this->AnneeScolaire==null) {
@@ -127,13 +141,23 @@ class ProfPrincipal extends LocalDomain
     }
     return $this->AnneeScolaire;
   }
-  public function getClasseScolaire()
+  /**
+   * @return Division
+   * @version 1.21.06.04
+   * @since 1.21.06.04
+   */
+  public function getDivision()
   {
-    if ($this->ClasseScolaire==null) {
-      $this->ClasseScolaire = $this->ClasseScolaireServices->selectLocal($this->classeId);
+    if ($this->Division==null) {
+      $this->Division = $this->DivisionServices->selectLocal($this->divisionId);
     }
-    return $this->ClasseScolaire;
+    return $this->Division;
   }
+  /**
+   * @return Enseignant
+   * @version 1.21.06.04
+   * @since 1.21.06.04
+   */
   public function getEnseignant()
   {
     if ($this->Enseignant==null) {
@@ -141,4 +165,16 @@ class ProfPrincipal extends LocalDomain
     }
     return $this->Enseignant;
   }
+
+  //////////////////////////////////////////////////
+  // METHODES
+  //////////////////////////////////////////////////
+  /**
+   * @param string $sep
+   * @return string
+   * @version 1.21.06.08
+   * @since 1.21.06.01
+   */
+  public function getCsvEntete($sep=';')
+  { return implode($sep, array(self::FIELD_ID, self::FIELD_ANNEESCOLAIRE, self::FIELD_LABELDIVISION, self::FIELD_NOMENSEIGNANT)); }
 }

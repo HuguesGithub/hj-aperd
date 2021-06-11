@@ -6,7 +6,7 @@ section { margin-bottom: 20px; }
 #formCr > fieldset { width: 90%; }
 #formCr > fieldset > legend {width: 160px; }
 
-.md-form { margin-bottom: 1.5rem; position: relative; }
+.md-form { position: relative; }
 .md-form textarea.md-textarea {
   overflow-y: hidden;
   height: auto;
@@ -109,7 +109,7 @@ section { margin-bottom: 20px; }
 .alert { margin-left: auto; margin-right: auto; }
 .alert:last-child { margin-bottom: 0; }
 
-ul.stepper { counter-reset: section; margin: 1em -1.5rem; overflow-x: hidden; overflow-y: auto; padding: 1.5rem; }
+ul.stepper { counter-reset: section; margin: 0 -1.5rem; overflow-x: hidden; overflow-y: auto; padding: 0 1.5rem; }
 
 ul.stepper .step { list-style: none; position: relative; }
 ul.stepper > li:not(:last-of-type) {
@@ -118,7 +118,7 @@ ul.stepper > li:not(:last-of-type) {
     -o-transition: margin-bottom .4s;
     transition: margin-bottom .4s;
 }
-ul.stepper .step:not(:last-of-type).active { margin-bottom: 2.25rem; }
+ul.stepper .step:not(:last-of-type).active { margin-bottom: 1.25rem; }
 ul.stepper .step::before {
     position: absolute;
     top: .75rem;
@@ -201,14 +201,75 @@ ul.stepper .step.done::before, ul.stepper .step.wrong::before {
     font-weight: 900;
 }
 ul.stepper .step.wrong::before {
-    content: '\f071';
-    font-size: 1.1rem;
+    font-size: 1rem;
     background-color: #ff3547;
 }
 ul.stepper .step.done::before {
-    content: '\f00c';
     font-size: 1rem;
     background-color: #00c851;
 }
 
 ul.stepper .step.active .step-new-content { display: block; height: calc(100% - 132px); }
+
+.form-row[data-matiere] {
+    border: 1px solid #000;
+    border-radius: 10px;
+    padding: 5px;
+    margin-bottom: 5px;
+}
+
+select[readonly] {
+  background: #e9ecef !important;
+}
+
+.btn-group-vertical button {
+    text-align: left;
+    white-space: break-spaces;
+}
+
+.badge-display .badge {
+  display: none;
+  margin-right: 10px;
+  color: white;
+}
+
+.badge-display.danger .badge.bg-danger {
+  display: inline;
+}
+
+.badge-display.warning .badge.bg-warning {
+  display: inline;
+}
+
+.badge-display.success .badge.bg-success {
+  display: inline;
+}
+
+.apercuPdf {
+  font-size: 0.55rem;
+  margin-top: 20px;
+}
+.apercuPdf button.close {
+  display: none;
+}
+.apercuPdf > div {
+  padding: 0 5px;
+  margin: 0 10px;
+  max-width: 450px;
+  width: 435px;
+  flex: initial;
+  height: 625px;
+  overflow: hidden;
+}
+.apercuPdf .table-sm td, .apercuPdf .table-sm th {
+  padding: 0;
+}
+.apercuPdf .alert {
+  background-color: transparent;
+  border: 0;
+  padding: 0;
+}
+.pdfParagrapheTitre {
+  color: rgb(36, 116, 179);
+  margin: 10px 0;
+}

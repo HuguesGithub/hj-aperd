@@ -29,6 +29,11 @@ class MatiereDaoImpl extends LocalDaoImpl
     }
     return $Items;
   }
+  public function deleteIn($ins)
+  {
+    $request = $this->delete.$this->fromRequest.'WHERE id IN ('.$ins.');';
+    MySQL::wpdbQuery($request);
+  }
   /**
    * @param string $file
    * @param int $line

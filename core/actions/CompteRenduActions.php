@@ -41,11 +41,94 @@ class CompteRenduActions extends LocalActions
       case self::AJAX_GETNEWMATIERE    :
         $returned = $Act->dealWithGetNewMatiere();
       break;
+      case self::AJAX_UPLOAD    :
+        $returned = $Act->dealWithAjaxUpload();
+      break;
       default :
         $returned = '';
       break;
     }
     return $returned;
+  }
+
+  public function dealWithAjaxUpload()
+  {
+    switch ($this->post['name']) {
+      case self::FIELD_DATECONSEIL :
+      case self::FIELD_NBELEVES :
+      case self::FIELD_PARENT1 :
+      case self::FIELD_PARENT2 :
+      case self::FIELD_ENFANT1 :
+      case self::FIELD_ENFANT2 :
+      case self::FIELD_ADMINISTRATION_ID :
+      case self::FIELD_ENSEIGNANT_ID :
+        $CompteRendu = $this->CompteRenduServices->getCompteRenduByCrKey($this->post['crKey']);
+        $CompteRendu->setField($this->post['name'], $this->post['value']);
+        $this->CompteRenduServices->updateLocal($CompteRendu);
+        $Bean = $CompteRendu->getBean();
+        return '{"renduStep1": '.json_encode($Bean->getStep1()).',"renduStep6": '.json_encode($Bean->getStep6()).'}';
+      break;
+      case self::FIELD_BILANPROFPRINCIPAL  :
+        $CompteRendu = $this->CompteRenduServices->getCompteRenduByCrKey($this->post['crKey']);
+        $CompteRendu->setField($this->post['name'], $this->post['value']);
+        $this->CompteRenduServices->updateLocal($CompteRendu);
+        $Bean = $CompteRendu->getBean();
+        return '{"renduStep2": '.json_encode($Bean->getStep2()).',"renduStep6": '.json_encode($Bean->getStep6()).'}';
+      break;
+      case self::FIELD_BILANELEVES  :
+      case self::FIELD_BILANPARENTS :
+        $CompteRendu = $this->CompteRenduServices->getCompteRenduByCrKey($this->post['crKey']);
+        $CompteRendu->setField($this->post['name'], $this->post['value']);
+        $this->CompteRenduServices->updateLocal($CompteRendu);
+        $Bean = $CompteRendu->getBean();
+        return '{"renduStep3": '.json_encode($Bean->getStep3()).',"renduStep6": '.json_encode($Bean->getStep6()).'}';
+      break;
+      case self::FIELD_NBCOMPLIMENTS  :
+      case self::FIELD_NBENCOURAGEMENTS :
+      case self::FIELD_NBFELICITATIONS  :
+      case self::FIELD_NBMGCPT :
+      case self::FIELD_NBMGCPTTVL  :
+      case self::FIELD_NBMGTVL :
+        $CompteRendu = $this->CompteRenduServices->getCompteRenduByCrKey($this->post['crKey']);
+        $CompteRendu->setField($this->post['name'], $this->post['value']);
+        $this->CompteRenduServices->updateLocal($CompteRendu);
+        $Bean = $CompteRendu->getBean();
+        return '{"renduStep4": '.json_encode($Bean->getStep4()).',"renduStep6": '.json_encode($Bean->getStep6()).'}';
+      break;
+      case self::FIELD_DATEREDACTION  :
+      case self::FIELD_AUTEURREDACTION :
+        $CompteRendu = $this->CompteRenduServices->getCompteRenduByCrKey($this->post['crKey']);
+        $CompteRendu->setField($this->post['name'], $this->post['value']);
+        $this->CompteRenduServices->updateLocal($CompteRendu);
+        $Bean = $CompteRendu->getBean();
+        return '{"renduStep5": '.json_encode($Bean->getStep5()).',"renduStep6": '.json_encode($Bean->getStep6()).'}';
+      break;
+      case 'status[]' :
+      case 'observations[]' :
+      case 'enseignantIds[]' :
+        return $this->dealWithBilanMatiere();
+      break;
+    }
+  }
+
+  public function dealWithBilanMatiere()
+  {
+    $CompteRendu = $this->CompteRenduServices->getCompteRenduByCrKey($this->post['crKey']);
+    $BilanMatiere = $this->BilanMatiereServices->selectLocal($this->post['bilanMatiereId']);
+    switch ($this->post['name']) {
+      case 'observations[]' :
+        $BilanMatiere->setObservations($this->post['value']);
+      break;
+      case 'status[]' :
+        $BilanMatiere->setStatus($this->post['value']);
+      break;
+      case 'enseignantIds[]' :
+        $BilanMatiere->setEnseignantId($this->post['value']);
+      break;
+    }
+    $this->BilanMatiereServices->updateLocal($BilanMatiere);
+    $Bean = $CompteRendu->getBean();
+    return '{"renduStep2": '.json_encode($Bean->getStep2()).',"renduStep6": '.json_encode($Bean->getStep6()).'}';
   }
 
   /**
@@ -81,25 +164,27 @@ class CompteRenduActions extends LocalActions
       if ($CompteRendu->getValue(self::FIELD_STATUS)==self::STATUS_ARCHIVED) {
         $msgAlert .= "<br>Toutefois, ce Compte-Rendu est une version archivée, il ne peut pas être modifié.";
       }
-      // Construction du PDF associé.
-      $nbPages = AperdPDF::buildPdf($CompteRendu);
-      // Et on ajoute une alerte pour information.
-      $msgAlert .= '<br>Vous pouvez télécharger une version <a href="'.$this->urlPdfFiles.$crKey.'.pdf">PDF</a>. (clic droit enregistrer sous)';
-      $attributes = array(
-        self::NOTIF_INFO,
-        'Compte-Rendu retrouvé',
-        $msgAlert,
-      );
-      $notifications = $CompteRenduBean->getRender($this->urlFragmentNotification, $attributes);
-      if ($nbPages>=3) {
+      if ($CompteRendu->getValue(self::FIELD_STATUS)==self::STATUS_PUBLISHED) {
+        // Construction du PDF associé.
+        $nbPages = AperdPDF::buildPdf($CompteRendu);
+        // Et on ajoute une alerte pour information.
+        $msgAlert .= '<br>Vous pouvez télécharger une version <a href="'.$this->urlPdfFiles.$crKey.'.pdf">PDF</a>. (clic droit enregistrer sous)';
         $attributes = array(
-          self::NOTIF_WARNING,
-          'Trop de pages',
-          'Attention, le PDF généré à partir de votre compte rendu comporte 3 pages ou plus.<br>Merci de le reprendre pour réduire le nombre de pages à 2.',
+          self::NOTIF_INFO,
+          'Compte-Rendu retrouvé',
+          $msgAlert,
         );
-        $notifications .= $CompteRenduBean->getRender($this->urlFragmentNotification, $attributes);
+        $notifications = $CompteRenduBean->getRender($this->urlFragmentNotification, $attributes);
+        if ($nbPages>=3) {
+          $attributes = array(
+            self::NOTIF_WARNING,
+            'Trop de pages',
+            'Attention, le PDF généré à partir de votre compte rendu comporte 3 pages ou plus.<br>Merci de le reprendre pour réduire le nombre de pages à 2.',
+          );
+          $notifications .= $CompteRenduBean->getRender($this->urlFragmentNotification, $attributes);
+        }
+        $CompteRendu->setNotifications($notifications);
       }
-      $CompteRendu->setNotifications($notifications);
     }
     return $CompteRendu;
   }
@@ -115,67 +200,70 @@ class CompteRenduActions extends LocalActions
     $CompteRendu->setByPost($this->post);
     $CompteRenduBean = $CompteRendu->getBean();
     // Les champs obligatoires ont-ils été remplis ?
-    if (!$CompteRendu->checkMandatory()) {
+    $strErrors = '';
+    if (!$CompteRendu->checkMandatory($strErrors)) {
       // Si ce n'est pas le cas, on retourne une erreur.
       $attributes = array(
         self::NOTIF_DANGER,
         'Champs Obligatoires non remplis',
-        "<br>Vous avez visiblement omis de renseigner certains champs. Les champs en question devraient être signalés en rouge.<br>Corrigez le formulaire et re-soumettez-le. Si le problème persiste, contactez l'administrateur.",
+        "<br>Vous avez visiblement omis de renseigner certains champs. Les champs en question devraient être signalés en rouge."
+        //.$strErrors
+        ."<br>Corrigez le formulaire et re-soumettez-le. Si le problème persiste, contactez l'administrateur.",
       );
       $CompteRendu->setNotifications($CompteRenduBean->getRender($this->urlFragmentNotification, $attributes));
-    } else {
-      // On recherche un ancien Compte-Rendu avec les critères suivants :
-      //  - anneeScolaireId
-      //  - trimestre
-      //  - classeId
-      $args = array(
-        self::FIELD_ANNEESCOLAIRE_ID => $CompteRendu->getValue(self::FIELD_ANNEESCOLAIRE_ID),
-        self::FIELD_TRIMESTRE => $CompteRendu->getValue(self::FIELD_TRIMESTRE),
-        self::FIELD_CLASSE_ID => $CompteRendu->getValue(self::FIELD_CLASSE_ID),
-        self::FIELD_STATUS => self::STATUS_PUBLISHED,
-      );
-      $CompteRendus = $this->CompteRenduServices->getCompteRendusWithFilters($args);
-      $notifications = '';
-      if (!empty($CompteRendus)) {
-        // On a une ancienne version
-        $OldCompteRendu = array_shift($CompteRendus);
-        $OldCompteRendu->setStatus(self::STATUS_ARCHIVED);
-        $this->CompteRenduServices->updateLocal($OldCompteRendu);
-        // On ajoute une alerte pour information.
-        $attributes = array(
-          self::NOTIF_WARNING,
-          'Ancienne version archivée',
-          "<br>Une ancienne version de ce Compte-Rendu existait déjà. Elle a été archivée et ne peut plus être modifiée. Elle reste toutefois consultable.",
-        );
-        $notifications = $CompteRenduBean->getRender($this->urlFragmentNotification, $attributes);
-      }
-      // Quoiqu'il en soit, on sauvegarde la nouvelle.
-      $CompteRendu->setStatus(self::STATUS_PUBLISHED);
-      $this->CompteRenduServices->insertLocal($CompteRendu);
-      $crKey = $CompteRendu->getValue(self::FIELD_CRKEY);
-      $this->dealWithSaveObservations();
-      // Construction du PDF associé.
-      $nbPages = AperdPDF::buildPdf($CompteRendu);
-      // Et on ajoute une alerte pour information.
-      $msgAlert  = '<br>Votre Compte-Rendu a été sauvegardé. Il peut désormais être consulté en utilisant cette clé : <a href="?';
-      $msgAlert .= self::FIELD_CRKEY.'='.$crKey.'">'.$crKey.'</a>.<br>Vous pouvez télécharger une version <a href="'.$this->urlPdfFiles;
-      $msgAlert .= $crKey.'.pdf">PDF</a>. (clic droit enregistrer sous)';
+      return $CompteRendu;
+    }
+    ////////////////////////////////////////////////////////////////////////////
+
+    $notifications = '';
+    ////////////////////////////////////////////////////////////////////////////
+    // Le Compte-Rendu saisi est correct. On va récupérer l'ancienne version.
+    // On s'appuie sur la clé crKey pour ça.
+    $crKey = $this->post[self::FIELD_CRKEY];
+    $OldCompteRendu = $this->CompteRenduServices->getCompteRenduByCrKey($crKey);
+    // On le passe à archived.
+    $OldCompteRendu->setStatus(self::STATUS_ARCHIVED);
+    $this->CompteRenduServices->updateLocal($OldCompteRendu);
+    // On ajoute une alerte pour information.
+    $attributes = array(
+      self::NOTIF_WARNING,
+      'Ancienne version archivée',
+      "<br>L'ancienne version de ce Compte-Rendu a été archivée et ne peut plus être modifiée.",
+    );
+    $notifications = $CompteRenduBean->getRender($this->urlFragmentNotification, $attributes);
+    ////////////////////////////////////////////////////////////////////////////
+
+    ////////////////////////////////////////////////////////////////////////////
+    // On va donc maintenant sauvegarder la nouvelle version en lui mettant le statut published
+    $CompteRendu->setStatus(self::STATUS_PUBLISHED);
+    $this->CompteRenduServices->insertLocal($CompteRendu);
+    // On sauvegarde les Bilans de Matières
+    $this->dealWithSaveObservations();
+
+    ////////////////////////////////////////////////////////////////////////////
+    // On génère le PDF avec les nouvelles données. Le précédent est écrasé.
+    // Construction du PDF associé.
+    $nbPages = AperdPDF::buildPdf($CompteRendu);
+    // Et on ajoute une alerte pour information.
+    $msgAlert  = '<br>Votre Compte-Rendu a été sauvegardé. Il peut désormais être consulté en utilisant cette clé : <a href="?';
+    $msgAlert .= self::FIELD_CRKEY.'='.$crKey.'">'.$crKey.'</a>.<br>Vous pouvez télécharger une version <a href="'.$this->urlPdfFiles;
+    $msgAlert .= $crKey.'.pdf">PDF</a>. (clic droit enregistrer sous)';
+    $attributes = array(
+      self::NOTIF_SUCCESS,
+      'Version sauvegardée',
+      $msgAlert,
+    );
+    $notifications .= $CompteRenduBean->getRender($this->urlFragmentNotification, $attributes);
+    if ($nbPages>=3) {
       $attributes = array(
-        self::NOTIF_SUCCESS,
-        'Version sauvegardée',
-        $msgAlert,
+        self::NOTIF_WARNING,
+        'Trop de pages',
+        'Attention, le PDF généré à partir de votre compte rendu comporte 3 pages ou plus.<br>Merci de le reprendre pour réduire le nombre de pages à 2.',
       );
       $notifications .= $CompteRenduBean->getRender($this->urlFragmentNotification, $attributes);
-      if ($nbPages>=3) {
-        $attributes = array(
-          self::NOTIF_WARNING,
-          'Trop de pages',
-          'Attention, le PDF généré à partir de votre compte rendu comporte 3 pages ou plus.<br>Merci de le reprendre pour réduire le nombre de pages à 2.',
-        );
-        $notifications .= $CompteRenduBean->getRender($this->urlFragmentNotification, $attributes);
-      }
-      $CompteRendu->setNotifications($notifications);
     }
+    $CompteRendu->setNotifications($notifications);
+
     return $CompteRendu;
   }
 

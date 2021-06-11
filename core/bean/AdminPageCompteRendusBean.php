@@ -18,7 +18,7 @@ class AdminPageCompteRendusBean extends AdminPageBean
   {
     parent::__construct();
     $this->title = 'Comptes-Rendus';
-    $this->ClasseScolaireServices = new ClasseScolaireServices();
+    $this->DivisionServices = new DivisionServices();
     $this->CompteRenduServices = new CompteRenduServices();
   }
   /**
@@ -36,7 +36,31 @@ class AdminPageCompteRendusBean extends AdminPageBean
   public function dealWithPostAction($urlParams)
   {
     $this->msgErreur = '';
-    if ($urlParams['type']=='generateCdc') {
+    $id = $urlParams[self::FIELD_ID];
+    if ($urlParams[self::CST_POSTACTION] == 'edit') {
+      $this->CompteRendu = $this->CompteRenduServices->selectLocal($id);
+    } elseif ($urlParams[self::CST_POSTACTION] == 'Edition') {
+      $this->CompteRendu = $this->CompteRenduServices->selectLocal($id);
+      $this->CompteRendu->setDateConseil($urlParams[self::FIELD_DATECONSEIL]);
+      $this->CompteRendu->setAdministrationId($urlParams[self::FIELD_ADMINISTRATION_ID]);
+      $this->CompteRenduServices->updateLocal($this->CompteRendu);
+    } elseif ($urlParams[self::CST_POSTACTION] == 'Appliquer') {
+      // Soit on est sur le point de Trasher des données, soit on est sur le point de passer des données au statut definitive
+      $ids = $urlParams['post'];
+      while (!empty($ids)) {
+        $id = array_shift($ids);
+        $CompteRendu = $this->CompteRenduServices->selectLocal($id);
+        if ($urlParams['action']=='trash' && $CompteRendu->getStatus()=='archived') {
+          $this->CompteRenduServices->deleteLocal($CompteRendu);
+        } elseif ($urlParams['action']=='definitive' && $CompteRendu->getStatus()=='published') {
+          $CompteRendu->setField(self::FIELD_STATUS, 'definitive');
+          $this->CompteRenduServices->updateLocal($CompteRendu);
+        } elseif ($urlParams['action']=='published' && $CompteRendu->getStatus()=='definitive') {
+          $CompteRendu->setField(self::FIELD_STATUS, 'published');
+          $this->CompteRenduServices->updateLocal($CompteRendu);
+        }
+      }
+    } elseif ($urlParams['type']=='generateCdc') {
       $this->dealWithGenerateCdcAction($urlParams);
     }
   }
@@ -53,11 +77,11 @@ class AdminPageCompteRendusBean extends AdminPageBean
       if (!empty($CompteRendus)) {
         $this->msgErreur .= 'Il existe déjà des comptes-rendus pour cette année scolaire et ce trimestre..<br>';
       } else {
-        $ClasseScolaires = $this->ClasseScolaireServices->getClasseScolairesWithFilters();
+        $ClasseScolaires = $this->DivisionServices->getDivisionsWithFilters();
         while (!empty($ClasseScolaires)) {
           $ClasseScolaire = array_shift($ClasseScolaires);
           $crKey = $this->CompteRenduServices->getUniqueGenKey();
-          $request  = "INSERT INTO wp_14_aperd_compte_rendu (crKey, anneeScolaireId, trimestre, classeId, status) VALUES ('";
+          $request  = "INSERT INTO wp_14_aperd_compte_rendu (crKey, anneeScolaireId, trimestre, divisionId, status) VALUES ('";
           $request .= $crKey."', ".$urlParams[self::FIELD_ANNEESCOLAIRE_ID].", ".$urlParams[self::FIELD_TRIMESTRE].", ".$ClasseScolaire->getId().", 'future');";
           MySQL::wpdbQuery($request);
           $this->msgErreur .= $request.'<br>';
@@ -81,9 +105,9 @@ class AdminPageCompteRendusBean extends AdminPageBean
       $trimestre = $urlParams[self::FIELD_TRIMESTRE];
       $args[self::FIELD_TRIMESTRE] = $trimestre;
     }
-    if (isset($urlParams[self::FIELD_CLASSE_ID]) && $urlParams[self::FIELD_CLASSE_ID]!=-1) {
-      $filterClasseId = $urlParams[self::FIELD_CLASSE_ID];
-      $args[self::FIELD_CLASSE_ID] = $filterClasseId;
+    if (isset($urlParams[self::FIELD_DIVISION_ID]) && $urlParams[self::FIELD_DIVISION_ID]!=-1) {
+      $filterClasseId = $urlParams[self::FIELD_DIVISION_ID];
+      $args[self::FIELD_DIVISION_ID] = $filterClasseId;
     }
     if (isset($urlParams[self::FIELD_STATUS]) && $urlParams[self::FIELD_STATUS]!=-1) {
       $status = $urlParams[self::FIELD_STATUS];
@@ -106,8 +130,8 @@ class AdminPageCompteRendusBean extends AdminPageBean
     $strOptions .= $this->getLocalOption('T3', '3', $trimestre);
     $strFiltres .= $this->getBalise(self::TAG_SELECT, $strOptions, $attributes);
     /////////////////////////////////////////////////////////////////////////////
-    $ClasseScolaireBean = new ClasseScolaireBean();
-    $strFiltres .= $ClasseScolaireBean->getSelect(self::FIELD_CLASSE_ID, 'Toutes les classes', $filterClasseId);
+    $DivisionBean = new DivisionBean();
+    $strFiltres .= $DivisionBean->getSelect(self::FIELD_DIVISION_ID, 'Toutes les divisions', $filterClasseId);
     /////////////////////////////////////////////////////////////////////////////
     $attributes = array(
       self::ATTR_CLASS => self::CST_MD_SELECT,
@@ -134,14 +158,22 @@ class AdminPageCompteRendusBean extends AdminPageBean
 
     // On récupère l'ensemble des Compte-rendus
     $strCompteRendus = '';
+    $Bean = new CompteRenduBean();
     $CompteRendus = $this->CompteRenduServices->getCompteRendusWithFilters($args);
-    while (!empty($CompteRendus)) {
-      $CompteRendu = array_shift($CompteRendus);
-      $Bean = $CompteRendu->getBean();
-      $strCompteRendus .= $Bean->getRowForAdminPage();
+    if (!empty($CompteRendus)) {
+      while (!empty($CompteRendus)) {
+        $CompteRendu = array_shift($CompteRendus);
+        $Bean = $CompteRendu->getBean();
+        $strCompteRendus .= $Bean->getRowForAdminPage($args);
+      }
+    } else {
+      $strCompteRendus = '<tr><td colspan="7"><em>Aucun résultat</em></td></tr>';
     }
 
+    $urlCancel = $Bean->getQueryArg(array(self::CST_ONGLET=>self::PAGE_COMPTE_RENDU));
+
     $AnneeScolaireBean = new AnneeScolaireBean();
+    $AdministrationBean = new AdministrationBean();
     /////////////////////////////////////////////////////////////////////////////
     // On restitue le template enrichi.
     $attibutes = array(
@@ -155,7 +187,25 @@ class AdminPageCompteRendusBean extends AdminPageBean
       $strCompteRendus,
       // Les filtres - 5
       $strFiltres,
-    '','','','','','','','','','','','','','','','',
+      // Titre du bloc de Création / Edition - 6
+      $this->CompteRendu==null ? self::CST_CREATION : 'Edition',
+      // Année Scolaire - 7
+      $this->CompteRendu==null ? '' : $this->CompteRendu->getAnneeScolaire()->getAnneeScolaire(),
+      // Trimestre - 8
+      $this->CompteRendu==null ? '' : 'T'.$this->CompteRendu->getTrimestre(),
+      // Division - 9
+      $this->CompteRendu==null ? '' : $this->CompteRendu->getDivision()->getLabelDivision(),
+      // crKey - 10
+      $this->CompteRendu==null ? '' : $this->CompteRendu->getCrKey(),
+      // Id - 11
+      $this->CompteRendu==null ? '' : $this->CompteRendu->getId(),
+      // Url pour annuler - 12
+      $urlCancel,
+      // Date du conseil de classe - 13
+      $this->CompteRendu==null ? '' : $this->CompteRendu->getDateConseil(),
+      // Président de séance (c'est un select) - 14
+      $AdministrationBean->getSelect(self::FIELD_ADMINISTRATION_ID, self::CST_DEFAULT_SELECT, ($this->CompteRendu==null ? -1 : $this->CompteRendu->getAdministrationId())),
+      '','','','','','','','','','','','','','','','',
     );
     return $this->getRender($this->urlTemplatePageCompteRenduAdmin, $attibutes);
   }

@@ -5,25 +5,42 @@ if (!defined('ABSPATH')) {
 /**
  * Classe EnseignantServices
  * @author Hugues
- * @version 1.00.01
- * @since 1.00.00
+ * @version 1.21.06.04
+ * @since 1.21.06.04
  */
 class EnseignantServices extends LocalServices
 {
+  //////////////////////////////////////////////////
+  // ATTRIBUTES
+  //////////////////////////////////////////////////
   /**
    * L'objet Dao pour faire les requêtes
    * @var EnseignantDaoImpl $Dao
    */
   protected $Dao;
+
+  //////////////////////////////////////////////////
+  // CONSTRUCT
+  //////////////////////////////////////////////////
   /**
    * Class constructor
+   * @version 1.21.06.04
+   * @since 1.21.06.04
    */
   public function __construct()
   {
-    parent::__construct();
     $this->Dao = new EnseignantDaoImpl();
   }
 
+  //////////////////////////////////////////////////
+  // METHODS
+  //////////////////////////////////////////////////
+  /**
+   * @param array $arrFilters
+   * @return array
+   * @version 1.21.06.04
+   * @since 1.21.06.04
+   */
   private function buildFilters($arrFilters)
   {
     $arrParams = array();
@@ -37,6 +54,8 @@ class EnseignantServices extends LocalServices
    * @param string $orderby
    * @param string $order
    * @return array
+   * @version 1.21.06.04
+   * @since 1.21.06.04
    */
   public function getEnseignantsWithFilters($arrFilters=array(), $orderby=self::FIELD_NOMENSEIGNANT, $order=self::ORDER_ASC)
   {
@@ -45,27 +64,11 @@ class EnseignantServices extends LocalServices
     return $this->Dao->selectEntriesWithFilters(__FILE__, __LINE__, $arrParams);
   }
   /**
-   * @param int $id
-   * @return Enseignant
-   * @version 1.00.00
-   * @since 1.00.00
+   * @param string $ins
+   * @version 1.21.06.04
+   * @since 1.21.06.04
    */
-  public function selectLocal($id)
-  { return $this->select(__FILE__, __LINE__, $id); }
-  /**
-   * @param Enseignant $Enseignant
-   * @return Enseignant
-   * @version 1.00.01
-   * @since 1.00.01
-   */
-  public function updateLocal($Enseignant)
-  { return $this->update(__FILE__, __LINE__, $Enseignant); }
-  /**
-   * @param Enseignant $Enseignant
-   * @return Enseignant
-   * @version 1.00.01
-   * @since 1.00.01
-   */
-  public function insertLocal($Enseignant)
-  { return $this->insert(__FILE__, __LINE__, $Enseignant); }
+  public function deleteIn($ins)
+  { $this->Dao->deleteIn($ins); }
+
 }

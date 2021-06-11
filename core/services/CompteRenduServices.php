@@ -5,29 +5,43 @@ if (!defined('ABSPATH')) {
 /**
  * Classe CompteRenduServices
  * @author Hugues
- * @version 1.00.00
- * @since 1.00.00
+ * @version 1.21.06.04
+ * @since 1.21.06.04
  */
 class CompteRenduServices extends LocalServices
 {
+  //////////////////////////////////////////////////
+  // ATTRIBUTES
+  //////////////////////////////////////////////////
   /**
    * L'objet Dao pour faire les requêtes
    * @var CompteRenduDaoImpl $Dao
    */
   protected $Dao;
+
+  //////////////////////////////////////////////////
+  // CONSTRUCT
+  //////////////////////////////////////////////////
   /**
    * Class constructor
+   * @version 1.21.06.04
+   * @since 1.21.06.04
    */
   public function __construct()
   {
-    parent::__construct();
     $this->Dao = new CompteRenduDaoImpl();
   }
+
+  //////////////////////////////////////////////////
+  // METHODS
+  //////////////////////////////////////////////////
   /**
    * @param array $arrFilters
    * @return array
    * @version 1.00.00
    * @since 1.00.00
+   * @version 1.21.06.04
+   * @since 1.21.06.04
    */
   private function buildFilters($arrFilters)
   {
@@ -35,7 +49,7 @@ class CompteRenduServices extends LocalServices
     array_push($arrParams, $this->getValueToSearch($arrFilters, self::FIELD_CRKEY));
     array_push($arrParams, $this->getValueToSearch($arrFilters, self::FIELD_ANNEESCOLAIRE_ID));
     array_push($arrParams, $this->getValueToSearch($arrFilters, self::FIELD_TRIMESTRE));
-    array_push($arrParams, $this->getValueToSearch($arrFilters, self::FIELD_CLASSE_ID));
+    array_push($arrParams, $this->getValueToSearch($arrFilters, self::FIELD_DIVISION_ID));
     array_push($arrParams, $this->getValueToSearch($arrFilters, self::FIELD_STATUS));
     return $arrParams;
   }
@@ -44,6 +58,8 @@ class CompteRenduServices extends LocalServices
    * @param string $orderby
    * @param string $order
    * @return array
+   * @version 1.21.06.04
+   * @since 1.21.06.04
    */
   public function getCompteRendusWithFilters($arrFilters=array(), $orderby=self::FIELD_ID, $order=self::ORDER_ASC)
   {
@@ -54,37 +70,17 @@ class CompteRenduServices extends LocalServices
   /**
    * @param string $crKey
    * @return CompteRendu
-   * @version 1.00.00
-   * @since 1.00.00
+   * @version 1.21.06.04
+   * @since 1.21.06.04
    */
   public function getCompteRenduByCrKey($crKey)
   {
-    $CompteRendus = $this->getCompteRendusWithFilters(array(self::FIELD_CRKEY=>$crKey));
-    return (count($CompteRendus)==1 ? array_shift($CompteRendus) : new CompteRendu());
+    $CompteRendus = $this->getCompteRendusWithFilters(array(self::FIELD_CRKEY=>$crKey), self::FIELD_ID, self::ORDER_DESC);
+    return (count($CompteRendus)>=1 ? array_shift($CompteRendus) : new CompteRendu());
   }
-  /**
-   * @param CompteRendu $CompteRendu
-   * @return int
-   * @version 1.00.00
-   * @since 1.00.00
-   */
-  public function updateLocal($CompteRendu)
-  { return $this->update(__FILE__, __LINE__, $CompteRendu); }
-  /**
-   * @param CompteRendu $CompteRendu
-   * @version 1.00.00
-   * @since 1.00.00
-   */
-  public function insertLocal($CompteRendu)
-  {
-    do {
-      $crKey = $this->genKey();
-      $TestCr = $this->getCompteRenduByCrKey($crKey);
-    } while ($TestCr->getId()!='');
-    $CompteRendu->setCrKey($crKey);
-    $id = $this->insert(__FILE__, __LINE__, $CompteRendu);
-    $CompteRendu->setId($id);
-  }
+
+
+
   public function getUniqueGenKey()
   {
     do {
@@ -95,8 +91,8 @@ class CompteRenduServices extends LocalServices
   }
   /**
    * @return string
-   * @version 1.00.00
-   * @since 1.00.00
+   * @version 1.21.06.04
+   * @since 1.21.06.04
    */
   public function genKey()
   {

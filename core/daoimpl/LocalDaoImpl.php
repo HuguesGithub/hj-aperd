@@ -92,4 +92,5 @@ class LocalDaoImpl extends GlobalDaoImpl implements ConstantsInterface
     $Objs = $this->selectEntry(__FILE__, __LINE__, $arrParams);
     return (empty($Objs) ? $Obj : array_shift($Objs));
   }
+
 }

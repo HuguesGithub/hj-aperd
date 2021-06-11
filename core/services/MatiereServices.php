@@ -5,25 +5,42 @@ if (!defined('ABSPATH')) {
 /**
  * Classe MatiereServices
  * @author Hugues
- * @version 1.00.01
- * @since 1.00.00
+ * @version 1.21.06.04
+ * @since 1.21.06.04
  */
 class MatiereServices extends LocalServices
 {
+  //////////////////////////////////////////////////
+  // ATTRIBUTES
+  //////////////////////////////////////////////////
   /**
    * L'objet Dao pour faire les requêtes
    * @var MatiereDaoImpl $Dao
    */
   protected $Dao;
+
+  //////////////////////////////////////////////////
+  // CONSTRUCT
+  //////////////////////////////////////////////////
   /**
    * Class constructor
+   * @version 1.21.06.04
+   * @since 1.21.06.04
    */
   public function __construct()
   {
-    parent::__construct();
     $this->Dao = new MatiereDaoImpl();
   }
 
+  //////////////////////////////////////////////////
+  // METHODS
+  //////////////////////////////////////////////////
+  /**
+   * @param array $arrFilters
+   * @return array
+   * @version 1.21.06.04
+   * @since 1.21.06.04
+   */
   private function buildFilters($arrFilters)
   {
     $arrParams = array();
@@ -35,6 +52,8 @@ class MatiereServices extends LocalServices
    * @param string $orderby
    * @param string $order
    * @return array
+   * @version 1.21.06.04
+   * @since 1.21.06.04
    */
   public function getMatieresWithFilters($arrFilters=array(), $orderby=self::FIELD_LABELMATIERE, $order=self::ORDER_ASC)
   {
@@ -43,27 +62,11 @@ class MatiereServices extends LocalServices
     return $this->Dao->selectEntriesWithFilters(__FILE__, __LINE__, $arrParams);
   }
   /**
-   * @param int $id
-   * @return Matiere
-   * @version 1.00.01
-   * @since 1.00.00
+   * @param string $ins
+   * @version 1.21.06.04
+   * @since 1.21.06.04
    */
-  public function selectLocal($id)
-  { return $this->select(__FILE__, __LINE__, $id); }
-  /**
-   * @param Matiere $Matiere
-   * @return Matiere
-   * @version 1.00.01
-   * @since 1.00.01
-   */
-  public function updateLocal($Matiere)
-  { return $this->update(__FILE__, __LINE__, $Matiere); }
-  /**
-   * @param Matiere $Matiere
-   * @return Matiere
-   * @version 1.00.01
-   * @since 1.00.01
-   */
-  public function insertLocal($Matiere)
-  { return $this->insert(__FILE__, __LINE__, $Matiere); }
+  public function deleteIn($ins)
+  { $this->Dao->deleteIn($ins); }
+
 }

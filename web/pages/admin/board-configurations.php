@@ -15,7 +15,7 @@
     <div class="col-8">
       <div class="card-body">
         <form action="#" method="post" id="post-filters">
-          <table class="table table-striped table-bordered table-hover table-sm" aria-describeby="Liste des Administratifs">
+          <table class="table table-striped table-bordered table-hover table-sm" aria-describedby="Liste des Administratifs">
             <thead>
               <tr>
                 <td id="cb" class="manage-column column-cb check-column"><input id="cb-select-all-1" type="checkbox"></td>
@@ -66,7 +66,7 @@
     <div class="col-8">
       <div class="card-body">
         <form action="#" method="post" id="post-filters">
-          <table class="table table-striped table-bordered table-hover table-sm" aria-describeby="Liste des années scolaires">
+          <table class="table table-striped table-bordered table-hover table-sm" aria-describedby="Liste des années scolaires">
             <thead>
               <tr>
                 <td id="cb" class="manage-column column-cb check-column"><input id="cb-select-all-1" type="checkbox"></td>

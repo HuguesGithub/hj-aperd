@@ -5,11 +5,14 @@ if (!defined('ABSPATH')) {
 /**
  * Classe LocalServices
  * @author Hugues
- * @version 1.00.00
- * @since 1.00.00
+ * @version 1.21.06.04
+ * @since 1.21.06.04
  */
 class LocalServices extends GlobalServices implements ConstantsInterface
 {
+  //////////////////////////////////////////////////
+  // ATTRIBUTES
+  //////////////////////////////////////////////////
   /**
    * Texte par défaut du Select
    * @var string $labelDefault
@@ -26,12 +29,60 @@ class LocalServices extends GlobalServices implements ConstantsInterface
    */
   protected $multiple = false;
 
+  //////////////////////////////////////////////////
+  // CONSTRUCT
+  //////////////////////////////////////////////////
   /**
    * Class Constructor
+   * @version 1.21.06.04
+   * @since 1.21.06.04
    */
   public function __construct()
   {
   }
+
+  //////////////////////////////////////////////////
+  // LOCAL CRUD
+  //////////////////////////////////////////////////
+  /**
+   * @param int $id
+   * @return mixed
+   * @version 1.21.06.04
+   * @since 1.21.06.04
+   */
+  public function selectLocal($id)
+  { return $this->select(__FILE__, __LINE__, $id); }
+  /**
+   * @param mixed $Obj
+   * @return mixed
+   * @version 1.21.06.04
+   * @since 1.21.06.04
+   */
+  public function updateLocal($Obj)
+  { return $this->update(__FILE__, __LINE__, $Obj); }
+  /**
+   * @param mixed $Obj
+   * @return mixed
+   * @version 1.21.06.04
+   * @since 1.21.06.04
+   */
+  public function insertLocal($Obj)
+  { return $this->insert(__FILE__, __LINE__, $Obj); }
+  /**
+   * @param mixed $Obj
+   * @version 1.21.06.04
+   * @since 1.21.06.04
+   */
+  public function deleteLocal($Obj)
+  { $this->delete(__FILE__, __LINE__, $Obj); }
+
+
+
+
+
+
+
+
 
   /**
    * @param array $arrSetLabels

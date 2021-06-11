@@ -16,6 +16,7 @@
   integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
 <link rel="stylesheet" href="<?php echo PLUGINS_MYCOMMON; ?>/web/rsc/css/jquery-ui.min.css" type="text/css" media="all" />
 <link rel="stylesheet" href="<?php echo PLUGINS_APERD; ?>web/rsc/admin_aperd.css" type="text/css" media="all" />
+<link rel="stylesheet" href="<?php echo PLUGINS_APERD; ?>web/rsc/open-iconic-bootstrap.css" type="text/css" media="all" />
 <?php
   global $Aperd;
   if (empty($Aperd)) {
