@@ -11,8 +11,8 @@
             <li class="list-group-item list-group-item-action d-flex justify-content-between" data-foreign-key="#prof_princ">profPrincId <span class="badge badge-danger" title="required">&nbsp;</span></li>
             <li class="list-group-item list-group-item-action d-flex justify-content-between" data-foreign-key="#eleve">delegueEleve1Id <span class="badge badge-danger" title="required">&nbsp;</span></li>
             <li class="list-group-item list-group-item-action d-flex justify-content-between" data-foreign-key="#eleve">delegueEleve2Id <span class="badge badge-danger" title="required">&nbsp;</span></li>
-            <li class="list-group-item list-group-item-action d-flex justify-content-between" data-foreign-key="#parent_delegue">delegueParent1Id <span class="badge badge-danger" title="required">&nbsp;</span></li>
-            <li class="list-group-item list-group-item-action d-flex justify-content-between" data-foreign-key="#parent_delegue">delegueParent2Id <span class="badge badge-danger" title="required">&nbsp;</span></li>
+            <li class="list-group-item list-group-item-action d-flex justify-content-between" data-foreign-key="#parent-delegue">delegueParent1Id <span class="badge badge-danger" title="required">&nbsp;</span></li>
+            <li class="list-group-item list-group-item-action d-flex justify-content-between" data-foreign-key="#parent-delegue">delegueParent2Id <span class="badge badge-danger" title="required">&nbsp;</span></li>
             <li class="list-group-item list-group-item-action d-flex justify-content-between text-success">crKey <span class="badge badge-danger" title="required">&nbsp;</span></li>
             <li class="list-group-item list-group-item-action d-flex justify-content-between">trimestre <span class="badge badge-danger" title="required">&nbsp;</span></li>
             <li class="list-group-item list-group-item-action d-flex justify-content-between">nbEleves <span class="badge badge-danger" title="required">&nbsp;</span></li>
@@ -90,11 +90,11 @@
         </div>
       </div>
 
-      <div id="parent_delegue" class="card bg-light">
-        <div class="card-header"><strong>wp_14_aperd_parent_delegue</strong></div>
+      <div id="parent-delegue" class="card bg-light">
+        <div class="card-header"><strong><a href="http://aperd.jhugues.fr/wp-admin/admin.php?page=hj-aperd/admin_manage.php&onglet=parent-delegue">wp_14_aperd_parent_delegue</a></strong></div>
         <div class="card-body">
           <ul class="list-group list-group-condensed">
-            <li class="list-group-item list-group-item-action d-flex justify-content-between" data-key="parent_delegue">id <span class="badge badge-info" title="Clef">&nbsp;</span></li>
+            <li class="list-group-item list-group-item-action d-flex justify-content-between" data-key="parent-delegue">id <span class="badge badge-info" title="Clef">&nbsp;</span></li>
             <li class="list-group-item list-group-item-action d-flex justify-content-between" data-foreign-key="#parent">parentId <span class="badge badge-danger" title="required">&nbsp;</span></li>
             <li class="list-group-item list-group-item-action d-flex justify-content-between" data-foreign-key="#division">divisionId <span class="badge badge-danger" title="required">&nbsp;</span></li>
           </ul>

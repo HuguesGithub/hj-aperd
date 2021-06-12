@@ -88,7 +88,6 @@ function aperd_menu()
         'parent'         => 'Parents',
         'parent-delegue' => 'Parents Délégués',
         '-'              => '-----------------',
-
         'compte-rendu'  => 'Compte-Rendus',
         'enseignant'    => 'Enseignants',
         'compodivision' => 'Composition Division',
