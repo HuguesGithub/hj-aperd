@@ -16,13 +16,10 @@ section { margin-bottom: 20px; }
   box-sizing: content-box;
   background-color: transparent;
   border: none;
-  border-bottom-color: currentcolor;
-  border-bottom-style: none;
-  border-bottom-width: medium;
-  border-bottom-color: currentcolor;
-  border-bottom-style: none;
-  border-bottom-width: medium;
   border-bottom: 1px solid #ced4da;
+  border-bottom-color: currentcolor;
+  border-bottom-style: none;
+  border-bottom-width: medium;
   border-radius: 0;
   outline: none;
   -webkit-box-shadow: none;

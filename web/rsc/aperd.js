@@ -42,7 +42,7 @@ function addChangeMatiereEvent(node) {
       data,
       function(response) {
         try {
-          obj = JSON.parse(response);
+          var obj = JSON.parse(response);
           $hj('#divMatieres').append(obj.blocMatiere);
           addBilanEvent();
           addTextAreaEvent();

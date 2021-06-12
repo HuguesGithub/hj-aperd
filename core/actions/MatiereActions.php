@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 /**
  * MatiereActions
  * @author Hugues
- * @version 1.21.06.08
+ * @version 1.21.06.012
  * @since 1.21.06.08
  */
 class MatiereActions extends LocalActions
@@ -22,7 +22,7 @@ class MatiereActions extends LocalActions
   /**
    * @param string $actionType
    * @param mixed $params
-   * @version 1.21.06.08
+   * @version 1.21.06.12
    * @since 1.21.06.08
    */
   public static function dealWithStatic($actionType, &$params=null)
@@ -34,6 +34,9 @@ class MatiereActions extends LocalActions
       break;
       case self::CST_IMPORT :
         return $Act->importMatiere($params);
+      break;
+      default :
+        return 'Erreur dans MatiereActions > dealWithStatic [<strong>'.$actionType.'</strong>] non défini.';
       break;
     }
   }

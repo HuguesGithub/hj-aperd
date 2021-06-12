@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 /**
  * AdminPageParentDeleguesBean
  * @author Hugues
- * @version 1.21.06.11
+ * @version 1.21.06.12
  * @since 1.21.06.11
  */
 class AdminPageParentDeleguesBean extends AdminPageBean
@@ -247,7 +247,7 @@ class AdminPageParentDeleguesBean extends AdminPageBean
   /**
    * Gestion de l'affichage de la page.
    * @return string
-   * @version 1.21.06.11
+   * @version 1.21.06.12
    * @since 1.21.06.11
    */
   public function getListingPage()
@@ -258,6 +258,7 @@ class AdminPageParentDeleguesBean extends AdminPageBean
     if (empty($ParentDelegues)) {
       $strRows = '<tr><td colspan="5"><em>Aucun résultat</em></td></tr>';
     } else {
+      $strRows = '';
       while (!empty($ParentDelegues)) {
         $ParentDelegue = array_shift($ParentDelegues);
         $strRows .= $ParentDelegue->getBean()->getRowForAdminPage(false, $queryArg);

@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 /**
  * AdminPageQuestionnairesBean
  * @author Hugues
- * @version 1.21.06.09
+ * @version 1.21.06.12
  * @since 1.21.06.09
  */
 class AdminPageQuestionnairesBean extends AdminPageBean
@@ -161,7 +161,7 @@ class AdminPageQuestionnairesBean extends AdminPageBean
   /**
    * Intialise les panneaux latéraux à afficher
    * @param string $action
-   * @version 1.21.06.06
+   * @version 1.21.06.12
    * @since 1.21.06.01
    */
   public function initPanels($action)
@@ -205,7 +205,7 @@ class AdminPageQuestionnairesBean extends AdminPageBean
         $arrIds = array();
         $arrLabels = array();
         foreach($this->urlParams[self::CST_POST] as $key=> $value) {
-          $Questionnaire = $this->QuestionnaireServices->getQuestionnaireWithFilters(array(self::FIELD_CONFIG_KEY=>$urlParams[self::FIELD_CONFIG_KEY]));
+          $Questionnaire = $this->QuestionnaireServices->getQuestionnaireWithFilters(array(self::FIELD_CONFIG_KEY=>$key));
           $arrLabels[] = $Questionnaire->getConfigKey();
           $arrIds[] = $value;
         }

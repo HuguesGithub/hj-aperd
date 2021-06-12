@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 /**
  * AnneeScolaireActions
  * @author Hugues
- * @version 1.21.06.10
+ * @version 1.21.06.12
  * @since 1.21.06.10
  */
 class AnneeScolaireActions extends LocalActions
@@ -22,7 +22,7 @@ class AnneeScolaireActions extends LocalActions
   /**
    * @param string $actionType
    * @param mixed $params
-   * @version 1.21.06.10
+   * @version 1.21.06.12
    * @since 1.21.06.10
    */
   public static function dealWithStatic($actionType, &$params=null)
@@ -34,6 +34,9 @@ class AnneeScolaireActions extends LocalActions
       break;
       case self::CST_IMPORT :
         return $Act->importAnneeScolaire($params);
+      break;
+      default :
+        return 'Erreur dans AnneeScolaireActions > dealWithStatic [<strong>'.$actionType.'</strong>] non défini.';
       break;
     }
   }

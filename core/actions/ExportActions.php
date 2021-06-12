@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 /**
  * ExportActions
  * @author Hugues
- * @version 1.21.06.11
+ * @version 1.21.06.12
  * @since 1.21.06.01
  */
 class ExportActions extends LocalActions
@@ -25,37 +25,47 @@ class ExportActions extends LocalActions
     $this->post = $post;
   }
 
+  /**
+   * @param string $exportType
+   * @param mixed $ids
+   * @version 1.21.06.12
+   * @since 1.21.06.01
+   */
   public static function dealWithStaticExport($exportType, $ids)
   {
     $Act = new ExportActions();
     switch ($exportType) {
       case self::PAGE_ADMINISTRATION :
-        return AdministrationActions::dealWithStatic(self::CST_EXPORT, $ids);
+        $returned = AdministrationActions::dealWithStatic(self::CST_EXPORT, $ids);
       break;
       case self::PAGE_ANNEE_SCOLAIRE :
-        return AnneeScolaireActions::dealWithStatic(self::CST_EXPORT, $ids);
+        $returned = AnneeScolaireActions::dealWithStatic(self::CST_EXPORT, $ids);
       break;
       case self::PAGE_DIVISION :
-        return DivisionActions::dealWithStatic(self::CST_EXPORT, $ids);
+        $returned = DivisionActions::dealWithStatic(self::CST_EXPORT, $ids);
       break;
       case self::PAGE_ELEVE :
-        return EleveActions::dealWithStatic(self::CST_EXPORT, $ids);
+        $returned = EleveActions::dealWithStatic(self::CST_EXPORT, $ids);
       break;
       case self::PAGE_MATIERE :
-        return MatiereActions::dealWithStatic(self::CST_EXPORT, $ids);
+        $returned = MatiereActions::dealWithStatic(self::CST_EXPORT, $ids);
       break;
       case self::PAGE_PARENT :
-        return AdulteActions::dealWithStatic(self::CST_EXPORT, $ids);
+        $returned = AdulteActions::dealWithStatic(self::CST_EXPORT, $ids);
       break;
 
 
       case self::PAGE_ENSEIGNANT :
-        return $Act->exportEnseignant($ids);
+        $returned = $Act->exportEnseignant($ids);
       break;
       case self::PAGE_COMPO_DIVISION :
-        return $Act->exportCompo($ids);
+        $returned = $Act->exportCompo($ids);
+      break;
+      default :
+        $returned = 'Erreur dans ExportActions > dealWithStatic [<strong>'.$actionType.'</strong>] non défini.';
       break;
     }
+    return $returned;
   }
 
   public function exportCompo($arrIds)

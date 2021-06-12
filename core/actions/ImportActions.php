@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 /**
  * ImportActions
  * @author Hugues
- * @version 1.21.06.11
+ * @version 1.21.06.12
  * @since 1.21.06.01
  */
 class ImportActions extends LocalActions
@@ -26,6 +26,13 @@ class ImportActions extends LocalActions
     $this->post = $post;
   }
 
+  /**
+   * @param string $importType
+   * @param string &$notif
+   * @param string &$msg
+   * @version 1.21.06.12
+   * @since 1.21.06.01
+   */
   public static function dealWithStaticImport($importType, &$notif, &$msg)
   {
     $Act = new ImportActions();
@@ -64,6 +71,9 @@ class ImportActions extends LocalActions
 
       case self::PAGE_ENSEIGNANT :
         return $Act->importEnseignant($notif, $msg);
+      break;
+      default :
+        return 'Erreur dans ImportActions > dealWithStatic [<strong>'.$actionType.'</strong>] non défini.';
       break;
     }
   }

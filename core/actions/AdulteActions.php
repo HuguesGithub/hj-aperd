@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 /**
  * AdulteActions
  * @author Hugues
- * @version 1.21.06.11
+ * @version 1.21.06.12
  * @since 1.21.06.11
  */
 class AdulteActions extends LocalActions
@@ -22,7 +22,7 @@ class AdulteActions extends LocalActions
   /**
    * @param string $actionType
    * @param mixed $params
-   * @version 1.21.06.11
+   * @version 1.21.06.12
    * @since 1.21.06.11
    */
   public static function dealWithStatic($actionType, &$params=null)
@@ -34,6 +34,9 @@ class AdulteActions extends LocalActions
       break;
       case self::CST_IMPORT :
         return $Act->importAdulte($params);
+      break;
+      default :
+        return 'Erreur dans AdulteActions > dealWithStatic [<strong>'.$actionType.'</strong>] non défini.';
       break;
     }
   }

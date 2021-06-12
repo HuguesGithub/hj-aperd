@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 /**
  * AdministrationActions
  * @author Hugues
- * @version 1.21.06.10
+ * @version 1.21.06.12
  * @since 1.21.06.10
  */
 class AdministrationActions extends LocalActions
@@ -22,7 +22,8 @@ class AdministrationActions extends LocalActions
   /**
    * @param string $actionType
    * @param mixed $params
-   * @version 1.21.06.10
+   * @return string
+   * @version 1.21.06.12
    * @since 1.21.06.10
    */
   public static function dealWithStatic($actionType, &$params=null)
@@ -34,6 +35,9 @@ class AdministrationActions extends LocalActions
       break;
       case self::CST_IMPORT :
         return $Act->importAdministration($params);
+      break;
+      default :
+        return 'Erreur dans AdministrationActions > dealWithStatic [<strong>'.$actionType.'</strong>] non défini.';
       break;
     }
   }
