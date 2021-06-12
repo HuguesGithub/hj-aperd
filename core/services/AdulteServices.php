@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 /**
  * Classe AdulteServices
  * @author Hugues
- * @version 1.21.06.10
+ * @version 1.21.06.12
  * @since 1.21.06.04
  */
 class AdulteServices extends LocalServices
@@ -38,13 +38,14 @@ class AdulteServices extends LocalServices
   /**
    * @param array $arrFilters
    * @return array
-   * @version 1.21.06.04
+   * @version 1.21.06.12
    * @since 1.21.06.04
    */
   private function buildFilters($arrFilters)
   {
     $arrParams = array();
     array_push($arrParams, $this->getValueToSearch($arrFilters, self::FIELD_NOMPARENT));
+    array_push($arrParams, $this->getValueToSearch($arrFilters, self::FIELD_PRENOMPARENT));
     array_push($arrParams, $this->getValueToSearch($arrFilters, self::FIELD_ADHERENT));
     return $arrParams;
   }

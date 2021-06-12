@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 /**
  * Classe ParentDelegueServices
  * @author Hugues
- * @version 1.21.06.11
+ * @version 1.21.06.12
  * @since 1.21.06.11
  */
 class ParentDelegueServices extends LocalServices
@@ -75,5 +75,11 @@ class ParentDelegueServices extends LocalServices
     $arrParams = $this->buildFilters($arrFilters);
     return $this->Dao->deleteWithFilters(__FILE__, __LINE__, $arrParams);
   }
-
+  /**
+   * @param string $ins
+   * @version 1.21.06.12
+   * @since 1.21.06.12
+   */
+  public function deleteIn($ins)
+  { $this->Dao->deleteIn($ins); }
 }

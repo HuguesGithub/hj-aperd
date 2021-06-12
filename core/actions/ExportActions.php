@@ -53,6 +53,9 @@ class ExportActions extends LocalActions
       case self::PAGE_PARENT :
         $returned = AdulteActions::dealWithStatic(self::CST_EXPORT, $ids);
       break;
+      case self::PAGE_PARENT_DELEGUE :
+        $returned = ParentDelegueActions::dealWithStatic(self::CST_EXPORT, $ids);
+      break;
 
 
       case self::PAGE_ENSEIGNANT :
@@ -62,7 +65,7 @@ class ExportActions extends LocalActions
         $returned = $Act->exportCompo($ids);
       break;
       default :
-        $returned = 'Erreur dans ExportActions > dealWithStatic [<strong>'.$actionType.'</strong>] non défini.';
+        $returned = 'Erreur dans ExportActions > dealWithStatic [<strong>'.$exportType.'</strong>] non défini.';
       break;
     }
     return $returned;

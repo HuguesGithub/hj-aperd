@@ -292,7 +292,7 @@ class AdminPageElevesBean extends AdminPageBean
       $strRows = '';
       while (!empty($DisplayedEleves)) {
         $Eleve = array_shift($DisplayedEleves);
-        $strRows .= $Eleve->getBean()->getRowForAdminPage(false, $queryArg);
+        $strRows .= $Eleve->getBean()->getRowForAdminPage(in_array($Eleve->getId(), $this->arrIds), $queryArg);
       }
     }
     //////////////////////////////////////////////////////////////////

@@ -67,6 +67,11 @@ class ImportActions extends LocalActions
         $notif = $params['notif'];
         $msg   = $params['msg'];
       break;
+      case self::PAGE_PARENT_DELEGUE :
+        ParentDelegueActions::dealWithStatic(self::CST_IMPORT, $ids);
+        $notif = $params['notif'];
+        $msg   = $params['msg'];
+      break;
 
 
       case self::PAGE_ENSEIGNANT :

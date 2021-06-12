@@ -138,11 +138,11 @@ class ParentDelegue extends LocalDomain
   /**
    * @param string $sep
    * @return string
-   * @version 1.21.06.11
+   * @version 1.21.06.12
    * @since 1.21.06.11
    */
-  public function getCsvEntete($sep=';')
-  { return implode($sep, array(self::FIELD_ID, self::FIELD_PARENT_ID, self::FIELD_LABELDIVISION)); }
+  public function getCsvEntete($sep=self::SEP)
+  { return implode($sep, array(self::FIELD_ID, self::FIELD_NOMPARENT, self::FIELD_PRENOMPARENT, self::FIELD_LABELDIVISION)); }
   /**
    * @return string
    * @version 1.21.06.11
@@ -153,14 +153,15 @@ class ParentDelegue extends LocalDomain
   /**
    * @param string $sep
    * @return string
-   * @version 1.21.06.11
+   * @version 1.21.06.12
    * @since 1.21.06.11
    */
-  public function toCsv($sep=';')
+  public function toCsv($sep=self::SEP)
   {
     $arrValues = array();
     $arrValues[] = $this->id;
-    $arrValues[] = $this->getAdulte()->getFullName();
+    $arrValues[] = $this->getAdulte()->getNomParent();
+    $arrValues[] = $this->getAdulte()->getPrenomParent();
     $arrValues[] = $this->getDivision()->getLabelDivision();
     return implode($sep, $arrValues);
   }
@@ -170,16 +171,24 @@ class ParentDelegue extends LocalDomain
    * @param string &$notif
    * @param string &$msg
    * @return boolean
-   * @version 1.21.06.11
+   * @version 1.21.06.12
    * @since 1.21.06.11
    */
   public function controleImportRow($rowContent, $sep=self::SEP, &$notif, &$msg)
   {
-    list($id, $nomAdulte, $labelDivision) = explode($sep, $rowContent);
+    list($id, $nomAdulte, $prenomAdulte, $labelDivision) = explode($sep, $rowContent);
     $this->setId($id);
-    // TODO
-    //$this->setNomEleve(trim($nomEleve));
-
+    // On vérifie l'existence de l'Adulte.
+    $argFilters = array(self::FIELD_NOMPARENT=>$nomAdulte, self::FIELD_PRENOMPARENT=>$prenomAdulte);
+    $Adultes = $this->AdulteServices->getAdultesWithFilters($argFilters);
+    if (count($Adultes)!=1) {
+      $notif = self::NOTIF_DANGER;
+      $msg   = self::MSG_ERREUR_CONTROL_INEXISTENCE;
+      return true;
+    }
+    $Adulte = array_shift($Adultes);
+    $this->setParentId(trim($Adulte->getId()));
+    // On vérifie l'existence de la Division
     $Divisions = $this->DivisionServices->getDivisionsWithFilters(array(self::FIELD_LABELDIVISION=>str_replace(self::EOL, '', $labelDivision)));
     if (empty($Divisions)) {
       $notif = self::NOTIF_DANGER;
@@ -212,11 +221,25 @@ class ParentDelegue extends LocalDomain
   /**
    * @param string &$notif
    * @param string &$msg
-   * @version 1.21.06.11
+   * @version 1.21.06.12
    * @since 1.21.06.11
    */
   public function controleDonnees(&$notif, &$msg)
   {
+    // Vérification de l'id du Parent
+    $Adulte = $this->AdulteServices->selectLocal($this->parentId);
+    if ($Adulte->getId()=='') {
+      $notif = self::NOTIF_DANGER;
+      $msg   = self::MSG_ERREUR_CONTROL_EXISTENCE;
+      return false;
+    }
+    // Vérification de l'id de la Division
+    $Division = $this->DivisionServices->selectLocal($this->divisionId);
+    if ($Division->getId()=='') {
+      $notif = self::NOTIF_DANGER;
+      $msg   = self::MSG_ERREUR_CONTROL_EXISTENCE;
+      return false;
+    }
     return true;
   }
 }

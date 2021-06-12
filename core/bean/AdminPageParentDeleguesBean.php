@@ -261,7 +261,7 @@ class AdminPageParentDeleguesBean extends AdminPageBean
       $strRows = '';
       while (!empty($ParentDelegues)) {
         $ParentDelegue = array_shift($ParentDelegues);
-        $strRows .= $ParentDelegue->getBean()->getRowForAdminPage(false, $queryArg);
+        $strRows .= $ParentDelegue->getBean()->getRowForAdminPage(in_array($ParentDelegue->getId(), $this->arrIds), $queryArg);
       }
     }
     //////////////////////////////////////////////////////////////////

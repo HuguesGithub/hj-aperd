@@ -8,7 +8,7 @@ update="UPDATE wp_14_aperd_administration SET genre='%s', nomTitulaire='%s', lab
 [Adulte]
 select="SELECT id, nomParent, prenomParent, mailParent, adherent "
 from="FROM wp_14_aperd_parent "
-where="WHERE nomParent LIKE '%s' AND adherent LIKE '%s' "
+where="WHERE nomParent LIKE '%s' AND prenomParent LIKE '%s' AND adherent LIKE '%s' "
 insert="INSERT INTO wp_14_aperd_parent (nomParent, prenomParent, mailParent, adherent) VALUES ('%s', '%s', '%s', '%s');"
 update="UPDATE wp_14_aperd_parent SET nomParent='%s', prenomParent='%s', mailParent='%s', adherent='%s' "
 
