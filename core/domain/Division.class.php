@@ -230,4 +230,11 @@ class Division extends LocalDomain
     return $genCrKey;
   }
 
+  /**
+   * @return string
+   * @version 1.21.06.17
+   * @since 1.21.06.17
+   */
+  public function getFullName()
+  { return $this->getLabelDivision(); }
 }

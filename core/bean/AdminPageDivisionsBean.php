@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 /**
  * AdminPageDivisionsBean
  * @author Hugues
- * @version 1.21.06.06
+ * @version 1.21.06.17
  * @since 1.21.06.01
  */
 class AdminPageDivisionsBean extends AdminPageBean
@@ -27,10 +27,12 @@ class AdminPageDivisionsBean extends AdminPageBean
     } else {
       $this->Division = new Division();
     }
+    $this->LocalObject    = $this->Division;
     // On stocke les paramètres
     $this->urlParams = $urlParams;
     // On prépare le stockage pour les ids multiples si existants.
     $this->arrIds = array();
+    $this->subMenuValue = self::PAGE_DIVISION;
   }
   /**
    * Retourne la Division
@@ -65,7 +67,7 @@ class AdminPageDivisionsBean extends AdminPageBean
   /**
    * @param array $urlParams
    * @return string
-   * @version 1.21.06.06
+   * @version 1.21.06.17
    * @since 1.21.06.06
    */
   public function getContentPage()
@@ -145,90 +147,17 @@ class AdminPageDivisionsBean extends AdminPageBean
     }
     ///////////////////////////////////////////:
     // On initialise les panneaux latéraux droit
+    $this->msgConfirmDelete = sprintf(self::MSG_CONFIRM_SUPPR_DIVISION, $this->Division->getLabelDivision());
+    $this->attributesFormNew = array('');
+    $this->tagConfirmDeleteMultiple = self::MSG_CONFIRM_SUPPR_DIVISIONS;
+    $this->attributesFormEdit  = array(
+      // Libellé de la Division - 1
+      $this->Division->getLabelDivision(),
+    ) ;
     $this->initPanels($initPanel);
     ///////////////////////////////////////////:
     // On retourne le listing et les panneaux latéraux droit
     return $this->getListingPage();
-  }
-
-  /**
-   * Intialise les panneaux latéraux à afficher
-   * @param string $action
-   * @version 1.21.06.06
-   * @since 1.21.06.01
-   */
-  public function initPanels($action)
-  {
-    switch ($action) {
-      case self::CST_DELETE :
-        $this->crudType = self::CST_DELETE;
-        // Définition des attributs de la Card CRUD
-        $this->attributesCardCRUD = array(
-          // Message de confirmation à afficher - 1
-          sprintf(self::MSG_CONFIRM_SUPPR_DIVISION, $this->Division->getLabelDivision()),
-          // Id de l'objet ou des objets à supprimer - 2
-          $this->Division->getId(),
-          // Url d'annulation de l'opération - 3
-          $this->getQueryArg(array(self::CST_ONGLET=>self::PAGE_DIVISION)),
-        );
-      break;
-      case self::CST_CREATION :
-      case self::CST_EDITION  :
-      case self::CST_EDIT     :
-        $this->crudType = self::CST_EDIT;
-        $attributesForm  = array(
-          // Libellé de la Matière - 1
-          $this->Division->getLabelDivision(),
-        ) ;
-        // Définition des attributs de la Card CRUD
-        $this->attributesCardCRUD = array(
-          // Contenu du Formulaire - 1
-          $this->getRender($this->urlTemplateForm, $attributesForm),
-          // Id de l'objet ou des objets à supprimer - 2
-          $this->Division->getId(),
-          // Url d'annulation de l'opération - 3
-          $this->getQueryArg(array(self::CST_ONGLET=>self::PAGE_DIVISION)),
-        );
-      break;
-      case self::CST_BULK_TRASH :
-        $this->crudType = self::CST_DELETE;
-        // Construction des listings suite à la sélection multiple.
-        $arrIds = array();
-        $arrLabels = array();
-        foreach($this->urlParams[self::CST_POST] as $key=> $value) {
-          $Division = $this->DivisionServices->selectLocal($value);
-          $arrLabels[] = $Division->getLabelDivision();
-          $arrIds[] = $value;
-        }
-        $this->arrIds                   = $arrIds;
-        // Définition des attributs de la Card CRUD
-        $this->attributesCardCRUD = array(
-          // Message de confirmation à afficher - 1
-          sprintf(self::MSG_CONFIRM_SUPPR_DIVISIONS, implode(', ', $arrLabels)),
-          // Id de l'objet ou des objets à supprimer - 2
-          implode(',', $arrIds),
-          // Url d'annulation de l'opération - 3
-          $this->getQueryArg(array(self::CST_ONGLET=>self::PAGE_DIVISION)),
-        );
-      break;
-      case self::CST_BULK_EXPORT :
-        foreach($this->urlParams[self::CST_POST] as $key=> $value) {
-          $arrIds[] = $value;
-        }
-        $this->arrIds                   = $arrIds;
-      case self::CST_CREATE :
-      default :
-        $this->crudType = self::CST_CREATE;
-        $attributesForm  = array('',);
-        // Définition des attributs de la Card CRUD
-        $this->attributesCardCRUD = array(
-          // Contenu du Formulaire - 1
-          $this->getRender($this->urlTemplateForm, $attributesForm),
-          // Url d'annulation de l'opération - 2
-          $this->getQueryArg(array(self::CST_ONGLET=>self::PAGE_DIVISION)),
-        );
-      break;
-    }
   }
 
   /**

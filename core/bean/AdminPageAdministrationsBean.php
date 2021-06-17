@@ -24,11 +24,10 @@ class AdminPageAdministrationsBean extends AdminPageBean
     // Initialisation de l'Administratif sélectionné s'il y en a un.
     if ($urlParams!=null && isset($urlParams[self::FIELD_ID])) {
       $this->Administration = $this->AdministrationServices->selectLocal($urlParams[self::FIELD_ID]);
-      $this->LocalObject    = $this->Administration;
     } else {
       $this->Administration = new Administration();
-      $this->LocalObject    = new Administration();
     }
+    $this->LocalObject    = $this->Administration;
     // On stocke les paramètres
     $this->urlParams = $urlParams;
     // On prépare le stockage pour les ids multiples si existants.
