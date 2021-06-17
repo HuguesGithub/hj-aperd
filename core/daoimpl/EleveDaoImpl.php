@@ -5,8 +5,8 @@ if (!defined('ABSPATH')) {
 /**
  * Classe EleveDaoImpl
  * @author Hugues
- * @version 1.00.00
- * @since 1.00.00
+ * @version 1.21.06.12
+ * @since 1.21.06.01
  */
 class EleveDaoImpl extends LocalDaoImpl
 {
@@ -46,4 +46,5 @@ class EleveDaoImpl extends LocalDaoImpl
   {
     $request = $this->delete.$this->fromRequest.'WHERE id IN ('.$ins.');';
     MySQL::wpdbQuery($request);
-  }}
+  }
+}

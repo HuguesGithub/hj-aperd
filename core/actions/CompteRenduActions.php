@@ -108,6 +108,9 @@ class CompteRenduActions extends LocalActions
       case 'enseignantIds[]' :
         return $this->dealWithBilanMatiere();
       break;
+      default :
+        return '';
+      break;
     }
   }
 
@@ -124,6 +127,9 @@ class CompteRenduActions extends LocalActions
       break;
       case 'enseignantIds[]' :
         $BilanMatiere->setEnseignantId($this->post['value']);
+      break;
+      default :
+        return '';
       break;
     }
     $this->BilanMatiereServices->updateLocal($BilanMatiere);

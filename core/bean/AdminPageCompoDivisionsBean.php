@@ -5,8 +5,8 @@ if (!defined('ABSPATH')) {
 /**
  * AdminPageCompoDivisionsBean
  * @author Hugues
- * @version 1.00.01
- * @since 1.00.01
+ * @version 1.21.06.17
+ * @since 1.21.06.01
  */
 class AdminPageCompoDivisionsBean extends AdminPageBean
 {
@@ -52,7 +52,7 @@ class AdminPageCompoDivisionsBean extends AdminPageBean
           $Bean->import($notif, $msg);
           $Bean->CompoDivision = new CompoDivision();
         break;
-        case 'Édition' :
+        case self::CST_EDITION :
           // Exécution de la mise à jour
           $Bean->getCompoDivision()->setAnneeScolaireId($urlParams[self::FIELD_ANNEESCOLAIRE_ID]);
           $Bean->getCompoDivision()->setDivisionId($urlParams[self::FIELD_DIVISION_ID]);
@@ -61,7 +61,7 @@ class AdminPageCompoDivisionsBean extends AdminPageBean
           $Bean->getCompoDivision()->update($notif, $msg);
           $initPanel = self::CST_EDIT;
         break;
-        case 'Création' :
+        case self::CST_CREATION :
           // Exécution de la création
           $Bean->getCompoDivision()->setAnneeScolaireId($urlParams[self::FIELD_ANNEESCOLAIRE_ID]);
           $Bean->getCompoDivision()->setDivisionId($urlParams[self::FIELD_DIVISION_ID]);
@@ -70,24 +70,24 @@ class AdminPageCompoDivisionsBean extends AdminPageBean
           $Bean->getCompoDivision()->insert($notif, $msg);
           $Bean->CompoDivision = new CompoDivision();
         break;
-        case 'Suppression' :
+        case self::CST_SUPPRESSION :
           // Exécution de la suppression unitaire ou groupée
           $Bean->delete($notif, $msg);
           $Bean->CompoDivision = new CompoDivision();
         break;
-        case 'Bulk' :
+        case self::CST_BULK :
           // Gestion des Actions groupées
           switch ($urlParams['action']) {
-            case 'trash' :
+            case self::CST_TRASH :
               // Confirmation de la Suppression de masse
               if (empty($urlParams['post'])) {
                 $msg = 'Suppressions impossibles : aucune entrée sélectionnée.';
                 $notif = self::NOTIF_WARNING;
               } else {
-                $initPanel = 'bulk-trash';
+                $initPanel = self::CST_BULK_TRASH;
               }
             break;
-            case 'export' :
+            case self::CST_EXPORT :
               // Exécution de l'exportation
               if (empty($urlParams['post'])) {
                 $msg = 'Export impossible : aucune entrée sélectionnée.';
@@ -96,7 +96,7 @@ class AdminPageCompoDivisionsBean extends AdminPageBean
                 $msg = ExportActions::dealWithStaticExport(self::PAGE_COMPO_DIVISION, $urlParams['post']);
                 $notif = self::NOTIF_SUCCESS;
               }
-              $initPanel = 'bulk-export';
+              $initPanel = self::CST_BULK_EXPORT;
             break;
             default :
               // Erreur sur l'action groupée, non reconnue
@@ -223,13 +223,13 @@ class AdminPageCompoDivisionsBean extends AdminPageBean
       // Url d'annulation - 8
       $urlCancel,
       // Show Card Creation/Edition - 9
-      $this->showCardEditionCreation ? '' : ' hidden',
+      $this->showCardEditionCreation ? '' : self::CST_BLANK.self::CST_HIDDEN,
       // Show Card Suppression - 10
-      $this->showCardSuppression ? '' : ' hidden',
+      $this->showCardSuppression ? '' : self::CST_BLANK.self::CST_HIDDEN,
       // Show Suppression simple - 11
-      $this->showSuppressionSimple ? '' : ' hidden',
+      $this->showSuppressionSimple ? '' : self::CST_BLANK.self::CST_HIDDEN,
       // Show Suppression multiple - 12
-      !$this->showSuppressionSimple ? '' : ' hidden',
+      !$this->showSuppressionSimple ? '' : self::CST_BLANK.self::CST_HIDDEN,
       // Libellé suppressions mumtiples - 13
       $this->libellesMultiples,
       // Id de la Suppression - 14
@@ -334,20 +334,20 @@ class AdminPageCompoDivisionsBean extends AdminPageBean
   public function initPanels($action)
   {
     switch ($action) {
-      case 'bulk-export' :
+      case self::CST_BULK_EXPORT :
       case self::CST_CREATION :
-        $this->cardCreationEditionTitre = 'Création';
+        $this->cardCreationEditionTitre = self::CST_CREATION;
         $this->showCardEditionCreation = true;
         $this->showCardSuppression     = false;
       break;
-      case 'Création' :
-      case 'Édition' :
+      case self::CST_CREATION :
+      case self::CST_EDITION :
       case self::CST_EDIT :
-        $this->cardCreationEditionTitre = 'Édition';
+        $this->cardCreationEditionTitre = self::CST_EDITION;
         $this->showCardEditionCreation = true;
         $this->showCardSuppression     = false;
       break;
-      case 'bulk-trash' :
+      case self::CST_BULK_TRASH :
         $this->cardCreationEditionTitre = '';
         $this->showSuppressionSimple    = false;
         $this->showCardEditionCreation  = false;
@@ -365,7 +365,7 @@ class AdminPageCompoDivisionsBean extends AdminPageBean
       break;
       case self::CST_DELETE :
         $this->ids = $this->CompoDivision->getId();
-        $this->cardCreationEditionTitre = 'Suppression';
+        $this->cardCreationEditionTitre = self::CST_SUPPRESSION;
         $this->showSuppressionSimple    = true;
         $this->showCardEditionCreation  = false;
         $this->showCardSuppression      = true;

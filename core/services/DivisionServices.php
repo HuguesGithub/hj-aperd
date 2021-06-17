@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 /**
  * Classe DivisionServices
  * @author Hugues
- * @version 1.21.06.04
+ * @version 1.21.06.17
  * @since 1.21.06.04
  */
 class DivisionServices extends LocalServices
@@ -38,13 +38,14 @@ class DivisionServices extends LocalServices
   /**
    * @param array $arrFilters
    * @return array
-   * @version 1.21.06.04
+   * @version 1.21.06.17
    * @since 1.21.06.04
    */
   private function buildFilters($arrFilters)
   {
     $arrParams = array();
     array_push($arrParams, $this->getValueToSearch($arrFilters, self::FIELD_LABELDIVISION));
+    array_push($arrParams, $this->getValueToSearch($arrFilters, self::FIELD_CRKEY));
     return $arrParams;
   }
   /**

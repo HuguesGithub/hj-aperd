@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 /**
  * Classe Division
  * @author Hugues
- * @version 1.21.06.04
+ * @version 1.21.06.17
  * @since 1.21.06.04
  */
 class Division extends LocalDomain
@@ -23,6 +23,11 @@ class Division extends LocalDomain
    * @var string $labelDivision
    */
   protected $labelDivision;
+  /**
+   * Code de la Division
+   * @var string $crKey
+   */
+  protected $crKey;
 
   //////////////////////////////////////////////////
   // GETTERS & SETTERS
@@ -41,6 +46,20 @@ class Division extends LocalDomain
    */
   public function setLabelDivision($labelDivision)
   { $this->labelDivision = $labelDivision; }
+  /**
+   * @return string
+   * @version 1.21.06.17
+   * @since 1.21.06.17
+   */
+  public function getCrKey()
+  { return $this->crKey; }
+  /**
+   * @param string $crKey
+   * @version 1.21.06.17
+   * @since 1.21.06.17
+   */
+  public function setCrKey($crKey)
+  { $this->crKey = $crKey; }
 
   //////////////////////////////////////////////////
   // CONSTRUCT - CLASSVARS - CONVERT - BEAN
@@ -87,19 +106,19 @@ class Division extends LocalDomain
   /**
    * @param string $sep
    * @return string
-   * @version 1.21.06.08
+   * @version 1.21.06.17
    * @since 1.21.06.01
    */
   public function getCsvEntete($sep=self::SEP)
-  { return implode($sep, array(self::FIELD_ID, self::FIELD_LABELDIVISION)); }
+  { return implode($sep, array(self::FIELD_ID, self::FIELD_LABELDIVISION, self::FIELD_CRKEY)); }
   /**
    * @param string $sep
    * @return string
-   * @version 1.21.06.08
+   * @version 1.21.06.17
    * @since 1.21.06.08
    */
   public function toCsv($sep=self::SEP)
-  { return implode($sep, array($this->id, $this->labelDivision)); }
+  { return implode($sep, array($this->id, $this->labelDivision, $this->crKey)); }
   /**
    * @param string $rowContent
    * @param string $sep
@@ -111,10 +130,14 @@ class Division extends LocalDomain
    */
   public function controleImportRow($rowContent, $sep=self::SEP, &$notif, &$msg)
   {
-    list($id, $labelDivision) = explode($sep, $rowContent);
+    list($id, $labelDivision, $crKey) = explode($sep, $rowContent);
     $this->setId($id);
-    $labelDivision = trim(str_replace(self::EOL, '', $labelDivision));
-    $this->setLabelDivision($labelDivision);
+    $this->setLabelDivision(trim($labelDivision));
+    $crKey = trim(str_replace(self::EOL, '', $crKey));
+    if (empty($crKey)) {
+      $crKey = $this->getUniqueGenKey();
+    }
+    $this->setCrKey($crKey);
 
     if (!$this->controleDonnees($notif, $msg)) {
       $notif = self::NOTIF_WARNING;
@@ -141,25 +164,67 @@ class Division extends LocalDomain
   /**
    * @param string &$notif
    * @param string &$msg
-   * @version 1.21.06.08
+   * @version 1.21.06.17
    * @since 1.21.06.08
    */
   public function controleDonnees(&$notif, &$msg)
   {
+    $returned = true;
     // Le libellé doit être renseigné
     if (empty($this->labelDivision)) {
       $notif = self::NOTIF_DANGER;
       $msg   = self::MSG_ERREUR_CONTROL_EXISTENCE;
-      return false;
+      $returned = false;
     }
     // Le libellé doit être unique et donc, ne pas exister en base
     $Divisions = $this->DivisionServices->getDivisionsWithFilters(array(self::FIELD_LABELDIVISION=>$this->labelDivision));
     if (!empty($Divisions)) {
       $notif = self::NOTIF_DANGER;
       $msg   = self::MSG_ERREUR_CONTROL_UNICITE;
-      return false;
+      $returned = false;
     }
-    return true;
+
+    // Le code crKey doit être unique. S'il est déjà présent, on envoie une alerte et on en génère un nouveau.
+    $Divisions = $this->DivisionServices->getDivisionsWithFilters(array(self::FIELD_CRKEY=>$crKey);
+    if (!empty($Divisions)) {
+      $notif = self::NOTIF_DANGER;
+      $msg   = self::MSG_ERREUR_CONTROL_UNICITE;
+      $this->setCrKey($this->getUniqueGenKey());
+      $returned = false;
+    }
+
+    return $returned;
+  }
+
+
+
+  /**
+   * @return string
+   * @version 1.21.06.17
+   * @since 1.21.06.17
+   */
+  public function getUniqueGenKey()
+  {
+    do {
+      $crKey = $this->genKey();
+      $Divisions = $this->DivisionServices->getDivisionsWithFilters(array(self::FIELD_CRKEY=>$crKey);
+    } while (!empty($Divisions));
+    return $crKey;
+  }
+  /**
+   * @return string
+   * @version 1.21.06.17
+   * @since 1.21.06.17
+   */
+  public function genKey()
+  {
+    $eligibleChars = 'abcdefghijkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    $crKey = '';
+    for ($i=0; $i<16; $i++) {
+      $eligibleChars = str_shuffle($eligibleChars);
+      $crKey .= $eligibleChars[0];
+    }
+    return $crKey;
   }
 
 }

@@ -174,8 +174,9 @@ class ParentDelegue extends LocalDomain
    * @version 1.21.06.12
    * @since 1.21.06.11
    */
-  public function controleImportRow($rowContent, $sep=self::SEP, &$notif, &$msg)
+  public function controleImportRow($rowContent, $sep, &$notif, &$msg)
   {
+    $bln_hasErrors = false;
     list($id, $nomAdulte, $prenomAdulte, $labelDivision) = explode($sep, $rowContent);
     $this->setId($id);
     // On vérifie l'existence de l'Adulte.
@@ -184,39 +185,43 @@ class ParentDelegue extends LocalDomain
     if (count($Adultes)!=1) {
       $notif = self::NOTIF_DANGER;
       $msg   = self::MSG_ERREUR_CONTROL_INEXISTENCE;
-      return true;
+      $bln_hasErrors = true;
     }
     $Adulte = array_shift($Adultes);
     $this->setParentId(trim($Adulte->getId()));
     // On vérifie l'existence de la Division
-    $Divisions = $this->DivisionServices->getDivisionsWithFilters(array(self::FIELD_LABELDIVISION=>str_replace(self::EOL, '', $labelDivision)));
-    if (empty($Divisions)) {
-      $notif = self::NOTIF_DANGER;
-      $msg   = self::MSG_ERREUR_CONTROL_INEXISTENCE;
-      return true;
+    if (!$bln_hasErrors) {
+      $Divisions = $this->DivisionServices->getDivisionsWithFilters(array(self::FIELD_LABELDIVISION=>str_replace(self::EOL, '', $labelDivision)));
+      if (empty($Divisions)) {
+        $notif = self::NOTIF_DANGER;
+        $msg   = self::MSG_ERREUR_CONTROL_INEXISTENCE;
+        $bln_hasErrors = true;
+      }
+      $Division = array_shift($Divisions);
+      $this->setDivisionId(trim($Division->getId()));
     }
-    $Division = array_shift($Divisions);
-    $this->setDivisionId(trim($Division->getId()));
 
-    if (!$this->controleDonnees($notif, $msg)) {
-      return true;
+    if (!$bln_hasErrors && !$this->controleDonnees($notif, $msg)) {
+      $bln_hasErrors = true;
     }
     // Si les contrôles sont okay, on peut insérer ou mettre à jour
-    if ($id=='') {
-      // Si id n'est pas renseigné. C'est une création. Il faut vérifier que le label n'existe pas déjà.
-      $this->Services->insertLocal($this);
-    } else {
-      $ObjectInBase = $this->Services->selectLocal($id);
-      if ($ObjectInBase->getId()=='') {
-        // Sinon, si id n'existe pas, c'est une création. Cf au-dessus
+    if (!$bln_hasErrors) {
+      if ($id=='') {
+        // Si id n'est pas renseigné. C'est une création. Il faut vérifier que le label n'existe pas déjà.
         $this->Services->insertLocal($this);
       } else {
-        // Si id existe, c'est une édition, même contrôle que ci-dessus.
-        $this->setId($id);
-        $this->Services->updateLocal($this);
+        $ObjectInBase = $this->Services->selectLocal($id);
+        if ($ObjectInBase->getId()=='') {
+          // Sinon, si id n'existe pas, c'est une création. Cf au-dessus
+          $this->Services->insertLocal($this);
+        } else {
+          // Si id existe, c'est une édition, même contrôle que ci-dessus.
+          $this->setId($id);
+          $this->Services->updateLocal($this);
+        }
       }
     }
-    return false;
+    return $bln_hasErrors;
   }
   /**
    * @param string &$notif

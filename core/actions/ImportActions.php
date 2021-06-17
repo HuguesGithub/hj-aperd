@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 /**
  * ImportActions
  * @author Hugues
- * @version 1.21.06.12
+ * @version 1.21.06.17
  * @since 1.21.06.01
  */
 class ImportActions extends LocalActions
@@ -30,7 +30,7 @@ class ImportActions extends LocalActions
    * @param string $importType
    * @param string &$notif
    * @param string &$msg
-   * @version 1.21.06.12
+   * @version 1.21.06.17
    * @since 1.21.06.01
    */
   public static function dealWithStaticImport($importType, &$notif, &$msg)
@@ -63,12 +63,12 @@ class ImportActions extends LocalActions
         $msg   = $params['msg'];
       break;
       case self::PAGE_PARENT :
-        AdulteActions::dealWithStatic(self::CST_IMPORT, $ids);
+        AdulteActions::dealWithStatic(self::CST_IMPORT, $params);
         $notif = $params['notif'];
         $msg   = $params['msg'];
       break;
       case self::PAGE_PARENT_DELEGUE :
-        ParentDelegueActions::dealWithStatic(self::CST_IMPORT, $ids);
+        ParentDelegueActions::dealWithStatic(self::CST_IMPORT, $params);
         $notif = $params['notif'];
         $msg   = $params['msg'];
       break;
@@ -78,7 +78,7 @@ class ImportActions extends LocalActions
         return $Act->importEnseignant($notif, $msg);
       break;
       default :
-        return 'Erreur dans ImportActions > dealWithStatic [<strong>'.$actionType.'</strong>] non défini.';
+        return 'Erreur dans ImportActions > dealWithStatic [<strong>'.$importType.'</strong>] non défini.';
       break;
     }
   }
@@ -219,7 +219,7 @@ class ImportActions extends LocalActions
           }
 
           // On supprime les anciens rôles de Prof Principal de l'Enseignant et on ajoute le nouveau.
-          if (!$hasMinorErros && $AnneeScolaire!=null && $Division!=null) {
+          if (!$hasMinorErrors && $AnneeScolaire!=null && $Division!=null) {
             $this->ProfPrincipalServices->deleteWithFilters(array(self::FIELD_ENSEIGNANT_ID=>$Enseignant->getId()));
 
             $ProfPrincipal = new ProfPrincipal();

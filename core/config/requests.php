@@ -27,11 +27,11 @@ insert="INSERT INTO wp_14_aperd_bilan_matiere (compteRenduId, matiereId, enseign
 update="UPDATE wp_14_aperd_bilan_matiere SET compteRenduId='%s', matiereId='%s', enseignantId='%s', status='%s', observations='%s' "
 
 [Division]
-select="SELECT id, labelDivision "
+select="SELECT id, labelDivision, crKey "
 from="FROM wp_14_aperd_division "
 where="WHERE labelDivision LIKE '%s' "
-insert="INSERT INTO wp_14_aperd_division (labelDivision) VALUES ('%s');"
-update="UPDATE wp_14_aperd_division SET labelDivision='%s' "
+insert="INSERT INTO wp_14_aperd_division (labelDivision, crKey) VALUES ('%s', '%s');"
+update="UPDATE wp_14_aperd_division SET labelDivision='%s', crKey='%s' "
 
 [CompoDivision]
 select="SELECT id, anneeScolaireId, divisionId, matiereId, enseignantId "

@@ -46,6 +46,7 @@ interface ConstantsInterface
   const CST_EDIT             = 'edit';
   const CST_EXPORT           = 'export';
   const CST_FORMCONTROL      = 'form-control';
+  const CST_HIDDEN           = 'hidden';
   const CST_ID               = 'id';
   const CST_IMPORT           = 'import';
   const CST_MD_SELECT        = 'form-control md-select';
