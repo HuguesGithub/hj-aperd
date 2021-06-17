@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 /**
  * Classe Administration
  * @author Hugues
- * @version 1.21.06.10
+ * @version 1.21.06.17
  * @since 1.21.06.04
  */
 class Administration extends LocalDomain
@@ -158,10 +158,10 @@ class Administration extends LocalDomain
    * @param string &$notif
    * @param string &$msg
    * @return boolean
-   * @version 1.21.06.10
+   * @version 1.21.06.17
    * @since 1.21.06.10
    */
-  public function controleImportRow($rowContent, $sep=self::SEP, &$notif, &$msg)
+  public function controleImportRow($rowContent, $sep, &$notif, &$msg)
   {
     list($id, $genre, $nomTitulaire, $labelPoste) = explode($sep, $rowContent);
     $this->setId($id);

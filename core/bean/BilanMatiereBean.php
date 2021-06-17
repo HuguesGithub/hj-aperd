@@ -144,7 +144,7 @@ class BilanMatiereBean extends LocalBean
       self::ATTR_CLASS => self::CST_MD_TEXTAREA.' ajaxUpload',
       self::ATTR_ROWS  => 3,
     );
-    $strContentPanel .= $strTextArea = $this->getBalise(self::TAG_TEXTAREA, $observations, $attributes);
+    $strContentPanel .= $this->getBalise(self::TAG_TEXTAREA, $observations, $attributes);
     $strContentPanel .= '<label class="'.($observations!=''?'active':'').'" for="observation-'.$matiereId.'">Observations</label>';
     $strContentPanel .= '</div>';
 

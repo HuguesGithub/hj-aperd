@@ -137,7 +137,6 @@ function checkStep(index) {
 function addAjaxUploadEvent() {
   $hj('.ajaxUpload').on('change', function(){
     var obj;
-    var node = $hj(this);
     var value = $hj(this).val();
     var name  = $hj(this).attr('name');
     var crKey = $hj('#formCr input[name="crKey"]').val();

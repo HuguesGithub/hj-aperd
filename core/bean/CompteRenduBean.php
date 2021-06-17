@@ -5,8 +5,8 @@ if (!defined('ABSPATH')) {
 /**
  * Classe CompteRenduBean
  * @author Hugues
- * @version 1.00.00
- * @since 1.00.00
+ * @version 1.21.06.17
+ * @since 1.21.06.01
  */
 class CompteRenduBean extends LocalBean
 {
@@ -155,6 +155,10 @@ class CompteRenduBean extends LocalBean
     return $content;
   }
 
+  /**
+   * @version 1.21.06.17
+   * @since 1.21.06.01
+   */
   public function getStep2BilanMatieres()
   {
     $content  = '<div class="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>';
@@ -185,8 +189,6 @@ class CompteRenduBean extends LocalBean
       }
     }
 
-    for ($i=0; $i<10; $i++) {
-    }
     $content .= '</table>';
     $content .= '</div>';
     return $content;

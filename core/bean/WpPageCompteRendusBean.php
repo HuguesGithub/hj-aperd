@@ -5,8 +5,8 @@ if (!defined('ABSPATH')) {
 /**
  * Classe WpPageCompteRendusBean
  * @author Hugues
- * @version 1.00.00
- * @since 1.00.00
+ * @version 1.21.06.17
+ * @since 1.21.06.01
  */
 class WpPageCompteRendusBean extends WpPageBean
 {
@@ -64,8 +64,8 @@ class WpPageCompteRendusBean extends WpPageBean
   }
   /**
    * @return string
-   * @version 1.00.00
-   * @since 1.00.00
+   * @version 1.21.06.17
+   * @since 1.21.06.01
    */
   public function getContent()
   {
@@ -145,12 +145,6 @@ class WpPageCompteRendusBean extends WpPageBean
     $strNewObservationsByMatieres .= '<div class="form-group col-md-9">';
     $strNewObservationsByMatieres .= '  <div class="tab-content" id="v-pills-tabContent">';
     $strNewObservationsByMatieres .= $strPanelMatieres;
-    /*
-    $strNewObservationsByMatieres .= '    <div class="tab-pane fade show active" id="v-pills-home" role="tabpanel" aria-labelledby="v-pills-home-tab">Tab Home</div>';
-    $strNewObservationsByMatieres .= '    <div class="tab-pane fade" id="v-pills-profile" role="tabpanel" aria-labelledby="v-pills-profile-tab">Tab Profile</div>';
-    $strNewObservationsByMatieres .= '    <div class="tab-pane fade" id="v-pills-messages" role="tabpanel" aria-labelledby="v-pills-messages-tab">Tab Messages</div>';
-    $strNewObservationsByMatieres .= '    <div class="tab-pane fade" id="v-pills-settings" role="tabpanel" aria-labelledby="v-pills-settings-tab">Tab Settings</div>';
-    */
     $strNewObservationsByMatieres .= '  </div>';
     $strNewObservationsByMatieres .= '</div>';
     $strNewObservationsByMatieres .= '</div>';

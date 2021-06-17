@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 /**
  * Classe Questionnaire
  * @author Hugues
- * @version 1.21.06.09
+ * @version 1.21.06.17
  * @since 1.21.06.09
  */
 class Questionnaire extends LocalDomain
@@ -120,10 +120,10 @@ class Questionnaire extends LocalDomain
    * @param string &$notif
    * @param string &$msg
    * @return boolean
-   * @version 1.21.06.09
+   * @version 1.21.06.17
    * @since 1.21.06.09
    */
-  public function controleImportRow($rowContent, $sep=self::SEP, &$notif, &$msg)
+  public function controleImportRow($rowContent, $sep, &$notif, &$msg)
   {
     // TODO
     /*

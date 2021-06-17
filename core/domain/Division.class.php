@@ -128,16 +128,16 @@ class Division extends LocalDomain
    * @version 1.21.06.08
    * @since 1.21.06.08
    */
-  public function controleImportRow($rowContent, $sep=self::SEP, &$notif, &$msg)
+  public function controleImportRow($rowContent, $sep, &$notif, &$msg)
   {
     list($id, $labelDivision, $crKey) = explode($sep, $rowContent);
     $this->setId($id);
     $this->setLabelDivision(trim($labelDivision));
-    $crKey = trim(str_replace(self::EOL, '', $crKey));
-    if (empty($crKey)) {
-      $crKey = $this->getUniqueGenKey();
+    $importedCrKey = trim(str_replace(self::EOL, '', $crKey));
+    if (empty($importedCrKey)) {
+      $importedCrKey = $this->getUniqueGenKey();
     }
-    $this->setCrKey($crKey);
+    $this->setCrKey($importedCrKey);
 
     if (!$this->controleDonnees($notif, $msg)) {
       $notif = self::NOTIF_WARNING;
@@ -185,7 +185,7 @@ class Division extends LocalDomain
     }
 
     // Le code crKey doit être unique. S'il est déjà présent, on envoie une alerte et on en génère un nouveau.
-    $Divisions = $this->DivisionServices->getDivisionsWithFilters(array(self::FIELD_CRKEY=>$crKey));
+    $Divisions = $this->DivisionServices->getDivisionsWithFilters(array(self::FIELD_CRKEY=>$this->crKey));
     if (!empty($Divisions)) {
       $notif = self::NOTIF_DANGER;
       $msg   = self::MSG_ERREUR_CONTROL_UNICITE;
@@ -207,12 +207,12 @@ class Division extends LocalDomain
   {
     do {
       // On génère une clef.
-      $crKey = $this->genKey();
+      $genCrKey = $this->genKey();
       // On vérifie son unicité.
-      $Divisions = $this->DivisionServices->getDivisionsWithFilters(array(self::FIELD_CRKEY=>$crKey));
+      $Divisions = $this->DivisionServices->getDivisionsWithFilters(array(self::FIELD_CRKEY=>$genCrKey));
       // Tant qu'elle n'est pas unique, on reprend le processus.
     } while (!empty($Divisions));
-    return $crKey;
+    return $genCrKey;
   }
   /**
    * @return string
@@ -222,12 +222,12 @@ class Division extends LocalDomain
   public function genKey()
   {
     $eligibleChars = 'abcdefghijkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-    $crKey = '';
+    $genCrKey = '';
     for ($i=0; $i<16; $i++) {
       $eligibleChars = str_shuffle($eligibleChars);
-      $crKey .= $eligibleChars[0];
+      $genCrKey .= $eligibleChars[0];
     }
-    return $crKey;
+    return $genCrKey;
   }
 
 }

@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 /**
  * Classe Matiere
  * @author Hugues
- * @version 1.21.06.04
+ * @version 1.21.06.17
  * @since 1.21.06.04
  */
 class Matiere extends LocalDomain
@@ -106,15 +106,15 @@ class Matiere extends LocalDomain
    * @param string &$notif
    * @param string &$msg
    * @return boolean
-   * @version 1.21.06.08
+   * @version 1.21.06.17
    * @since 1.21.06.08
    */
-  public function controleImportRow($rowContent, $sep=self::SEP, &$notif, &$msg)
+  public function controleImportRow($rowContent, $sep, &$notif, &$msg)
   {
-    list($id, $labelMatiere) = explode($sep, $rowContent);
+    list($id, $importedLabelMatiere) = explode($sep, $rowContent);
     $this->setId($id);
-    $labelMatiere = trim(str_replace(self::EOL, '', $labelMatiere));
-    $this->setLabelMatiere($labelMatiere);
+    $importedLabelMatiere = trim(str_replace(self::EOL, '', $importedLabelMatiere));
+    $this->setLabelMatiere($importedLabelMatiere);
 
     if (!$this->controleDonnees($notif, $msg)) {
       return true;

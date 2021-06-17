@@ -188,55 +188,82 @@ class AdminPageBean extends MainPageBean
 
 
 
-
-
+  /**
+   * Intialise les panneaux latéraux à afficher
+   * @param string $action
+   * @version 1.21.06.17
+   * @since 1.21.06.17
+   */
   public function initPanels($action)
   {
     switch ($action) {
-      case 'bulk-export' :
+      case self::CST_DELETE :
+        $this->crudType = self::CST_DELETE;
+        // Définition des attributs de la Card CRUD
+        $this->attributesCardCRUD = array(
+          // Message de confirmation à afficher - 1
+          $this->msgConfirmDelete,
+          // Id de l'objet ou des objets à supprimer - 2
+          $this->LocalObject->getId(),
+          // Url d'annulation de l'opération - 3
+          $this->getQueryArg(array(self::CST_ONGLET=>$this->subMenuValue)),
+        );
+      break;
       case self::CST_CREATION :
-        $this->cardCreationEditionTitre = 'Création';
-        $this->showCardEditionCreation = true;
-        $this->showCardSuppression     = false;
+      case self::CST_EDITION  :
+      case self::CST_EDIT     :
+        $this->crudType = self::CST_EDIT;
+        // Définition des attributs de la Card CRUD
+        $this->attributesCardCRUD = array(
+          // Contenu du Formulaire - 1
+          $this->getRender($this->urlTemplateForm, $this->attributesFormEdit),
+          // Id de l'objet ou des objets à supprimer - 2
+          $this->LocalObject->getId(),
+          // Url d'annulation de l'opération - 3
+          $this->getQueryArg(array(self::CST_ONGLET=>$this->subMenuValue)),
+        );
       break;
-      case 'Création' :
-      case 'Édition' :
-      case self::CST_EDIT :
-        $this->cardCreationEditionTitre = 'Édition';
-        $this->showCardEditionCreation = true;
-        $this->showCardSuppression     = false;
-      break;
-      case 'bulk-trash' :
-        $this->cardCreationEditionTitre = '';
-        $this->showSuppressionSimple    = false;
-        $this->showCardEditionCreation  = false;
-        $this->showCardSuppression      = true;
+      case self::CST_BULK_TRASH :
+        $this->crudType = self::CST_DELETE;
+        // Construction des listings suite à la sélection multiple.
         $arrIds = array();
         $arrLabels = array();
-        foreach($this->urlParams['post'] as $key=> $value) {
-          $Matiere = $this->MatiereServices->selectLocal($value);
-          $arrLabels[] = $Matiere->getLabelMatiere();
+        foreach($this->urlParams[self::CST_POST] as $key=> $value) {
+          $Obj = $this->Services->selectLocal($value);
+          $arrLabels[] = $Obj->getFullName();
           $arrIds[] = $value;
         }
         $this->arrIds                   = $arrIds;
-        $this->ids                      = implode(',', $arrIds);
-        $this->libellesMultiples        = implode(', ', $arrLabels);
+        // Définition des attributs de la Card CRUD
+        $this->attributesCardCRUD = array(
+          // Message de confirmation à afficher - 1
+          sprintf($this->tagConfirmDeleteMultiple, implode(', ', $arrLabels)),
+          // Id de l'objet ou des objets à supprimer - 2
+          implode(',', $arrIds),
+          // Url d'annulation de l'opération - 3
+          $this->getQueryArg(array(self::CST_ONGLET=>$this->subMenuValue)),
+        );
       break;
-      case self::CST_DELETE :
-        $this->ids = $this->Matiere->getId();
-        $this->cardCreationEditionTitre = 'Suppression';
-        $this->showSuppressionSimple    = true;
-        $this->showCardEditionCreation  = false;
-        $this->showCardSuppression      = true;
-      break;
+      case self::CST_BULK_EXPORT :
+        foreach($this->urlParams[self::CST_POST] as $key=> $value) {
+          $arrIds[] = $value;
+        }
+        $this->arrIds                   = $arrIds;
+      case self::CST_CREATE :
       default :
-        $this->cardCreationEditionTitre = 'WIP - '.$action.' -';
-        $this->showCardEditionCreation = true;
-        $this->showCardSuppression     = false;
-
+        $this->crudType = self::CST_CREATE;
+        // Définition des attributs de la Card CRUD
+        $this->attributesCardCRUD = array(
+          // Contenu du Formulaire - 1
+          $this->getRender($this->urlTemplateForm, $this->attributesFormNew),
+          // Url d'annulation de l'opération - 2
+          $this->getQueryArg(array(self::CST_ONGLET=>$this->subMenuValue)),
+        );
       break;
     }
   }
+
+
 
   /**
    * Ajout de l'interface d'Importation

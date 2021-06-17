@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 /**
  * Classe Enseignant
  * @author Hugues
- * @version 1.21.06.04
+ * @version 1.21.06.17
  * @since 1.21.06.04
  */
 class Enseignant extends LocalDomain
@@ -200,7 +200,6 @@ class Enseignant extends LocalDomain
    */
   public function toCsv($sep=self::SEP, $withPP=false)
   {
-    $classVars = $this->getClassVars();
     $arrValues = array();
     $arrValues[] = $this->id;
     $arrValues[] = $this->genre;
@@ -254,10 +253,10 @@ class Enseignant extends LocalDomain
    * @param string &$notif
    * @param string &$msg
    * @return boolean
-   * @version 1.21.06.09
+   * @version 1.21.06.17
    * @since 1.21.06.08
    */
-  public function controleImportRow($rowContent, $sep=self::SEP, &$notif, &$msg)
+  public function controleImportRow($rowContent, $sep, &$notif, &$msg)
   {
     list($id, $genre, $nomEnseignant, $prenomEnseignant, $labelMatiere, $labelDivision, $anneeScolaire) = explode($sep, $rowContent);
     $this->setId($id);

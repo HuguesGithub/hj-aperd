@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 /**
  * AdminPageEnseignantsBean
  * @author Hugues
- * @version 1.21.06.09
+ * @version 1.21.06.17
  * @since 1.21.06.01
  */
 class AdminPageEnseignantsBean extends AdminPageBean
@@ -68,7 +68,7 @@ class AdminPageEnseignantsBean extends AdminPageBean
   /**
    * @param array $urlParams
    * @return string
-   * @version 1.21.06.06
+   * @version 1.21.06.17
    * @since 1.21.06.06
    */
   public function getContentPage()
@@ -79,8 +79,7 @@ class AdminPageEnseignantsBean extends AdminPageBean
     $initPanel = self::CST_CREATE;
 
     // Analyse de l'action éventuelle.
-    if (isset($this->urlParams['filter_action'])) {
-    } elseif (isset($this->urlParams[self::CST_POSTACTION])) {
+    if (!isset($this->urlParams['filter_action']) && isset($this->urlParams[self::CST_POSTACTION])) {
       switch($this->urlParams[self::CST_POSTACTION]) {
         case self::CST_CREATION :
           // Exécution de la création
