@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 /**
  * AdminPageParentDeleguesBean
  * @author Hugues
- * @version 1.21.06.12
+ * @version 1.21.06.17
  * @since 1.21.06.11
  */
 class AdminPageParentDeleguesBean extends AdminPageBean
@@ -27,10 +27,12 @@ class AdminPageParentDeleguesBean extends AdminPageBean
     } else {
       $this->ParentDelegue = new ParentDelegue();
     }
+    $this->LocalObject    = $this->ParentDelegue;
     // On stocke les paramètres
     $this->urlParams = $urlParams;
     // On prépare le stockage pour les ids multiples si existants.
     $this->arrIds = array();
+    $this->subMenuValue = self::PAGE_PARENT_DELEGUE;
     $this->AdulteServices = new AdulteServices();
     $this->DivisionServices = new DivisionServices();
   }
@@ -67,7 +69,7 @@ class AdminPageParentDeleguesBean extends AdminPageBean
   /**
    * @param array $urlParams
    * @return string
-   * @version 1.21.06.11
+   * @version 1.21.06.17
    * @since 1.21.06.11
    */
   public function getContentPage()
@@ -151,98 +153,21 @@ class AdminPageParentDeleguesBean extends AdminPageBean
     }
     ///////////////////////////////////////////:
     // On initialise les panneaux latéraux droit
+    $this->msgConfirmDelete = sprintf(self::MSG_CONFIRM_SUPPR_PARENT_DELEGUE, $this->ParentDelegue->getLabelComplet());
+    $this->attributesFormNew = array('','');
+    $this->tagConfirmDeleteMultiple = self::MSG_CONFIRM_SUPPR_PARENT_DELEGUES;
+    $this->attributesFormEdit  = array(
+      // Choix du Parent - 1
+      $this->ParentDelegue->getAdulte()->getBean()->getSelect(self::FIELD_PARENT_ID, self::CST_DEFAULT_SELECT, $this->ParentDelegue->getParentId()),
+      // Choix de la Division - 2
+      $this->ParentDelegue->getDivision()->getBean()->getSelect(self::FIELD_DIVISION_ID, self::CST_DEFAULT_SELECT, $this->ParentDelegue->getDivisionId()),
+    ) ;
     $this->initPanels($initPanel);
     ///////////////////////////////////////////:
     // On retourne le listing et les panneaux latéraux droit
     return $this->getListingPage();
   }
 
-  /**
-   * Intialise les panneaux latéraux à afficher
-   * @param string $action
-   * @version 1.21.06.11
-   * @since 1.21.06.11
-   */
-  public function initPanels($action)
-  {
-    switch ($action) {
-      case self::CST_DELETE :
-        $this->crudType = self::CST_DELETE;
-        // Définition des attributs de la Card CRUD
-        $this->attributesCardCRUD = array(
-          // Message de confirmation à afficher - 1
-          sprintf(self::MSG_CONFIRM_SUPPR_PARENT_DELEGUE, $this->ParentDelegue->getLabelComplet()),
-          // Id de l'objet ou des objets à supprimer - 2
-          $this->ParentDelegue->getId(),
-          // Url d'annulation de l'opération - 3
-          $this->getQueryArg(array(self::CST_ONGLET=>self::PAGE_PARENT_DELEGUE)),
-        );
-      break;
-      case self::CST_CREATION :
-      case self::CST_EDITION  :
-      case self::CST_EDIT     :
-        $this->crudType = self::CST_EDIT;
-        $attributesForm  = array(
-          // Choix du Parent - 1
-          $this->ParentDelegue->getAdulte()->getBean()->getSelect(self::FIELD_PARENT_ID, self::CST_DEFAULT_SELECT, $this->ParentDelegue->getParentId()),
-          // Choix de la Division - 2
-          $this->ParentDelegue->getDivision()->getBean()->getSelect(self::FIELD_DIVISION_ID, self::CST_DEFAULT_SELECT, $this->ParentDelegue->getDivisionId()),
-        ) ;
-        // Définition des attributs de la Card CRUD
-        $this->attributesCardCRUD = array(
-          // Contenu du Formulaire - 1
-          $this->getRender($this->urlTemplateForm, $attributesForm),
-          // Id de l'objet ou des objets à supprimer - 2
-          $this->ParentDelegue->getId(),
-          // Url d'annulation de l'opération - 3
-          $this->getQueryArg(array(self::CST_ONGLET=>self::PAGE_PARENT_DELEGUE)),
-        );
-      break;
-      case self::CST_BULK_TRASH :
-        $this->crudType = self::CST_DELETE;
-        // Construction des listings suite à la sélection multiple.
-        $arrIds = array();
-        $arrLabels = array();
-        foreach($this->urlParams[self::CST_POST] as $key=> $value) {
-          $ParentDelegue = $this->ParentDelegueServices->selectLocal($value);
-          $arrLabels[] = $ParentDelegue->getLabelComplet();
-          $arrIds[] = $value;
-        }
-        $this->arrIds                   = $arrIds;
-        // Définition des attributs de la Card CRUD
-        $this->attributesCardCRUD = array(
-          // Message de confirmation à afficher - 1
-          sprintf(self::MSG_CONFIRM_SUPPR_PARENT_DELEGUES, implode(', ', $arrLabels)),
-          // Id de l'objet ou des objets à supprimer - 2
-          implode(',', $arrIds),
-          // Url d'annulation de l'opération - 3
-          $this->getQueryArg(array(self::CST_ONGLET=>self::PAGE_PARENT_DELEGUE)),
-        );
-      break;
-      case self::CST_BULK_EXPORT :
-        foreach($this->urlParams[self::CST_POST] as $key=> $value) {
-          $arrIds[] = $value;
-        }
-        $this->arrIds                   = $arrIds;
-      case self::CST_CREATE :
-      default :
-        $this->crudType = self::CST_CREATE;
-        $attributesForm  = array(
-          // Choix du Parent - 1
-          $this->ParentDelegue->getAdulte()->getBean()->getSelect(self::FIELD_PARENT_ID),
-          // Choix de la Division - 2
-          $this->ParentDelegue->getDivision()->getBean()->getSelect(self::FIELD_DIVISION_ID),
-        );
-        // Définition des attributs de la Card CRUD
-        $this->attributesCardCRUD = array(
-          // Contenu du Formulaire - 1
-          $this->getRender($this->urlTemplateForm, $attributesForm),
-          // Url d'annulation de l'opération - 2
-          $this->getQueryArg(array(self::CST_ONGLET=>self::PAGE_PARENT_DELEGUE)),
-        );
-      break;
-    }
-  }
 
   /**
    * Gestion de l'affichage de la page.

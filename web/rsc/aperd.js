@@ -107,36 +107,43 @@ function closeStep(index) {
 
 function checkStep(index) {
   var isValid = true;
-  $hj('.stepper li:nth-child('+(index+1)+') textarea[required=""]').each(function(){
-    if ($hj(this).val()=='') {
-      isValid = false;
-      $hj(this).addClass('is-invalid');
-    } else {
-      $hj(this).removeClass('is-invalid');
+  $hj('.stepper li:nth-child('+(index+1)+') textarea[required=""]').each(
+    function(){
+      if ($hj(this).val()=='') {
+        isValid = false;
+        $hj(this).addClass('is-invalid');
+      } else {
+        $hj(this).removeClass('is-invalid');
+      }
     }
-  });
-  $hj('.stepper li:nth-child('+(index+1)+') input[required=""]').each(function(){
-    if ($hj(this).val()=='') {
-      isValid = false;
-      $hj(this).addClass('is-invalid');
-    } else {
-      $hj(this).removeClass('is-invalid');
+  );
+  $hj('.stepper li:nth-child('+(index+1)+') input[required=""]').each(
+    function(){
+      if ($hj(this).val()=='') {
+        isValid = false;
+        $hj(this).addClass('is-invalid');
+      } else {
+        $hj(this).removeClass('is-invalid');
+      }
     }
-  });
-  $hj('.stepper li:nth-child('+(index+1)+') select[required=""]').each(function(){
-    if ($hj(this).val()=='-1') {
-      isValid = false;
-      $hj(this).addClass('is-invalid');
-    } else {
-      $hj(this).removeClass('is-invalid');
+  );
+  $hj('.stepper li:nth-child('+(index+1)+') select[required=""]').each(
+    function(){
+      if ($hj(this).val()=='-1') {
+        isValid = false;
+        $hj(this).addClass('is-invalid');
+      } else {
+        $hj(this).removeClass('is-invalid');
+      }
     }
-  });
+  );
   return isValid;
 }
 
 function addAjaxUploadEvent() {
   $hj('.ajaxUpload').on('change', function(){
     var obj;
+    var data;
     var value = $hj(this).val();
     var name  = $hj(this).attr('name');
     var crKey = $hj('#formCr input[name="crKey"]').val();
@@ -148,7 +155,7 @@ function addAjaxUploadEvent() {
     var buttonForPanel = '';
     if (name=='observations[]' || name=='status[]' || name=='enseignantIds[]') {
       bilanMatiereId = $hj(this).closest('.tab-pane').data('bilan-matiere-id');
-      var data = {'action': 'dealWithAjax', 'ajaxAction': 'ajaxUpload', 'value': value, 'name': name, 'crKey': crKey, 'bilanMatiereId': bilanMatiereId};
+      data = {'action': 'dealWithAjax', 'ajaxAction': 'ajaxUpload', 'value': value, 'name': name, 'crKey': crKey, 'bilanMatiereId': bilanMatiereId};
       extraTreats = true;
       bilanMatiereTextarea = $hj(this).closest('.tab-pane').find('textarea').val();
       bilanMatiereSelEns = $hj(this).closest('.tab-pane').find('select[name="enseignantIds[]"]').val();
@@ -156,7 +163,7 @@ function addAjaxUploadEvent() {
       var id = $hj(this).closest('.tab-pane').attr('id');
       buttonForPanel = $hj('#'+id+'-tab');
     } else {
-      var data = {'action': 'dealWithAjax', 'ajaxAction': 'ajaxUpload', 'value': value, 'name': name, 'crKey': crKey};
+      data = {'action': 'dealWithAjax', 'ajaxAction': 'ajaxUpload', 'value': value, 'name': name, 'crKey': crKey};
     }
     $hj.post(
       ajaxurl,
@@ -204,7 +211,6 @@ function addAjaxUploadEvent() {
             }
             buttonForPanel.find('.badge-display').removeClass('success danger warning').addClass(newBadge);
           }
-          //console.log(' - Fin');
         } catch (e) {
           console.log("error: "+e);
           console.log(response);

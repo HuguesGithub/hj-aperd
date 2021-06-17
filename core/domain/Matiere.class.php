@@ -160,4 +160,12 @@ class Matiere extends LocalDomain
     return true;
   }
 
+  /**
+   * @return string
+   * @version 1.21.06.17
+   * @since 1.21.06.17
+   */
+  public function getFullName()
+  { return $this->getLabelMatiere(); }
+
 }

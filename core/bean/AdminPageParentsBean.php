@@ -27,10 +27,12 @@ class AdminPageParentsBean extends AdminPageBean
     } else {
       $this->Adulte = new Adulte();
     }
+    $this->LocalObject    = $this->Adulte;
     // On stocke les paramètres
     $this->urlParams = $urlParams;
     // On prépare le stockage pour les ids multiples si existants.
     $this->arrIds = array();
+    $this->subMenuValue = self::PAGE_PARENT;
   }
   /**
    * Retourne le Parent
@@ -151,96 +153,23 @@ class AdminPageParentsBean extends AdminPageBean
     }
     ///////////////////////////////////////////:
     // On initialise les panneaux latéraux droit
+    $this->msgConfirmDelete = sprintf(self::MSG_CONFIRM_SUPPR_PARENT, $this->Adulte->getFullName());
+    $this->attributesFormNew = array('','','','');
+    $this->tagConfirmDeleteMultiple = self::MSG_CONFIRM_SUPPR_PARENTS;
+    $this->attributesFormEdit  = array(
+      // Nom du Parent - 1
+      $this->Adulte->getNomParent(),
+      // Préom du Parent - 2
+      $this->Adulte->getPrenomParent(),
+      // Mail du Parent - 3
+      $this->Adulte->getMailParent(),
+      // Est adhérent ? - 4
+      ($this->Adulte->isAdherent() ? self::CST_BLANK.self::CST_CHECKED : ''),
+    ) ;
     $this->initPanels($initPanel);
     ///////////////////////////////////////////:
     // On retourne le listing et les panneaux latéraux droit
     return $this->getListingPage();
-  }
-
-  /**
-   * Intialise les panneaux latéraux à afficher
-   * @param string $action
-   * @version 1.21.06.10
-   * @since 1.21.06.10
-   */
-  public function initPanels($action)
-  {
-    switch ($action) {
-      case self::CST_DELETE :
-        $this->crudType = self::CST_DELETE;
-        // Définition des attributs de la Card CRUD
-        $this->attributesCardCRUD = array(
-          // Message de confirmation à afficher - 1
-          sprintf(self::MSG_CONFIRM_SUPPR_PARENT, $this->Adulte->getFullName()),
-          // Id de l'objet ou des objets à supprimer - 2
-          $this->Adulte->getId(),
-          // Url d'annulation de l'opération - 3
-          $this->getQueryArg(array(self::CST_ONGLET=>self::PAGE_PARENT)),
-        );
-      break;
-      case self::CST_CREATION :
-      case self::CST_EDITION  :
-      case self::CST_EDIT     :
-        $this->crudType = self::CST_EDIT;
-        $attributesForm  = array(
-          // Nom du Parent - 1
-          $this->Adulte->getNomParent(),
-          // Préom du Parent - 2
-          $this->Adulte->getPrenomParent(),
-          // Mail du Parent - 3
-          $this->Adulte->getMailParent(),
-          // Est adhérent ? - 4
-          ($this->Adulte->isAdherent() ? self::CST_BLANK.self::CST_CHECKED : ''),
-        ) ;
-        // Définition des attributs de la Card CRUD
-        $this->attributesCardCRUD = array(
-          // Contenu du Formulaire - 1
-          $this->getRender($this->urlTemplateForm, $attributesForm),
-          // Id de l'objet ou des objets à supprimer - 2
-          $this->Adulte->getId(),
-          // Url d'annulation de l'opération - 3
-          $this->getQueryArg(array(self::CST_ONGLET=>self::PAGE_PARENT)),
-        );
-      break;
-      case self::CST_BULK_TRASH :
-        $this->crudType = self::CST_DELETE;
-        // Construction des listings suite à la sélection multiple.
-        $arrIds = array();
-        $arrLabels = array();
-        foreach($this->urlParams[self::CST_POST] as $key=> $value) {
-          $Adulte = $this->AdulteServices->selectLocal($value);
-          $arrLabels[] = $Adulte->getFullName();
-          $arrIds[] = $value;
-        }
-        $this->arrIds                   = $arrIds;
-        // Définition des attributs de la Card CRUD
-        $this->attributesCardCRUD = array(
-          // Message de confirmation à afficher - 1
-          sprintf(self::MSG_CONFIRM_SUPPR_PARENTS, implode(', ', $arrLabels)),
-          // Id de l'objet ou des objets à supprimer - 2
-          implode(',', $arrIds),
-          // Url d'annulation de l'opération - 3
-          $this->getQueryArg(array(self::CST_ONGLET=>self::PAGE_PARENT)),
-        );
-      break;
-      case self::CST_BULK_EXPORT :
-        foreach($this->urlParams[self::CST_POST] as $key=> $value) {
-          $arrIds[] = $value;
-        }
-        $this->arrIds                   = $arrIds;
-      case self::CST_CREATE :
-      default :
-        $this->crudType = self::CST_CREATE;
-        $attributesForm  = array('', '', '', '', '');
-        // Définition des attributs de la Card CRUD
-        $this->attributesCardCRUD = array(
-          // Contenu du Formulaire - 1
-          $this->getRender($this->urlTemplateForm, $attributesForm),
-          // Url d'annulation de l'opération - 2
-          $this->getQueryArg(array(self::CST_ONGLET=>self::PAGE_PARENT)),
-        );
-      break;
-    }
   }
 
   /**

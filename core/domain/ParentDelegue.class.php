@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 /**
  * Classe ParentDelegue
  * @author Hugues
- * @version 1.21.06.11
+ * @version 1.21.06.17
  * @since 1.21.06.11
  */
 class ParentDelegue extends LocalDomain
@@ -247,4 +247,12 @@ class ParentDelegue extends LocalDomain
     }
     return true;
   }
+
+  /**
+   * @return string
+   * @version 1.21.06.17
+   * @since 1.21.06.17
+   */
+  public function getFullName()
+  { return $this->getLabelComplet(); }
 }
