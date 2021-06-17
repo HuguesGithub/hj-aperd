@@ -207,7 +207,7 @@ class Division extends LocalDomain
   {
     do {
       $crKey = $this->genKey();
-      $Divisions = $this->DivisionServices->getDivisionsWithFilters(array(self::FIELD_CRKEY=>$crKey);
+      $Divisions = $this->DivisionServices->getDivisionsWithFilters(array(self::FIELD_CRKEY=>$crKey));
     } while (!empty($Divisions));
     return $crKey;
   }

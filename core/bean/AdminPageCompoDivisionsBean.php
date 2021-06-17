@@ -340,7 +340,6 @@ class AdminPageCompoDivisionsBean extends AdminPageBean
         $this->showCardEditionCreation = true;
         $this->showCardSuppression     = false;
       break;
-      case self::CST_CREATION :
       case self::CST_EDITION :
       case self::CST_EDIT :
         $this->cardCreationEditionTitre = self::CST_EDITION;
