@@ -5,11 +5,12 @@ if (!defined('ABSPATH')) {
 /**
  * Classe AdminPageBean
  * @author Hugues
- * @version 1.21.06.10
+ * @version 1.21.06.17
  * @since 1.21.06.01
  */
 class AdminPageBean extends MainPageBean
 {
+  protected $urlFragmentPagination = 'web/pages/admin/fragments/fragment-pagination.php';
   public $Services;
 
   /**
@@ -281,5 +282,72 @@ class AdminPageBean extends MainPageBean
       break;
     }
     return $this->getRender($urlTemplateCard, $attributes);
+  }
+
+  /**
+   * @param boolean $isDisabled
+   * @param int $curPage
+   * @param array $queryArg
+   * @param string $label
+   * @return string
+   * @version 1.21.06.17
+   * @since 1.21.06.17
+   */
+  protected function getPaginationLink($isDisabled, $curpage, $queryArg, $label)
+  {
+    if (!$isDisabled) {
+      $queryArg[self::WP_CURPAGE] = $curpage;
+      $href = $this->getQueryArg($queryArg);
+      $addClass = '';
+    } else {
+      $href = '#';
+      $addClass = self::CST_BLANK.self::CST_DISABLED;
+    }
+    return '<li class="page-item '.$addClass.'"><a class="page-link" href="'.$href.'">'.$label.'</a></li>';
+  }
+  /**
+   * @param array $queryArg
+   * @param int $curPage
+   * @param int $nbPages
+   * @param int $nbElements
+   * @return string
+   * @version 1.21.06.17
+   * @since 1.21.06.01
+   */
+  protected function getPagination($queryArg, $curPage, $nbPages, $nbElements)
+  {
+    ////////////////////////////////////////////////////////////////////////////
+    // Lien vers la première page. Seulement si on n'est ni sur la première, ni sur la deuxième page.
+    $strToFirst = $this->getPaginationLink($curPage>=3, 1, $queryArg, '&laquo;');
+
+    ////////////////////////////////////////////////////////////////////////////
+    // Lien vers la page précédente. Seulement si on n'est pas sur la première.
+    $strToPrevious = $this->getPaginationLink($curPage>=2, $curPage-1, $queryArg, '&lsaquo;');
+
+    ////////////////////////////////////////////////////////////////////////////
+    // Lien vers la page suivante. Seulement si on n'est pas sur la dernière.
+    $strToNext = $this->getPaginationLink($curPage<$nbPages, $curPage+1, $queryArg, '&rsaquo;');
+
+    ////////////////////////////////////////////////////////////////////////////
+    // Lien vers la dernière page. Seulement si on n'est pas sur la dernière, ni l'avant-dernière.
+    $strToLast = $this->getPaginationLink($curPage<$nbPages-1, $nbPages, $queryArg, '&raquo;');
+
+    $args = array(
+      // Nombre d'éléments - 1
+      $nbElements,
+      // Lien vers la première page - 2
+      $strToFirst,
+      // Lien vers la page précédente - 3
+      $strToPrevious,
+      // Page courante - 4
+      $curPage,
+      // Nombre total de pages - 5
+      $nbPages,
+      // Lien vers la page suivante - 6
+      $strToNext,
+      // Lien vers la dernière page - 7
+      $strToLast,
+    );
+    return $this->getRender($this->urlFragmentPagination, $args);
   }
 }

@@ -29,7 +29,7 @@ update="UPDATE wp_14_aperd_bilan_matiere SET compteRenduId='%s', matiereId='%s',
 [Division]
 select="SELECT id, labelDivision, crKey "
 from="FROM wp_14_aperd_division "
-where="WHERE labelDivision LIKE '%s' "
+where="WHERE labelDivision LIKE '%s' AND crKey LIKE '%s' "
 insert="INSERT INTO wp_14_aperd_division (labelDivision, crKey) VALUES ('%s', '%s');"
 update="UPDATE wp_14_aperd_division SET labelDivision='%s', crKey='%s' "
 

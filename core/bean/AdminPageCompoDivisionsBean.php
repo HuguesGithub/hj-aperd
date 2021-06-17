@@ -10,7 +10,6 @@ if (!defined('ABSPATH')) {
  */
 class AdminPageCompoDivisionsBean extends AdminPageBean
 {
-  protected $urlFragmentPagination = 'web/pages/admin/fragments/fragment-pagination.php';
   protected $urlTemplatePageAdmin = 'web/pages/admin/board-compo-divisions.php';
   /**
    * Class Constructor
@@ -252,83 +251,6 @@ class AdminPageCompoDivisionsBean extends AdminPageBean
       '','','','','','','','','','','','','','','','','','',
     );
     return $this->getRender($this->urlTemplatePageAdmin, $attributes);
-  }
-  /**
-   * @param unknown $queryArg
-   * @param unknown $post_status
-   * @param unknown $curPage
-   * @param unknown $nbPages
-   * @param unknown $nbElements
-   * @return string
-   */
-  protected function getPagination($queryArg, $post_status, $curPage, $nbPages, $nbElements)
-  {
-    ////////////////////////////////////////////////////////////////////////////
-    // Lien vers la première page. Seulement si on n'est ni sur la première, ni sur la deuxième page.
-
-    if ($curPage>=3) {
-      $queryArg[self::WP_CURPAGE] = 1;
-      $href = $this->getQueryArg($queryArg);
-      $addClass = '';
-    } else {
-      $href = '#';
-      $addClass = ' disabled';
-    }
-    $strToFirst = '<li class="page-item '.$addClass.'"><a class="page-link" href="'.$href.'">&laquo;</a></li>';
-
-    ////////////////////////////////////////////////////////////////////////////
-    // Lien vers la page précédente. Seulement si on n'est pas sur la première.
-    if ($curPage>=2) {
-      $queryArg[self::WP_CURPAGE] = $curPage-1;
-      $href = $this->getQueryArg($queryArg);
-      $addClass = '';
-    } else {
-      $href = '#';
-      $addClass = ' disabled';
-    }
-    $strToPrevious = '<li class="page-item '.$addClass.'"><a class="page-link" href="'.$href.'">&lsaquo;</a></li>';
-
-    ////////////////////////////////////////////////////////////////////////////
-    // Lien vers la page suivante. Seulement si on n'est pas sur la dernière.
-    if ($curPage<$nbPages) {
-      $queryArg[self::WP_CURPAGE] = $curPage+1;
-      $href = $this->getQueryArg($queryArg);
-      $addClass = '';
-    } else {
-      $href = '#';
-      $addClass = ' disabled';
-    }
-    $strToNext = '<li class="page-item '.$addClass.'"><a class="page-link" href="'.$href.'">&rsaquo;</a></li>';
-
-    ////////////////////////////////////////////////////////////////////////////
-    // Lien vers la dernière page. Seulement si on n'est pas sur la dernière, ni l'avant-dernière.
-    if ($curPage<$nbPages-1) {
-      $queryArg[self::WP_CURPAGE] = $nbPages;
-      $href = $this->getQueryArg($queryArg);
-      $addClass = '';
-    } else {
-      $href = '#';
-      $addClass = ' disabled';
-    }
-    $strToLast = '<li class="page-item '.$addClass.'"><a class="page-link" href="'.$href.'">&raquo;</a></li>';
-
-    $args = array(
-      // Nombre d'éléments - 1
-      $nbElements,
-      // Lien vers la première page - 2
-      $strToFirst,
-      // Lien vers la page précédente - 3
-      $strToPrevious,
-      // Page courante - 4
-      $curPage,
-      // Nombre total de pages - 5
-      $nbPages,
-      // Lien vers la page suivante - 6
-      $strToNext,
-      // Lien vers la dernière page - 7
-      $strToLast,
-    );
-    return $this->getRender($this->urlFragmentPagination, $args);
   }
 
   public function initPanels($action)

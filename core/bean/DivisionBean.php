@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 /**
  * Classe DivisionBean
  * @author Hugues
- * @version 1.21.06.04
+ * @version 1.21.06.17
  * @since 1.21.06.04
  */
 class DivisionBean extends LocalBean
@@ -28,7 +28,7 @@ class DivisionBean extends LocalBean
   /**
    * @parame boolean $checked
    * @return string
-   * @version 1.21.06.04
+   * @version 1.21.06.17
    * @since 1.21.06.04
    */
   public function getRowForAdminPage($checked=false)
@@ -51,6 +51,8 @@ class DivisionBean extends LocalBean
       $urlEdition,
       // Libellé de la Division
       $this->Division->getLabelDivision(),
+      // crKey de la Division
+      $this->Division->getCrKey(),
       // Url de suppression de la Division
       $urlSuppression,
       // Checkée ou non - 5

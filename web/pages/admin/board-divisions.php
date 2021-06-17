@@ -23,6 +23,7 @@
               <tr>
                 <td id="cb" class="manage-column column-cb check-column"><input id="cb-select-all-1" type="checkbox"></td>
                 <th scope="col" id="labelDivision" class="manage-column">Libellé de la Division</th>
+                <th scope="col" id="crKey" class="manage-column">CRKey</th>
                 <th scope="col" id="actionDivision" class="manage-column column-actions">Actions</th>
               </tr>
             </thead>
@@ -31,6 +32,7 @@
               <tr>
                 <td class="manage-column column-cb check-column"><input id="cb-select-all-2" type="checkbox"></td>
                 <th scope="col" class="manage-column">Libellé de la Division</th>
+                <th scope="col" class="manage-column">CRKey</th>
                 <th scope="col" class="manage-column">Actions</th>
               </tr>
             </tfoot>

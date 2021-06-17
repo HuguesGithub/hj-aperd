@@ -42,6 +42,7 @@ interface ConstantsInterface
   const CST_CREATION         = 'Création';
   const CST_DEFAULT_SELECT   = 'Choisir...';
   const CST_DELETE           = 'delete';
+  const CST_DISABLED         = 'disabled';
   const CST_EDITION          = 'Édition';
   const CST_EDIT             = 'edit';
   const CST_EXPORT           = 'export';

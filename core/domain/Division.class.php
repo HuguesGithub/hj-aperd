@@ -185,7 +185,7 @@ class Division extends LocalDomain
     }
 
     // Le code crKey doit être unique. S'il est déjà présent, on envoie une alerte et on en génère un nouveau.
-    $Divisions = $this->DivisionServices->getDivisionsWithFilters(array(self::FIELD_CRKEY=>$crKey);
+    $Divisions = $this->DivisionServices->getDivisionsWithFilters(array(self::FIELD_CRKEY=>$crKey));
     if (!empty($Divisions)) {
       $notif = self::NOTIF_DANGER;
       $msg   = self::MSG_ERREUR_CONTROL_UNICITE;
