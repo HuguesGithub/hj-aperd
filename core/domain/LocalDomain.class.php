@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 /**
  * Classe LocalDomain
  * @author Hugues
- * @version 1.21.06.09
+ * @version 1.21.06.17
  * @since 1.21.06.04
  */
 class LocalDomain extends GlobalDomain implements ConstantsInterface
@@ -133,6 +133,38 @@ class LocalDomain extends GlobalDomain implements ConstantsInterface
         $notif = self::NOTIF_SUCCESS;
         $msg   = self::MSG_SUCCESS_UPDATE;
         return true;
+      }
+    }
+    return false;
+  }
+  /**
+   * @param string $rowContent
+   * @param string $sep
+   * @param string &$notif
+   * @param string &$msg
+   * @return boolean
+   * @version 1.21.06.17
+   * @since 1.21.06.17
+   */
+  public function controleDonneesAndAct($Obj, &$notif, &$msg)
+  {
+    if (!$this->controleDonnees($notif, $msg)) {
+      return true;
+    }
+    $id = $Obj->getId();
+    // Si les contrôles sont okay, on peut insérer ou mettre à jour
+    if ($id=='') {
+      // Si id n'est pas renseigné. C'est une création. Il faut vérifier que le label n'existe pas déjà.
+      $this->Services->insertLocal($Obj);
+    } else {
+      $ObjectInBase = $this->Services->selectLocal($id);
+      if ($ObjectInBase->getId()=='') {
+        // Sinon, si id n'existe pas, c'est une création. Cf au-dessus
+        $this->Services->insertLocal($Obj);
+      } else {
+        // Si id existe, c'est une édition, même contrôle que ci-dessus.
+        $this->setId($id);
+        $this->Services->updateLocal($Obj);
       }
     }
     return false;

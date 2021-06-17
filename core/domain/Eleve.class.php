@@ -215,25 +215,7 @@ class Eleve extends LocalDomain
     $this->setDivisionId(trim($Division->getId()));
     $this->setDelegue(trim(str_replace(self::EOL, '', $delegue)));
 
-    if (!$this->controleDonnees($notif, $msg)) {
-      return true;
-    }
-    // Si les contrôles sont okay, on peut insérer ou mettre à jour
-    if ($id=='') {
-      // Si id n'est pas renseigné. C'est une création. Il faut vérifier que le label n'existe pas déjà.
-      $this->Services->insertLocal($this);
-    } else {
-      $ObjectInBase = $this->Services->selectLocal($id);
-      if ($ObjectInBase->getId()=='') {
-        // Sinon, si id n'existe pas, c'est une création. Cf au-dessus
-        $this->Services->insertLocal($this);
-      } else {
-        // Si id existe, c'est une édition, même contrôle que ci-dessus.
-        $this->setId($id);
-        $this->Services->updateLocal($this);
-      }
-    }
-    return false;
+    return $this->controleDonneesAndAct($this, $notif, $msg);
   }
   /**
    * @param string &$notif
