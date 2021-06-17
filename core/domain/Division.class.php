@@ -206,8 +206,11 @@ class Division extends LocalDomain
   public function getUniqueGenKey()
   {
     do {
+      // On génère une clef.
       $crKey = $this->genKey();
+      // On vérifie son unicité.
       $Divisions = $this->DivisionServices->getDivisionsWithFilters(array(self::FIELD_CRKEY=>$crKey));
+      // Tant qu'elle n'est pas unique, on reprend le processus.
     } while (!empty($Divisions));
     return $crKey;
   }
