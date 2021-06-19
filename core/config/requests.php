@@ -51,6 +51,7 @@ update="UPDATE wp_14_aperd_compte_rendu SET crKey='%s', anneeScolaireId='%s', tr
 select="SELECT id, nomEleve, prenomEleve, divisionId, delegue "
 from="FROM wp_14_aperd_eleve "
 where="WHERE nomEleve LIKE '%s' AND prenomEleve LIKE '%s' AND divisionId LIKE '%s' AND delegue LIKE '%s' "
+whereOr="WHERE (nomEleve LIKE '%s' OR prenomEleve LIKE '%s') AND divisionId LIKE '%s' AND delegue LIKE '%s' "
 insert="INSERT INTO wp_14_aperd_eleve (nomEleve, prenomEleve, divisionId, delegue) VALUES ('%s', '%s', '%s', '%s');"
 update="UPDATE wp_14_aperd_eleve SET nomEleve='%s', prenomEleve='%s', divisionId='%s', delegue='%s' "
 

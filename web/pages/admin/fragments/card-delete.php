@@ -6,10 +6,10 @@
           </div>
           <div class="card-footer">
             <div class="btn-group btn-group-toggle">
-              <input type="submit" name="submit" value="Oui" class="btn btn-danger btn-sm"/>
+              <input type="submit" name="submit" value="Oui" class="btn btn-danger btn-lg"/>
               <input type="hidden" name="id" value="%2$s"/>
               <input type="hidden" name="postAction" value="Suppression"/>
-              <a href="%3$s" class="btn btn-outline-dark btn-sm">Non</a>
+              <a href="%3$s" class="btn btn-outline-dark btn-lg">Non</a>
             </div>
           </div>
         </form>

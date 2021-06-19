@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 /**
  * AnneeScolaireActions
  * @author Hugues
- * @version 1.21.06.12
+ * @version 1.21.06.18
  * @since 1.21.06.10
  */
 class AnneeScolaireActions extends LocalActions
@@ -63,7 +63,7 @@ class AnneeScolaireActions extends LocalActions
   /**
    * @param array $arrIds
    * @return string
-   * @version 1.21.06.10
+   * @version 1.21.06.18
    * @since 1.21.06.10
    */
   public function importAnneeScolaire(&$params)
@@ -87,6 +87,14 @@ class AnneeScolaireActions extends LocalActions
     }
     $params['notif'] = $notif;
     $params['msg']   = $msg;
+
+    $strRows = '';
+    $AnneeScolaires = $this->AnneeScolaireServices->getAnneeScolairesWithFilters();
+    foreach ($AnneeScolaires as $AnneeScolaire) {
+      $Bean = $AnneeScolaire->getBean();
+      $strRows .= $Bean->getRowForAdminPage(in_array($AnneeScolaire->getId(), $this->arrIds));
+    }
+    return $strRows;
   }
 
 }

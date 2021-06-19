@@ -6,9 +6,9 @@
           </div>
           <div class="card-footer">
             <div class="btn-group btn-group-toggle">
-              <input type="submit" name="postAction" value="Édition" class="btn btn-primary btn-sm"/>
+              <input type="submit" name="postAction" value="Édition" class="btn btn-primary btn-lg"/>
               <input type="hidden" name="id" value="%2$s"/>
-              <a href="%3$s" class="btn btn-outline-dark btn-sm">Annuler</a>
+              <a href="%3$s" class="btn btn-outline-dark btn-lg">Annuler</a>
             </div>
           </div>
         </form>

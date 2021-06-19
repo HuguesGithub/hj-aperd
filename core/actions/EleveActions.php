@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 /**
  * EleveActions
  * @author Hugues
- * @version 1.21.06.12
+ * @version 1.21.06.18
  * @since 1.21.06.11
  */
 class EleveActions extends LocalActions
@@ -63,7 +63,7 @@ class EleveActions extends LocalActions
   /**
    * @param array $arrIds
    * @return string
-   * @version 1.21.06.11
+   * @version 1.21.06.18
    * @since 1.21.06.11
    */
   public function importEleve(&$params)
@@ -87,6 +87,14 @@ class EleveActions extends LocalActions
     }
     $params['notif'] = $notif;
     $params['msg']   = $msg;
+
+    $strRows = '';
+    $Eleves = $this->EleveServices->getElevesWithFilters();
+    foreach ($Eleves as $Eleve) {
+      $Bean = $Eleve->getBean();
+      $strRows .= $Bean->getRowForAdminPage(in_array($Eleve->getId(), $this->arrIds));
+    }
+    return $strRows;
   }
 
 }

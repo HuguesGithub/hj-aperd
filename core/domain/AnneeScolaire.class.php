@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 /**
  * Classe AnneeScolaire
  * @author Hugues
- * @version 1.21.06.17
+ * @version 1.21.06.19
  * @since 1.21.06.04
  */
 class AnneeScolaire extends LocalDomain
@@ -101,6 +101,13 @@ class AnneeScolaire extends LocalDomain
   public function toCsv($sep=self::SEP)
   { return implode($sep, array($this->id, $this->anneeScolaire)); }
   /**
+   * @return string
+   * @version 1.21.06.19
+   * @since 1.21.06.19
+   */
+  public function toArrayForm($isNew=true)
+  { return ($isNew ? array('') : array($this->getAnneeScolaire())); }
+  /**
    * @param string $rowContent
    * @param string $sep
    * @param string &$notif
@@ -120,8 +127,8 @@ class AnneeScolaire extends LocalDomain
   /**
    * @param string &$notif
    * @param string &$msg
-   * @version 1.21.06.10
-   * @since 1.21.06.10
+   * @version 1.21.06.19
+   * @since 1.21.06.19
    */
   public function controleDonnees(&$notif, &$msg)
   {
@@ -131,6 +138,14 @@ class AnneeScolaire extends LocalDomain
       $msg   = self::MSG_ERREUR_CONTROL_EXISTENCE;
       return false;
     }
+    // L'Année Scolaire doit être unique.
+    $AnneeScolaires = $this->AnneeScolaireServices->getAnneeScolairesWithFilters(array(self::FIELD_ANNEESCOLAIRE=>$this->anneeScolaire));
+    if (!empty($AnneeScolaires)) {
+      $notif = self::NOTIF_DANGER;
+      $msg   = self::MSG_ERREUR_CONTROL_UNICITE;
+      return false;
+    }
+
     return true;
   }
 

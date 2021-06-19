@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 /**
  * AdminPageAnneeScolairesBean
  * @author Hugues
- * @version 1.21.06.10
+ * @version 1.21.06.19
  * @since 1.21.06.10
  */
 class AdminPageAnneeScolairesBean extends AdminPageBean
@@ -67,7 +67,7 @@ class AdminPageAnneeScolairesBean extends AdminPageBean
   /**
    * @param array $urlParams
    * @return string
-   * @version 1.21.06.10
+   * @version 1.21.06.19
    * @since 1.21.06.10
    */
   public function getContentPage()
@@ -148,13 +148,9 @@ class AdminPageAnneeScolairesBean extends AdminPageBean
     ///////////////////////////////////////////:
     // On initialise les panneaux latéraux droit
     $this->msgConfirmDelete = sprintf(self::MSG_CONFIRM_SUPPR_ANNEESCOLAIRE, $this->AnneeScolaire->getAnneeScolaire());
-    $this->attributesFormNew = array('');
     $this->tagConfirmDeleteMultiple = self::MSG_CONFIRM_SUPPR_ANNEESCOLAIRES;
-    $this->attributesFormEdit  = array(
-      // Libellé de l'Année Scolaire - 1
-      $this->AnneeScolaire->getAnneeScolaire(),
-    ) ;
-
+    $this->attributesFormNew = $this->LocalObject->toArrayForm();
+    $this->attributesFormEdit  = $this->LocalObject->toArrayForm(false);
     $this->initPanels($initPanel);
     ///////////////////////////////////////////:
     // On retourne le listing et les panneaux latéraux droit

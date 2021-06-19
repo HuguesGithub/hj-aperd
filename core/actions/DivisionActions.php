@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 /**
  * DivisionActions
  * @author Hugues
- * @version 1.21.06.12
+ * @version 1.21.06.18
  * @since 1.21.06.08
  */
 class DivisionActions extends LocalActions
@@ -63,7 +63,7 @@ class DivisionActions extends LocalActions
   /**
    * @param array $arrIds
    * @return string
-   * @version 1.21.06.08
+   * @version 1.21.06.18
    * @since 1.21.06.08
    */
   public function importDivision(&$params)
@@ -87,6 +87,14 @@ class DivisionActions extends LocalActions
     }
     $params['notif'] = $notif;
     $params['msg']   = $msg;
+
+    $strRows = '';
+    $Divisions = $this->DivisionServices->getDivisionsWithFilters();
+    foreach ($Divisions as $Division) {
+      $Bean = $Division->getBean();
+      $strRows .= $Bean->getRowForAdminPage(in_array($Division->getId(), $this->arrIds));
+    }
+    return $strRows;
   }
 
 }

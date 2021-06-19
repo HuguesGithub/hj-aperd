@@ -151,18 +151,10 @@ class AdminPageAdministrationsBean extends AdminPageBean
     }
     ///////////////////////////////////////////
     // On initialise les panneaux latéraux droit
-    $this->msgConfirmDelete = sprintf(self::MSG_CONFIRM_SUPPR_ADMINISTRATION, $this->Administration->getFullName());
-    $this->attributesFormNew = array('','','');
+    $this->msgConfirmDelete = sprintf(self::MSG_CONFIRM_SUPPR_ADMINISTRATION, $this->LocalObject->getFullName());
     $this->tagConfirmDeleteMultiple = self::MSG_CONFIRM_SUPPR_ADMINISTRATIONS;
-    $this->attributesFormEdit  = array(
-      // Genre de l'Administratif - 1
-      $this->Administration->getGenre(),
-      // Nom du Titulaire - 2
-      $this->Administration->getNomTitulaire(),
-      // Libellé du Poste - 3
-      $this->Administration->getLabelPoste(),
-    ) ;
-
+    $this->attributesFormNew = $this->LocalObject->toArrayForm();
+    $this->attributesFormEdit  = $this->LocalObject->toArrayForm(false);
     $this->initPanels($initPanel);
     ///////////////////////////////////////////
     // On retourne le listing et les panneaux latéraux droit

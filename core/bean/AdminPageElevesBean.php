@@ -79,10 +79,7 @@ class AdminPageElevesBean extends AdminPageBean
 
     ///////////////////////////////////////////
     // Analyse de l'action éventuelle.
-    if (isset($this->urlParams['filter_action'])) {
-      echo "On filtre";
-      // On ne fait que filtrer, il n'y a pas d'actions associées.
-    } elseif (isset($this->urlParams[self::CST_POSTACTION])) {
+    if (!isset($this->urlParams['filter_action']) && isset($this->urlParams[self::CST_POSTACTION])) {
       switch ($this->urlParams[self::CST_POSTACTION]) {
         case self::CST_CREATION :
           // Exécution de la création
@@ -261,6 +258,9 @@ class AdminPageElevesBean extends AdminPageBean
     $argFilters = array();
     $filterDivisionId = (isset($this->urlParams[self::FIELD_DIVISION_ID]) ? $this->urlParams[self::FIELD_DIVISION_ID] : '');
     $argFilters[self::FIELD_DIVISION_ID] = $filterDivisionId;
+    $searchTerm = (isset($this->urlParams['searchTerm']) ? $this->urlParams['searchTerm'] : '');
+    $argFilters[self::FIELD_NOMELEVE] = $searchTerm;
+    $argFilters[self::FIELD_PRENOMELEVE] = $searchTerm;
     // Fin gestion des filtres
 
     //////////////////////////////////////////////////////////////////
@@ -269,7 +269,11 @@ class AdminPageElevesBean extends AdminPageBean
     $nbPerPage = 10;
     $orderby = $this->initVar(self::WP_ORDERBY, self::FIELD_NOMELEVE);
     $order = $this->initVar(self::WP_ORDER, self::ORDER_ASC);
-    $Eleves = $this->EleveServices->getElevesWithFilters($argFilters, $orderby, $order);
+    if ($searchTerm!='') {
+      $Eleves = $this->EleveServices->getElevesWithFilteredSearch($argFilters, $orderby, $order);
+    } else {
+      $Eleves = $this->EleveServices->getElevesWithFilters($argFilters, $orderby, $order);
+    }
     $nbElements = count($Eleves);
     $nbPages = ceil($nbElements/$nbPerPage);
     $curPage = $this->initVar(self::WP_CURPAGE, 1);
@@ -300,7 +304,7 @@ class AdminPageElevesBean extends AdminPageBean
     // Construction des filtres utilisés
     $strFiltres = '';
     $DivisionBean = new DivisionBean();
-    $strFiltres .= $DivisionBean->getSelect(self::FIELD_DIVISION_ID, 'Toutes les divisions', $filterDivisionId);
+    $strFiltres .= $DivisionBean->getSelect(self::FIELD_DIVISION_ID, self::CST_DEFAULT_SELECT, $filterDivisionId);
     //////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////

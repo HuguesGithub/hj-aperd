@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 /**
  * ParentDelegueActions
  * @author Hugues
- * @version 1.21.06.12
+ * @version 1.21.06.18
  * @since 1.21.06.12
  */
 class ParentDelegueActions extends LocalActions
@@ -63,7 +63,7 @@ class ParentDelegueActions extends LocalActions
   /**
    * @param array $arrIds
    * @return string
-   * @version 1.21.06.12
+   * @version 1.21.06.18
    * @since 1.21.06.12
    */
   public function importParentDelegue(&$params)
@@ -87,6 +87,14 @@ class ParentDelegueActions extends LocalActions
     }
     $params['notif'] = $notif;
     $params['msg']   = $msg;
+
+    $strRows = '';
+    $ParentDelegues = $this->ParentDelegueServices->getParentDeleguesWithFilters();
+    foreach ($ParentDelegues as $ParentDeleguee) {
+      $Bean = $ParentDelegue->getBean();
+      $strRows .= $Bean->getRowForAdminPage(in_array($ParentDelegue->getId(), $this->arrIds));
+    }
+    return $strRows;
   }
 
 }

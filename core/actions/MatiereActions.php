@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 /**
  * MatiereActions
  * @author Hugues
- * @version 1.21.06.012
+ * @version 1.21.06.18
  * @since 1.21.06.08
  */
 class MatiereActions extends LocalActions
@@ -63,7 +63,7 @@ class MatiereActions extends LocalActions
   /**
    * @param array $arrIds
    * @return string
-   * @version 1.21.06.08
+   * @version 1.21.06.18
    * @since 1.21.06.08
    */
   public function importMatiere(&$params)
@@ -87,6 +87,14 @@ class MatiereActions extends LocalActions
     }
     $params['notif'] = $notif;
     $params['msg']   = $msg;
+
+    $strRows = '';
+    $Matieres = $this->MatiereServices->getMatieresWithFilters();
+    foreach ($Matieres as $Matiere) {
+      $Bean = $Matiere->getBean();
+      $strRows .= $Bean->getRowForAdminPage(in_array($Matiere->getId(), $this->arrIds));
+    }
+    return $strRows;
   }
 
 }

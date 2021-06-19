@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 /**
  * ImportActions
  * @author Hugues
- * @version 1.21.06.17
+ * @version 1.21.06.18
  * @since 1.21.06.01
  */
 class ImportActions extends LocalActions
@@ -30,7 +30,7 @@ class ImportActions extends LocalActions
    * @param string $importType
    * @param string &$notif
    * @param string &$msg
-   * @version 1.21.06.17
+   * @version 1.21.06.18
    * @since 1.21.06.01
    */
   public static function dealWithStaticImport($importType, &$notif, &$msg)
@@ -38,39 +38,46 @@ class ImportActions extends LocalActions
     $Act = new ImportActions();
     switch ($importType) {
       case self::PAGE_ADMINISTRATION :
-        AdministrationActions::dealWithStatic(self::CST_IMPORT, $params);
+        $theList = AdministrationActions::dealWithStatic(self::CST_IMPORT, $params);
         $notif = $params['notif'];
         $msg   = $params['msg'];
+        return '{"the-list": '.json_encode($theList).',"alertBlock": '.json_encode('<div class="alert alert-'.$notif.' alert-dismissible fade show" role="alert">'.$msg.'<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button></div>').'}';
       break;
       case self::PAGE_ANNEE_SCOLAIRE :
-        AnneeScolaireActions::dealWithStatic(self::CST_IMPORT, $params);
+        $theList = AnneeScolaireActions::dealWithStatic(self::CST_IMPORT, $params);
         $notif = $params['notif'];
         $msg   = $params['msg'];
+        return '{"the-list": '.json_encode($theList).',"alertBlock": '.json_encode('<div class="alert alert-'.$notif.' alert-dismissible fade show" role="alert">'.$msg.'<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button></div>').'}';
       break;
       case self::PAGE_DIVISION :
-        DivisionActions::dealWithStatic(self::CST_IMPORT, $params);
+        $theList = DivisionActions::dealWithStatic(self::CST_IMPORT, $params);
         $notif = $params['notif'];
         $msg   = $params['msg'];
+        return '{"the-list": '.json_encode($theList).',"alertBlock": '.json_encode('<div class="alert alert-'.$notif.' alert-dismissible fade show" role="alert">'.$msg.'<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button></div>').'}';
       break;
       case self::PAGE_ELEVE :
-        EleveActions::dealWithStatic(self::CST_IMPORT, $params);
+        $theList = EleveActions::dealWithStatic(self::CST_IMPORT, $params);
         $notif = $params['notif'];
         $msg   = $params['msg'];
+        return '{"the-list": '.json_encode($theList).',"alertBlock": '.json_encode('<div class="alert alert-'.$notif.' alert-dismissible fade show" role="alert">'.$msg.'<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button></div>').'}';
       break;
       case self::PAGE_MATIERE :
-        MatiereActions::dealWithStatic(self::CST_IMPORT, $params);
+        $theList = MatiereActions::dealWithStatic(self::CST_IMPORT, $params);
         $notif = $params['notif'];
         $msg   = $params['msg'];
+        return '{"the-list": '.json_encode($theList).',"alertBlock": '.json_encode('<div class="alert alert-'.$notif.' alert-dismissible fade show" role="alert">'.$msg.'<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button></div>').'}';
       break;
       case self::PAGE_PARENT :
-        AdulteActions::dealWithStatic(self::CST_IMPORT, $params);
+        $theList = AdulteActions::dealWithStatic(self::CST_IMPORT, $params);
         $notif = $params['notif'];
         $msg   = $params['msg'];
+        return '{"the-list": '.json_encode($theList).',"alertBlock": '.json_encode('<div class="alert alert-'.$notif.' alert-dismissible fade show" role="alert">'.$msg.'<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button></div>').'}';
       break;
       case self::PAGE_PARENT_DELEGUE :
-        ParentDelegueActions::dealWithStatic(self::CST_IMPORT, $params);
+        $theList = ParentDelegueActions::dealWithStatic(self::CST_IMPORT, $params);
         $notif = $params['notif'];
         $msg   = $params['msg'];
+        return '{"the-list": '.json_encode($theList).',"alertBlock": '.json_encode('<div class="alert alert-'.$notif.' alert-dismissible fade show" role="alert">'.$msg.'<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button></div>').'}';
       break;
 
 

@@ -153,6 +153,13 @@ class Administration extends LocalDomain
   public function toCsv($sep=self::SEP)
   { return implode($sep, array($this->id, $this->genre, $this->nomTitulaire, $this->labelPoste)); }
   /**
+   * @return string
+   * @version 1.21.06.17
+   * @since 1.21.06.17
+   */
+  public function toArrayForm($isNew=true)
+  { return ($isNew ? array('','','') : array($this->genre, $this->nomTitulaire, $this->labelPoste)); }
+  /**
    * @param string $rowContent
    * @param string $sep
    * @param string &$notif
@@ -184,6 +191,16 @@ class Administration extends LocalDomain
       $notif = self::NOTIF_DANGER;
       $msg   = self::MSG_ERREUR_CONTROL_EXISTENCE;
       return false;
+    }
+    // Le nom du Titulaire doit être unique
+    $Administrations = $this->AdministrationServices->getAdministrationsWithFilters(array(self::FIELD_NOMTITULAIRE=>$this->nomTitulaire));
+    if (!empty($Administrations)) {
+      $Administration = array_shift($Administrations);
+      if ($Administration->getId()!=$this->id) {
+        $notif = self::NOTIF_DANGER;
+        $msg   = self::MSG_ERREUR_CONTROL_UNICITE;
+        return false;
+      }
     }
     // Le libellé du Poste doit être renseigné
     if (empty($this->labelPoste)) {

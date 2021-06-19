@@ -4,18 +4,20 @@
 
   <div class="row">
     <div class="col-8">
-      <div class="card-body">
-        <form action="#" method="post" id="post-filters">
-          <div class="tablenav top mb-3">
-            <div class="actions">
-              <select name="action" id="bulk-action-selector-top" class="form-control md-select form-control-sm">
-                <option value="-1">Actions groupées</option>
-                <option value="trash">Supprimer</option>
-                <option value="export">Exporter</option>
-              </select>
-              <input type="hidden" name="postAction" value="Bulk" class="btn btn-info"/>
-              <input type="submit" name="submit" class="btn btn-primary btn-sm" value="Appliquer">
-            </div>
+      <div class="card-body" style="padding-top: 20px;">
+        <form action="#" method="post" id="post-filters" class="md-form">
+          <div class="row">
+              <div class="card bg-light col-md" style="margin: 0 15px 10px;">
+                <div class="card-body">
+                  <select name="action" id="bulk-action-selector-top" class="form-control md-select form-control-lg" style="display: inline-block;">
+                    <option value="-1">Actions groupées</option>
+                    <option value="trash">Supprimer</option>
+                    <option value="export">Exporter</option>
+                  </select>
+                  <input type="hidden" name="postAction" value="Bulk"/>
+                  <input type="submit" name="submit" class="btn btn-primary btn-lg" value="Appliquer">
+                </div>
+              </div>
           </div>
 
           <table class="table table-striped table-bordered table-hover table-sm" aria-describedby="Liste des Administratifs">
@@ -44,7 +46,7 @@
     </div>
 
     <div class="col-4">
-      <div>%2$s</div>
+      <div id="alertBlock" style="margin-top: 20px; max-width: 520px;">%2$s</div>
       %3$s
       %4$s
     </div>

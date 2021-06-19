@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 /**
  * AdulteActions
  * @author Hugues
- * @version 1.21.06.12
+ * @version 1.21.06.18
  * @since 1.21.06.11
  */
 class AdulteActions extends LocalActions
@@ -63,7 +63,7 @@ class AdulteActions extends LocalActions
   /**
    * @param array $arrIds
    * @return string
-   * @version 1.21.06.11
+   * @version 1.21.06.18
    * @since 1.21.06.11
    */
   public function importAdulte(&$params)
@@ -87,6 +87,14 @@ class AdulteActions extends LocalActions
     }
     $params['notif'] = $notif;
     $params['msg']   = $msg;
+
+    $strRows = '';
+    $Adultes = $this->AdulteServices->getAdultesWithFilters();
+    foreach ($Adultes as $Adulte) {
+      $Bean = $Adulte->getBean();
+      $strRows .= $Bean->getRowForAdminPage(in_array($Adulte->getId(), $this->arrIds));
+    }
+    return $strRows;
   }
 
 }

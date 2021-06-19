@@ -47,4 +47,13 @@ class EleveDaoImpl extends LocalDaoImpl
     $request = $this->delete.$this->fromRequest.'WHERE id IN ('.$ins.');';
     MySQL::wpdbQuery($request);
   }
+  /**
+   * @version 1.21.06.19
+   * @since 1.21.06.19
+   */
+  public function getElevesWithFilteredSearch($file, $line, $arrParams)
+  {
+    $request = $this->selectRequest.$this->fromRequest.$this->arrConfigs['whereOr'];
+    return $this->convertToArray($this->selectEntriesAndLogQuery($file, $line, $request, $arrParams));
+  }
 }

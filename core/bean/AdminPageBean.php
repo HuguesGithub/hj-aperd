@@ -345,19 +345,19 @@ class AdminPageBean extends MainPageBean
   {
     ////////////////////////////////////////////////////////////////////////////
     // Lien vers la première page. Seulement si on n'est ni sur la première, ni sur la deuxième page.
-    $strToFirst = $this->getPaginationLink($curPage>=3, 1, $queryArg, '&laquo;');
+    $strToFirst = $this->getPaginationLink($curPage<3, 1, $queryArg, '&laquo;');
 
     ////////////////////////////////////////////////////////////////////////////
     // Lien vers la page précédente. Seulement si on n'est pas sur la première.
-    $strToPrevious = $this->getPaginationLink($curPage>=2, $curPage-1, $queryArg, '&lsaquo;');
+    $strToPrevious = $this->getPaginationLink($curPage<2, $curPage-1, $queryArg, '&lsaquo;');
 
     ////////////////////////////////////////////////////////////////////////////
     // Lien vers la page suivante. Seulement si on n'est pas sur la dernière.
-    $strToNext = $this->getPaginationLink($curPage<$nbPages, $curPage+1, $queryArg, '&rsaquo;');
+    $strToNext = $this->getPaginationLink($curPage>=$nbPages, $curPage+1, $queryArg, '&rsaquo;');
 
     ////////////////////////////////////////////////////////////////////////////
     // Lien vers la dernière page. Seulement si on n'est pas sur la dernière, ni l'avant-dernière.
-    $strToLast = $this->getPaginationLink($curPage<$nbPages-1, $nbPages, $queryArg, '&raquo;');
+    $strToLast = $this->getPaginationLink($curPage>=$nbPages-1, $nbPages, $queryArg, '&raquo;');
 
     $args = array(
       // Nombre d'éléments - 1

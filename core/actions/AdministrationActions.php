@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 /**
  * AdministrationActions
  * @author Hugues
- * @version 1.21.06.12
+ * @version 1.21.06.18
  * @since 1.21.06.10
  */
 class AdministrationActions extends LocalActions
@@ -64,16 +64,16 @@ class AdministrationActions extends LocalActions
   /**
    * @param array $arrIds
    * @return string
-   * @version 1.21.06.10
+   * @version 1.21.06.18
    * @since 1.21.06.10
    */
   public function importAdministration(&$params)
   {
-    $fileContent = $this->importFile(self::PAGE_ADMINISTRATION);
-    $arrContent  = explode(self::EOL, $fileContent);
-    $rowContent  = array_shift($arrContent);
-    $Administration     = new Administration();
-    $hasErrors   = $Administration->controleEntete($rowContent, $notif, $msg);
+    $fileContent    = $this->importFile(self::PAGE_ADMINISTRATION);
+    $arrContent     = explode(self::EOL, $fileContent);
+    $rowContent     = array_shift($arrContent);
+    $Administration = new Administration();
+    $hasErrors      = $Administration->controleEntete($rowContent, $notif, $msg);
 
     if (!$hasErrors) {
       while (!empty($arrContent) && !$hasErrors) {
@@ -88,6 +88,14 @@ class AdministrationActions extends LocalActions
     }
     $params['notif'] = $notif;
     $params['msg']   = $msg;
+
+    $strRows = '';
+    $Administrations = $this->AdministrationServices->getAdministrationsWithFilters();
+    foreach ($Administrations as $Administration) {
+      $Bean = $Administration->getBean();
+      $strRows .= $Bean->getRowForAdminPage(in_array($Administration->getId(), $this->arrIds));
+    }
+    return $strRows;
   }
 
 }
