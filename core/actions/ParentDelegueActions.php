@@ -90,7 +90,7 @@ class ParentDelegueActions extends LocalActions
 
     $strRows = '';
     $ParentDelegues = $this->ParentDelegueServices->getParentDeleguesWithFilters();
-    foreach ($ParentDelegues as $ParentDeleguee) {
+    foreach ($ParentDelegues as $ParentDelegue) {
       $Bean = $ParentDelegue->getBean();
       $strRows .= $Bean->getRowForAdminPage(in_array($ParentDelegue->getId(), $this->arrIds));
     }

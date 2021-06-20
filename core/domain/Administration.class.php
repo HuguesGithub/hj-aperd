@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 /**
  * Classe Administration
  * @author Hugues
- * @version 1.21.06.17
+ * @version 1.21.06.19
  * @since 1.21.06.04
  */
 class Administration extends LocalDomain
@@ -181,34 +181,37 @@ class Administration extends LocalDomain
   /**
    * @param string &$notif
    * @param string &$msg
-   * @version 1.21.06.10
+   * @version 1.21.06.19
    * @since 1.21.06.10
    */
   public function controleDonnees(&$notif, &$msg)
   {
+    $returned = true;
     // Le nom du Titulaire doit être renseigné
     if (empty($this->nomTitulaire)) {
       $notif = self::NOTIF_DANGER;
       $msg   = self::MSG_ERREUR_CONTROL_EXISTENCE;
-      return false;
+      $returned = false;
     }
-    // Le nom du Titulaire doit être unique
-    $Administrations = $this->AdministrationServices->getAdministrationsWithFilters(array(self::FIELD_NOMTITULAIRE=>$this->nomTitulaire));
-    if (!empty($Administrations)) {
-      $Administration = array_shift($Administrations);
-      if ($Administration->getId()!=$this->id) {
-        $notif = self::NOTIF_DANGER;
-        $msg   = self::MSG_ERREUR_CONTROL_UNICITE;
-        return false;
+    if ($returned) {
+      // Le nom du Titulaire doit être unique
+      $Administrations = $this->AdministrationServices->getAdministrationsWithFilters(array(self::FIELD_NOMTITULAIRE=>$this->nomTitulaire));
+      if (!empty($Administrations)) {
+        $Administration = array_shift($Administrations);
+        if ($Administration->getId()!=$this->id) {
+          $notif = self::NOTIF_DANGER;
+          $msg   = self::MSG_ERREUR_CONTROL_UNICITE;
+          $returned = false;
+        }
       }
     }
     // Le libellé du Poste doit être renseigné
-    if (empty($this->labelPoste)) {
+    if ($returned && empty($this->labelPoste)) {
       $notif = self::NOTIF_DANGER;
       $msg   = self::MSG_ERREUR_CONTROL_EXISTENCE;
-      return false;
+      $returned = false;
     }
-    return true;
+    return $returned;
   }
 
 }

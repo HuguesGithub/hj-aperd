@@ -154,18 +154,28 @@ class AdminPageParentDeleguesBean extends AdminPageBean
     ///////////////////////////////////////////:
     // On initialise les panneaux latéraux droit
     $this->msgConfirmDelete = sprintf(self::MSG_CONFIRM_SUPPR_PARENT_DELEGUE, $this->ParentDelegue->getLabelComplet());
+    $argSelect = array(
+      'tag'        => self::FIELD_DIVISION_ID,
+      self::ATTR_REQUIRED => '',
+    );
+    $DivisionBean = new DivisionBean();
     $this->attributesFormNew = array(
       // Choix du Parent - 1
       $this->ParentDelegue->getAdulte()->getBean()->getSelect(self::FIELD_PARENT_ID, self::CST_DEFAULT_SELECT, $this->ParentDelegue->getParentId(), true),
       // Choix de la Division - 2
-      $this->ParentDelegue->getDivision()->getBean()->getSelect(self::FIELD_DIVISION_ID, self::CST_DEFAULT_SELECT, $this->ParentDelegue->getDivisionId(), true),
+      $DivisionBean->getSelect($argSelect),
     );
     $this->tagConfirmDeleteMultiple = self::MSG_CONFIRM_SUPPR_PARENT_DELEGUES;
+    $argSelect = array(
+      'tag'        => self::FIELD_DIVISION_ID,
+      'selectedId' => $this->ParentDelegue->getDivisionId(),
+      self::ATTR_REQUIRED => '',
+    );
     $this->attributesFormEdit  = array(
       // Choix du Parent - 1
       $this->ParentDelegue->getAdulte()->getBean()->getSelect(self::FIELD_PARENT_ID, self::CST_DEFAULT_SELECT, $this->ParentDelegue->getParentId(), true),
       // Choix de la Division - 2
-      $this->ParentDelegue->getDivision()->getBean()->getSelect(self::FIELD_DIVISION_ID, self::CST_DEFAULT_SELECT, $this->ParentDelegue->getDivisionId(), true),
+      $DivisionBean->getSelect($argSelect),
     ) ;
     $this->initPanels($initPanel);
     ///////////////////////////////////////////:

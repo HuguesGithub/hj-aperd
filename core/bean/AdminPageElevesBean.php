@@ -184,13 +184,20 @@ class AdminPageElevesBean extends AdminPageBean
       case self::CST_EDITION  :
       case self::CST_EDIT     :
         $this->crudType = self::CST_EDIT;
+        $argSelect = array(
+          'tag'        => self::FIELD_DIVISION_ID,
+          'selectedId' => $this->Eleve->getDivisionId(),
+          self::ATTR_REQUIRED => '',
+        );
+        $DivisionBean = new DivisionBean();
+
         $attributesForm  = array(
           // Nom de l'Elève - 1
           $this->Eleve->getNomEleve(),
           // Prénom de l'Eleve - 2
           $this->Eleve->getPrenomEleve(),
           // Division de l'Eleve - 3
-          $this->Eleve->getDivision()->getBean()->getSelect(self::FIELD_DIVISION_ID, self::CST_DEFAULT_SELECT, $this->Eleve->getDivisionId()),
+          $DivisionBean->getSelect($argSelect),
           // Est délégué ? - 4
           ($this->Eleve->isDelegue() ? self::CST_BLANK.self::CST_CHECKED : ''),
         ) ;
@@ -233,7 +240,12 @@ class AdminPageElevesBean extends AdminPageBean
       case self::CST_CREATE :
       default :
         $this->crudType = self::CST_CREATE;
-        $attributesForm  = array('', '', $this->Eleve->getDivision()->getBean()->getSelect(self::FIELD_DIVISION_ID), '');
+        $argSelect = array(
+          'tag'        => self::FIELD_DIVISION_ID,
+          self::ATTR_REQUIRED => '',
+        );
+        $DivisionBean = new DivisionBean();
+        $attributesForm  = array('', '', $DivisionBean->getSelect($argSelect), '');
         // Définition des attributs de la Card CRUD
         $this->attributesCardCRUD = array(
           // Contenu du Formulaire - 1
@@ -266,7 +278,7 @@ class AdminPageElevesBean extends AdminPageBean
     //////////////////////////////////////////////////////////////////
     // On récupère tous les Elèves et on construit la base de la pagination et on restreint l'affichage
     $strAdminRowsEleves = '';
-    $nbPerPage = 10;
+    $nbPerPage = (isset($this->urlParams[self::FIELD_DIVISION_ID]) ? 50 : 10);;
     $orderby = $this->initVar(self::WP_ORDERBY, self::FIELD_NOMELEVE);
     $order = $this->initVar(self::WP_ORDER, self::ORDER_ASC);
     if ($searchTerm!='') {
@@ -304,7 +316,11 @@ class AdminPageElevesBean extends AdminPageBean
     // Construction des filtres utilisés
     $strFiltres = '';
     $DivisionBean = new DivisionBean();
-    $strFiltres .= $DivisionBean->getSelect(self::FIELD_DIVISION_ID, self::CST_DEFAULT_SELECT, $filterDivisionId);
+    $argSelect = array(
+      'tag'        => self::FIELD_DIVISION_ID,
+      'selectedId' => $filterDivisionId,
+    );
+    $strFiltres .= $DivisionBean->getSelect($argSelect);
     //////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////
