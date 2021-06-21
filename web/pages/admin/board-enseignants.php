@@ -4,21 +4,38 @@
 
   <div class="row">
     <div class="col-8">
-      <div class="card-body">
+      <div class="card-body" style="padding-top: 20px;">
         <form action="#" method="post" id="post-filters" class="md-form">
-          <div class="tablenav top mb-3" style="height: inherit;">
-            <div class="actions mb-3">
-              <select name="action" id="bulk-action-selector-top" class="form-control md-select form-control-sm">
-                <option value="-1">Actions groupées</option>
-                <option value="trash">Supprimer</option>
-                <option value="export">Exporter</option>
-              </select>
-              <input type="hidden" name="postAction" value="Bulk"/>
-              <input type="submit" name="submit" class="btn btn-primary btn-sm mr-5 float-left" value="Appliquer">
+          <div class="row">
+              <div class="card bg-light col-md">
+                <div class="card-body row">
+                  <div class="col-md">
+                    <select name="action" id="bulk-action-selector-top" class="form-control md-select form-control-lg" style="display: inline-block;">
+                    <option value="-1">Actions groupées</option>
+                    <option value="trash">Supprimer</option>
+                    <option value="export">Exporter</option>
+                  </select>
+                  </div>
+                  <div class="col-md">
+                    <input type="hidden" name="postAction" value="Bulk"/>
+                    <input type="submit" name="submit" class="btn btn-primary btn-lg" value="Appliquer">
+                  </div>
+                </div>
+              </div>
 
-              %2$s
-              <input type="submit" name="filter_action" class="btn btn-info btn-sm" value="Filtrer">
-            </div>
+              <div class="card bg-light col-md">
+                <div class="card-body row">
+                  <div class="col-md">
+                    <div class="form-floating">
+                      %2$s
+                      <label for="matiereId">Toutes les Matières</label>
+                    </div>
+                  </div>
+                  <div class="col-md">
+                    <input type="submit" name="filter_action" class="btn btn-info btn-lg" value="Filtrer">
+                  </div>
+                </div>
+              </div>
           </div>
 
           <table class="table table-striped table-bordered table-hover table-sm" aria-describedby="Liste des Enseignants avec leurs Matières et un éventuel rôle de Professeur Principal.">
@@ -49,12 +66,12 @@
     </div>
 
     <div class="col-4">
-      <div>%3$s</div>
+      <div id="alertBlock" style="margin-top: 20px; max-width: 520px;">%3$s</div>
       %4$s
       %5$s
     </div>
-  </div>
 
+  </div>
 </div>
 <script>
   var defaultTab = '';

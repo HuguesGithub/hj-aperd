@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 /**
  * AdminPageEnseignantsBean
  * @author Hugues
- * @version 1.21.06.17
+ * @version 1.21.06.21
  * @since 1.21.06.01
  */
 class AdminPageEnseignantsBean extends AdminPageBean
@@ -27,10 +27,12 @@ class AdminPageEnseignantsBean extends AdminPageBean
     } else {
       $this->Enseignant = new Enseignant();
     }
+    $this->LocalObject    = $this->Enseignant;
     // On stocke les paramètres
     $this->urlParams = $urlParams;
     // On prépare le stockage pour les ids multiples si existants.
     $this->arrIds = array();
+    $this->subMenuValue = self::PAGE_ENSEIGNANT;
     // Autres Services
     $this->ProfPrincipalServices = new ProfPrincipalServices();
     $this->AnneeScolaireServices = new AnneeScolaireServices();
@@ -275,24 +277,34 @@ class AdminPageEnseignantsBean extends AdminPageBean
    */
   public function getListingPage()
   {
-    $MatiereBean = new MatiereBean();
     /////////////////////////////////////////////////////////////////////////////
-    // S'il y a un filtre sur la matière, on le récupère puis on construit la liste déroulante associée
-    $args = array();
-    if (isset($this->urlParams[self::FIELD_MATIERE_ID]) && $this->urlParams[self::FIELD_MATIERE_ID]!=-1) {
-      $filterMatiereId = $this->urlParams[self::FIELD_MATIERE_ID];
-      $args[self::FIELD_MATIERE_ID] = $filterMatiereId;
-    }
-    $strSelectFilters = $MatiereBean->getSelect(self::FIELD_MATIERE_ID, 'Toutes les matières', $filterMatiereId);
+    // On récupère les filtres éventuels.
+    $argFilters = array();
+    $filterMatiereId = (isset($this->urlParams[self::FIELD_MATIERE_ID]) ? $this->urlParams[self::FIELD_MATIERE_ID] : '');
+    $argFilters[self::FIELD_MATIERE_ID] = $filterMatiereId;
+    // Fin gestion des filtres
+    /////////////////////////////////////////////////////////////////////////////
 
     /////////////////////////////////////////////////////////////////////////////
     // On récupère toutes les matières puis on concatène les rows.
     $strRows = '';
-    $Enseignants = $this->EnseignantServices->getEnseignantsWithFilters($args);
+    $Enseignants = $this->EnseignantServices->getEnseignantsWithFilters($argFilters);
     foreach ($Enseignants as $Enseignant) {
       $Bean = $Enseignant->getBean();
       $strRows .= $Bean->getRowForAdminPage(in_array($Enseignant->getId(), $this->arrIds));
     }
+    /////////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////
+    // Construction des filtres utilisés
+    $strFiltres = '';
+    $MatiereBean = new MatiereBean();
+    $argSelect = array(
+      'tag'        => self::FIELD_MATIERE_ID,
+      'selectedId' => $filterMatiereId,
+    );
+    $strFiltres .= $MatiereBean->getSelect($argSelect);
+    //////////////////////////////////////////////////////////////////
 
     /////////////////////////////////////////////////////////////////////////////
     // On restitue le template enrichi.
@@ -300,7 +312,7 @@ class AdminPageEnseignantsBean extends AdminPageBean
       // Liste des matières affichées - 1
       $strRows,
       // Filtre - 2
-      $strSelectFilters,
+      $strFiltres,
       // Notification suite à soumission formulaire - 3
       $this->notifications,
       // Card C(R)UD - 4

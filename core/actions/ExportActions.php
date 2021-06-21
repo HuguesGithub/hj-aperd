@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 /**
  * ExportActions
  * @author Hugues
- * @version 1.21.06.12
+ * @version 1.21.06.21
  * @since 1.21.06.01
  */
 class ExportActions extends LocalActions
@@ -28,7 +28,7 @@ class ExportActions extends LocalActions
   /**
    * @param string $exportType
    * @param mixed $ids
-   * @version 1.21.06.12
+   * @version 1.21.06.21
    * @since 1.21.06.01
    */
   public static function dealWithStaticExport($exportType, $ids)
@@ -47,6 +47,9 @@ class ExportActions extends LocalActions
       case self::PAGE_ELEVE :
         $returned = EleveActions::dealWithStatic(self::CST_EXPORT, $ids);
       break;
+      case self::PAGE_ENSEIGNANT :
+        $returned = EnseignantActions::dealWithStatic(self::CST_EXPORT, $ids);
+      break;
       case self::PAGE_MATIERE :
         $returned = MatiereActions::dealWithStatic(self::CST_EXPORT, $ids);
       break;
@@ -58,9 +61,7 @@ class ExportActions extends LocalActions
       break;
 
 
-      case self::PAGE_ENSEIGNANT :
-        $returned = $Act->exportEnseignant($ids);
-      break;
+
       case self::PAGE_COMPO_DIVISION :
         $returned = $Act->exportCompo($ids);
       break;

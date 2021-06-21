@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 /**
  * ImportActions
  * @author Hugues
- * @version 1.21.06.18
+ * @version 1.21.06.21
  * @since 1.21.06.01
  */
 class ImportActions extends LocalActions
@@ -30,7 +30,7 @@ class ImportActions extends LocalActions
    * @param string $importType
    * @param string &$notif
    * @param string &$msg
-   * @version 1.21.06.18
+   * @version 1.21.06.21
    * @since 1.21.06.01
    */
   public static function dealWithStaticImport($importType, &$notif, &$msg)
@@ -57,6 +57,11 @@ class ImportActions extends LocalActions
         $notif = $params['notif'];
         $msg   = $params['msg'];
       break;
+      case self::PAGE_ENSEIGNANT :
+        $theList = EnseignantActions::dealWithStatic(self::CST_IMPORT, $params);
+        $notif = $params['notif'];
+        $msg   = $params['msg'];
+      break;
       case self::PAGE_MATIERE :
         $theList = MatiereActions::dealWithStatic(self::CST_IMPORT, $params);
         $notif = $params['notif'];
@@ -71,11 +76,6 @@ class ImportActions extends LocalActions
         $theList = ParentDelegueActions::dealWithStatic(self::CST_IMPORT, $params);
         $notif = $params['notif'];
         $msg   = $params['msg'];
-      break;
-
-
-      case self::PAGE_ENSEIGNANT :
-        return $Act->importEnseignant($notif, $msg);
       break;
       default :
         return 'Erreur dans ImportActions > dealWithStatic [<strong>'.$importType.'</strong>] non défini.';

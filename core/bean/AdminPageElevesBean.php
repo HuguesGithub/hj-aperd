@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 /**
  * AdminPageElevesBean
  * @author Hugues
- * @version 1.21.06.17
+ * @version 1.21.06.21
  * @since 1.21.06.01
  */
 class AdminPageElevesBean extends AdminPageBean
@@ -27,10 +27,12 @@ class AdminPageElevesBean extends AdminPageBean
     } else {
       $this->Eleve = new Eleve();
     }
+    $this->LocalObject    = $this->Eleve;
     // On stocke les paramètres
     $this->urlParams = $urlParams;
     // On prépare le stockage pour les ids multiples si existants.
     $this->arrIds = array();
+    $this->subMenuValue = self::PAGE_ELEVE;
     $this->AnneeScolaireServices = new AnneeScolaireServices();
     $this->DivisionServices = new DivisionServices();
   }
@@ -67,7 +69,7 @@ class AdminPageElevesBean extends AdminPageBean
   /**
    * @param array $urlParams
    * @return string
-   * @version 1.21.06.11
+   * @version 1.21.06.21
    * @since 1.21.06.11
    */
   public function getContentPage()
@@ -153,6 +155,26 @@ class AdminPageElevesBean extends AdminPageBean
     }
     ///////////////////////////////////////////:
     // On initialise les panneaux latéraux droit
+    $this->msgConfirmDelete = sprintf(self::MSG_CONFIRM_SUPPR_ELEVE, $this->Eleve->getNomComplet());
+    $this->tagConfirmDeleteMultiple = self::MSG_CONFIRM_SUPPR_ELEVES;
+    $argSelect = array(
+      'tag'        => self::FIELD_DIVISION_ID,
+      self::ATTR_REQUIRED => '',
+    );
+    $DivisionBean = new DivisionBean();
+    $this->attributesFormNew = array('', '', $DivisionBean->getSelect($argSelect), '');
+    $argSelect['selectedId'] = $this->Eleve->getDivisionId();
+    $this->attributesFormEdit  = array(
+      // Nom de l'Elève - 1
+      $this->Eleve->getNomEleve(),
+      // Prénom de l'Eleve - 2
+      $this->Eleve->getPrenomEleve(),
+      // Division de l'Eleve - 3
+      $DivisionBean->getSelect($argSelect),
+      // Est délégué ? - 4
+      ($this->Eleve->isDelegue() ? self::CST_BLANK.self::CST_CHECKED : ''),
+    ) ;
+
     $this->initPanels($initPanel);
     ///////////////////////////////////////////:
     // On retourne le listing et les panneaux latéraux droit
@@ -160,107 +182,9 @@ class AdminPageElevesBean extends AdminPageBean
   }
 
   /**
-   * Intialise les panneaux latéraux à afficher
-   * @param string $action
-   * @version 1.21.06.11
-   * @since 1.21.06.01
-   */
-  public function initPanels($action)
-  {
-    switch ($action) {
-      case self::CST_DELETE :
-        $this->crudType = self::CST_DELETE;
-        // Définition des attributs de la Card CRUD
-        $this->attributesCardCRUD = array(
-          // Message de confirmation à afficher - 1
-          sprintf(self::MSG_CONFIRM_SUPPR_ELEVE, $this->Eleve->getNomComplet()),
-          // Id de l'objet ou des objets à supprimer - 2
-          $this->Eleve->getId(),
-          // Url d'annulation de l'opération - 3
-          $this->getQueryArg(array(self::CST_ONGLET=>self::PAGE_ELEVE)),
-        );
-      break;
-      case self::CST_CREATION :
-      case self::CST_EDITION  :
-      case self::CST_EDIT     :
-        $this->crudType = self::CST_EDIT;
-        $argSelect = array(
-          'tag'        => self::FIELD_DIVISION_ID,
-          'selectedId' => $this->Eleve->getDivisionId(),
-          self::ATTR_REQUIRED => '',
-        );
-        $DivisionBean = new DivisionBean();
-
-        $attributesForm  = array(
-          // Nom de l'Elève - 1
-          $this->Eleve->getNomEleve(),
-          // Prénom de l'Eleve - 2
-          $this->Eleve->getPrenomEleve(),
-          // Division de l'Eleve - 3
-          $DivisionBean->getSelect($argSelect),
-          // Est délégué ? - 4
-          ($this->Eleve->isDelegue() ? self::CST_BLANK.self::CST_CHECKED : ''),
-        ) ;
-        // Définition des attributs de la Card CRUD
-        $this->attributesCardCRUD = array(
-          // Contenu du Formulaire - 1
-          $this->getRender($this->urlTemplateForm, $attributesForm),
-          // Id de l'objet ou des objets à supprimer - 2
-          $this->Eleve->getId(),
-          // Url d'annulation de l'opération - 3
-          $this->getQueryArg(array(self::CST_ONGLET=>self::PAGE_ELEVE)),
-        );
-      break;
-      case self::CST_BULK_TRASH :
-        $this->crudType = self::CST_DELETE;
-        // Construction des listings suite à la sélection multiple.
-        $arrIds = array();
-        $arrLabels = array();
-        foreach($this->urlParams[self::CST_POST] as $key=> $value) {
-          $Eleve = $this->EleveServices->selectLocal($value);
-          $arrLabels[] = $Eleve->getNomComplet();
-          $arrIds[] = $value;
-        }
-        $this->arrIds                   = $arrIds;
-        // Définition des attributs de la Card CRUD
-        $this->attributesCardCRUD = array(
-          // Message de confirmation à afficher - 1
-          sprintf(self::MSG_CONFIRM_SUPPR_ELEVES, implode(', ', $arrLabels)),
-          // Id de l'objet ou des objets à supprimer - 2
-          implode(',', $arrIds),
-          // Url d'annulation de l'opération - 3
-          $this->getQueryArg(array(self::CST_ONGLET=>self::PAGE_ELEVE)),
-        );
-      break;
-      case self::CST_BULK_EXPORT :
-        foreach($this->urlParams[self::CST_POST] as $key=> $value) {
-          $arrIds[] = $value;
-        }
-        $this->arrIds                   = $arrIds;
-      case self::CST_CREATE :
-      default :
-        $this->crudType = self::CST_CREATE;
-        $argSelect = array(
-          'tag'        => self::FIELD_DIVISION_ID,
-          self::ATTR_REQUIRED => '',
-        );
-        $DivisionBean = new DivisionBean();
-        $attributesForm  = array('', '', $DivisionBean->getSelect($argSelect), '');
-        // Définition des attributs de la Card CRUD
-        $this->attributesCardCRUD = array(
-          // Contenu du Formulaire - 1
-          $this->getRender($this->urlTemplateForm, $attributesForm),
-          // Url d'annulation de l'opération - 2
-          $this->getQueryArg(array(self::CST_ONGLET=>self::PAGE_ELEVE)),
-        );
-      break;
-    }
-  }
-
-  /**
    * Gestion de l'affichage de la page.
    * @return string
-   * @version 1.21.06.12
+   * @version 1.21.06.21
    * @since 1.21.06.01
    */
   public function getListingPage()
@@ -277,8 +201,7 @@ class AdminPageElevesBean extends AdminPageBean
 
     //////////////////////////////////////////////////////////////////
     // On récupère tous les Elèves et on construit la base de la pagination et on restreint l'affichage
-    $strAdminRowsEleves = '';
-    $nbPerPage = (isset($this->urlParams[self::FIELD_DIVISION_ID]) ? 50 : 10);;
+    $nbPerPage = (isset($this->urlParams[self::FIELD_DIVISION_ID]) ? 50 : 10);
     $orderby = $this->initVar(self::WP_ORDERBY, self::FIELD_NOMELEVE);
     $order = $this->initVar(self::WP_ORDER, self::ORDER_ASC);
     if ($searchTerm!='') {
@@ -346,19 +269,6 @@ class AdminPageElevesBean extends AdminPageBean
     );
     return $this->getRender($this->urlTemplatePageAdmin, $attributes);
   }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

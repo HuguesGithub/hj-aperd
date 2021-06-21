@@ -187,5 +187,4 @@ border: 2px solid rgb(11, 133, 161);
 
 .label-checkbox { padding: 16px .75rem; }
 #post-filters .card { margin: 0 15px 10px; }
-#post-filters select, #post-filters input { display: inline-block; max-width: 200px; }
 select[required], input[required] { border-width: 2px; }
