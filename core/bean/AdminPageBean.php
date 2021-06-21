@@ -377,4 +377,69 @@ class AdminPageBean extends MainPageBean
     );
     return $this->getRender($this->urlFragmentPagination, $args);
   }
+  /**
+   * @version 1.21.06.21
+   * @since 1.21.06.21
+   */
+  public function parseUrlParams(&$initPanel, &$notif, &$msg)
+  {
+    switch($this->urlParams[self::CST_POSTACTION]) {
+      case self::CST_CREATION :
+        // Exécution de la création
+        $this->setLocalObject();
+        $this->LocalObject->insert($notif, $msg);
+        $this->initLocalObject();
+      break;
+      case self::CST_EDITION :
+        // Exécution de la mise à jour
+        $this->setLocalObject();
+        $this->LocalObject->update($notif, $msg);
+        $initPanel = self::CST_EDIT;
+      break;
+      case self::CST_SUPPRESSION :
+        // Exécution de la suppression unitaire ou groupée
+        $this->delete($notif, $msg);
+        $this->initLocalObject();
+      break;
+      case self::CST_IMPORT :
+        // Exécution de l'import
+        $this->import($notif, $msg);
+        $this->initLocalObject();
+      break;
+      case self::CST_BULK :
+        // Gestion des Actions groupées
+        switch ($this->urlParams[self::CST_ACTION]) {
+          case self::CST_TRASH :
+            // Confirmation de la Suppression de masse
+            if (empty($this->urlParams[self::CST_POST])) {
+              $msg = self::MSG_BULK_DELETE_IMPOSSIBLE;
+              $notif = self::NOTIF_WARNING;
+            } else {
+              $initPanel = self::CST_BULK_TRASH;
+            }
+          break;
+          case self::CST_EXPORT :
+            // Exécution de l'exportation
+            if (empty($this->urlParams[self::CST_POST])) {
+              $msg = self::MSG_BULK_EXPORT_IMPOSSIBLE;
+              $notif = self::NOTIF_WARNING;
+            } else {
+              $msg = ExportActions::dealWithStaticExport($this->subMenuValue, $this->urlParams[self::CST_POST]);
+              $notif = self::NOTIF_SUCCESS;
+              $initPanel = self::CST_BULK_EXPORT;
+            }
+          break;
+          default :
+            // Erreur sur l'action groupée, non reconnue
+            $notif = self::NOTIF_WARNING;
+            $msg   = sprintf(self::MSG_BULK_ACTION_INDEFINIE, array($this->urlParams[self::CST_ACTION]));
+          break;
+        }
+      break;
+      default :
+        // Affichage des écrans simples : création ou édition
+        $initPanel = $this->urlParams[self::CST_POSTACTION];
+      break;
+    }
+  }
 }
