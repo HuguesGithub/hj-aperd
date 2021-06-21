@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 /**
  * Classe AnneeScolaireBean
  * @author Hugues
- * @version 1.21.06.10
+ * @version 1.21.06.21
  * @since 1.21.06.10
  */
 class AnneeScolaireBean extends LocalBean
@@ -63,20 +63,18 @@ class AnneeScolaireBean extends LocalBean
 
 
 
-
   /**
-   * @param string $tagId
-   * @param mixed $selectedId
-   * @param boolean $isMandatory
+   * @param array $params
    * @return string
-   * @version 1.00.00
-   * @since 1.00.00
+   * @version 1.21.06.21
+   * @since 1.21.06.21
    */
-  public function getSelect($tagId=self::CST_ID, $label=self::CST_DEFAULT_SELECT, $selectedId=-1, $isMandatory=false, $isReadOnly=false)
+  public function getSelect($params = array())
   {
-    $AnneeScolaires = $this->AnneeScolaireServices->getAnneeScolairesWithFilters();
-    return $this->getLocalSelect($AnneeScolaires, $tagId, $label, $selectedId, $isMandatory, false, $isReadOnly);
+    $params['Objs'] = $this->AnneeScolaireServices->getAnneeScolairesWithFilters();
+    return parent::getSelect($params);
   }
+
   /**
    * @param mixed $selectedId
    * @return string;

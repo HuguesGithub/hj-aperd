@@ -70,7 +70,7 @@ class AdminPageEnseignantsBean extends AdminPageBean
   /**
    * @param array $urlParams
    * @return string
-   * @version 1.21.06.17
+   * @version 1.21.06.21
    * @since 1.21.06.06
    */
   public function getContentPage()
@@ -151,122 +151,58 @@ class AdminPageEnseignantsBean extends AdminPageBean
     }
     ///////////////////////////////////////////:
     // On initialise les panneaux latéraux droit
+    $this->msgConfirmDelete = sprintf(self::MSG_CONFIRM_SUPPR_ENSEIGNANT, $this->Enseignant->getFullName());
+    $this->tagConfirmDeleteMultiple = self::MSG_CONFIRM_SUPPR_ENSEIGNANTS;
+
+    $MatiereBean = new MatiereBean();
+    $DivisionBean = new DivisionBean();
+    $AnneeScolaireBean = new AnneeScolaireBean();
+
+    $argMatSelect = array(
+      'tag'        => self::FIELD_MATIERE_ID,
+      self::ATTR_REQUIRED => '',
+    );
+    $argDivSelect = array(
+      'tag'        => self::FIELD_DIVISION_ID,
+      self::ATTR_REQUIRED => '',
+    );
+    $argAsSelect = array(
+      'tag'        => self::FIELD_ANNEESCOLAIRE_ID,
+      self::ATTR_REQUIRED => '',
+    );
+    $this->attributesFormNew = array(
+      '', '', '',
+      $MatiereBean->getSelect($argMatSelect),
+      $DivisionBean->getSelect($argDivSelect),
+      $AnneeScolaireBean->getSelect($argAsSelect),
+    );
+
+    $ProfPrincipals = $this->ProfPrincipalServices->getProfPrincipalsWithFilters(array(self::FIELD_ENSEIGNANT_ID=>$this->Enseignant->getId()));
+    $ProfPrincipal = (empty($ProfPrincipals) ? new ProfPrincipal() : array_shift($ProfPrincipals));
+
+    $argMatSelect['selectedId'] = $this->Enseignant->getMatiereId();
+    $argDivSelect['selectedId'] = $ProfPrincipal->getDivisionId();
+    $argAsSelect['selectedId'] = $ProfPrincipal->getAnneeScolaireId();
+
+    $this->attributesFormEdit = array(
+      // Genre de l'Enseignant - 1
+      $this->Enseignant->getGenre(),
+      // Nom de l'Enseignant - 2
+      $this->Enseignant->getNomEnseignant(),
+      // Prénom de l'Enseignant - 3
+      $this->Enseignant->getPrenomEnseignant(),
+      // Liste déroulante sur la Matière enseignée par l'Enseignant - 4
+      $MatiereBean->getSelect($argMatSelect),
+      // Liste déroulante sur la Division enseignée par l'Enseignant - 5
+      $DivisionBean->getSelect($argDivSelect),
+      // Liste déroulante sur l'Année Scolaire enseignée par l'Enseignant - 6
+      $AnneeScolaireBean->getSelect($argAsSelect),
+    ) ;
+
     $this->initPanels($initPanel);
     ///////////////////////////////////////////:
     // On retourne le listing et les panneaux latéraux droit
     return $this->getListingPage();
-  }
-
-  /**
-   * Intialise les panneaux latéraux à afficher
-   * @param string $action
-   * @version 1.21.06.06
-   * @since 1.21.06.01
-   */
-  public function initPanels($action)
-  {
-    $AnneeScolaireBean = new AnneeScolaireBean();
-    $DivisionBean = new DivisionBean();
-    $MatiereBean = new MatiereBean();
-
-    switch ($action) {
-      case self::CST_DELETE :
-        $this->crudType = self::CST_DELETE;
-        // Définition des attributs de la Card CRUD
-        $this->attributesCardCRUD = array(
-          // Message de confirmation à afficher - 1
-          sprintf(self::MSG_CONFIRM_SUPPR_ENSEIGNANT, $this->Enseignant->getFullName()),
-          // Id de l'objet ou des objets à supprimer - 2
-          $this->Enseignant->getId(),
-          // Url d'annulation de l'opération - 3
-          $this->getQueryArg(array(self::CST_ONGLET=>self::PAGE_ENSEIGNANT)),
-        );
-      break;
-      case self::CST_CREATION :
-      case self::CST_EDITION  :
-      case self::CST_EDIT     :
-        $this->crudType = self::CST_EDIT;
-
-        if ($this->Enseignant==null) {
-          $this->Enseignant = new Enseignant();
-          $ProfPrincipal = new ProfPrincipal();
-        } else {
-          $ProfPrincipal = $this->ProfPrincipalServices->getProfPrincipalsWithFilters(array(self::FIELD_ENSEIGNANT_ID=>$this->Enseignant->getId()));
-          if ($this->Enseignant->getId()=='' || empty($ProfPrincipal)) {
-            $ProfPrincipal = new ProfPrincipal();
-          } else {
-            $ProfPrincipal = array_shift($ProfPrincipal);
-          }
-        }
-
-        $attributesForm  = array(
-          // Genre de l'Enseignant - 1
-          $this->Enseignant->getGenre(),
-          // Nom de l'Enseignant - 2
-          $this->Enseignant->getNomEnseignant(),
-          // Prénom de l'Enseignant - 3
-          $this->Enseignant->getPrenomEnseignant(),
-          // Liste déroulante sur la Matière enseignée par l'Enseignant - 4
-          $MatiereBean->getSelect(self::FIELD_MATIERE_ID, self::CST_DEFAULT_SELECT, $this->Enseignant->getMatiereId()),
-          // Liste déroulante sur la Division enseignée par l'Enseignant - 5
-          $DivisionBean->getSelect(self::FIELD_DIVISION_ID, self::CST_DEFAULT_SELECT, $ProfPrincipal->getDivisionId()),
-          // Liste déroulante sur l'Année Scolaire enseignée par l'Enseignant - 6
-          $AnneeScolaireBean->getSelect(self::FIELD_ANNEESCOLAIRE_ID, self::CST_DEFAULT_SELECT, $ProfPrincipal->getAnneeScolaireId()),
-        ) ;
-        // Définition des attributs de la Card CRUD
-        $this->attributesCardCRUD = array(
-          // Contenu du Formulaire - 1
-          $this->getRender($this->urlTemplateForm, $attributesForm),
-          // Id de l'objet ou des objets à supprimer - 2
-          $this->Enseignant->getId(),
-          // Url d'annulation de l'opération - 3
-          $this->getQueryArg(array(self::CST_ONGLET=>self::PAGE_ENSEIGNANT)),
-        );
-      break;
-      case self::CST_BULK_TRASH :
-        $this->crudType = self::CST_DELETE;
-        // Construction des listings suite à la sélection multiple.
-        $arrIds = array();
-        $arrLabels = array();
-        foreach($this->urlParams[self::CST_POST] as $key=> $value) {
-          $Enseignant = $this->EnseignantServices->selectLocal($value);
-          $arrLabels[] = $Enseignant->getFullName();
-          $arrIds[] = $value;
-        }
-        $this->arrIds                   = $arrIds;
-        // Définition des attributs de la Card CRUD
-        $this->attributesCardCRUD = array(
-          // Message de confirmation à afficher - 1
-          sprintf(self::MSG_CONFIRM_SUPPR_ENSEIGNANTS, implode(', ', $arrLabels)),
-          // Id de l'objet ou des objets à supprimer - 2
-          implode(',', $arrIds),
-          // Url d'annulation de l'opération - 3
-          $this->getQueryArg(array(self::CST_ONGLET=>self::PAGE_ENSEIGNANT)),
-        );
-      break;
-      case self::CST_BULK_EXPORT :
-        foreach($this->urlParams[self::CST_POST] as $key=> $value) {
-          $arrIds[] = $value;
-        }
-        $this->arrIds                   = $arrIds;
-      case self::CST_CREATE :
-      default :
-        $this->crudType = self::CST_CREATE;
-        $attributesForm  = array(
-          '','','',
-          $MatiereBean->getSelect(self::FIELD_MATIERE_ID, self::CST_DEFAULT_SELECT),
-          $DivisionBean->getSelect(self::FIELD_DIVISION_ID, self::CST_DEFAULT_SELECT),
-          $AnneeScolaireBean->getSelect(self::FIELD_ANNEESCOLAIRE_ID, self::CST_DEFAULT_SELECT),
-        );
-        // Définition des attributs de la Card CRUD
-        $this->attributesCardCRUD = array(
-          // Contenu du Formulaire - 1
-          $this->getRender($this->urlTemplateForm, $attributesForm),
-          // Url d'annulation de l'opération - 2
-          $this->getQueryArg(array(self::CST_ONGLET=>self::PAGE_ENSEIGNANT)),
-        );
-      break;
-    }
   }
 
   /**
