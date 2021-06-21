@@ -60,6 +60,60 @@ class LocalBean extends UtilitiesBean implements ConstantsInterface
     }
     return $default;
   }
+
+  /**
+   * @param array $params
+   * @return string
+   * @version 1.21.06.21
+   * @since 1.21.06.21
+   */
+  public function getSelect($params = array())
+  {
+    /////////////////////////////////////////////////////////////////
+    // Initialisation des données
+    $tagId = (isset($params['tag']) ? $params['tag'] : self::CST_ID);
+    $label = (isset($params['label']) ? $params['label'] : self::CST_DEFAULT_SELECT);
+    $selectedId = (isset($params['selectedId']) ? $params['selectedId'] : -1);
+    $Objs = $params['Objs'];
+
+    /////////////////////////////////////////////////////////////////
+    // Construction de la liste des Options
+    $strOptions = $this->getDefaultOption($selectedId, $label);
+    while (!empty($Objs)) {
+      $Obj = array_shift($Objs);
+      $Bean = $Obj->getBean();
+      $strOptions .= $Bean->getOption($selectedId);
+    }
+    /////////////////////////////////////////////////////////////////
+
+    /////////////////////////////////////////////////////////////////
+    // Construction des attributs de la balise Select
+    $selClass= self::CST_MD_SELECT;
+    if (isset($params[self::AJAX_UPLOAD])) {
+      $selClass .= self::CST_BLANK.self::AJAX_UPLOAD;
+    }
+    if (isset($params[self::ATTR_REQUIRED]) && ($selectedId==-1 || $selectedId==self::CST_DEFAULT_SELECT)) {
+      //$selClass .= self::CST_BLANK.self::NOTIF_IS_INVALID;
+    }
+    $attributes = array(
+      self::ATTR_CLASS => $selClass,
+      self::ATTR_NAME  => $tagId,
+    );
+    if (isset($params[self::ATTR_REQUIRED])) {
+      $attributes[self::ATTR_REQUIRED] = '';
+    }
+    if (isset($params[self::ATTR_READONLY])) {
+      $attributes[self::ATTR_READONLY] = '';
+    }
+    /////////////////////////////////////////////////////////////////
+
+    /////////////////////////////////////////////////////////////////
+    // On retourne la balise construite
+    return $this->getBalise(self::TAG_SELECT, $strOptions, $attributes);
+  }
+
+
+
   /**
    * @param array $Objs
    * @param string $tagId
