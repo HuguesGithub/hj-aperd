@@ -112,7 +112,6 @@ class AdminPageAdministrationsBean extends AdminPageBean
   public function initLocalObject()
   { $this->LocalObject = new Administration(); }
 
-
   /**
    * Gestion de l'affichage de la page.
    * @return string

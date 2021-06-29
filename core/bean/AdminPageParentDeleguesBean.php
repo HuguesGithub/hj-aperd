@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 /**
  * AdminPageParentDeleguesBean
  * @author Hugues
- * @version 1.21.06.17
+ * @version 1.21.06.29
  * @since 1.21.06.11
  */
 class AdminPageParentDeleguesBean extends AdminPageBean
@@ -22,16 +22,11 @@ class AdminPageParentDeleguesBean extends AdminPageBean
     $this->ParentDelegueServices  = new ParentDelegueServices();
     $this->Services               = new ParentDelegueServices();
     // Initialisation du Parent Délégué sélectionné s'il y en a un.
-    if ($urlParams!=null && isset($urlParams[self::FIELD_ID])) {
-      $this->ParentDelegue = $this->ParentDelegueServices->selectLocal($urlParams[self::FIELD_ID]);
-    } else {
-      $this->ParentDelegue = new ParentDelegue();
-    }
-    $this->LocalObject    = $this->ParentDelegue;
+    $this->LocalObject = ($urlParams!=null && isset($urlParams[self::FIELD_ID]) ? $this->ParentDelegueServices->selectLocal($urlParams[self::FIELD_ID]) : new ParentDelegue());
     // On stocke les paramètres
     $this->urlParams = $urlParams;
-    // On prépare le stockage pour les ids multiples si existants.
     $this->arrIds = array();
+    // On prépare le stockage pour les ids multiples si existants.
     $this->subMenuValue = self::PAGE_PARENT_DELEGUE;
     $this->AdulteServices = new AdulteServices();
     $this->DivisionServices = new DivisionServices();
@@ -39,19 +34,19 @@ class AdminPageParentDeleguesBean extends AdminPageBean
   /**
    * Retourne le Parent Délégué
    * @return ParentDelegue
-   * @version 1.21.06.11
+   * @version 1.21.06.29
    * @since 1.21.06.11
    */
   public function getObject()
-  { return $this->ParentDelegue; }
+  { return $this->LocalObject; }
   /**
    * Retourne le Service
    * @return ParentDelegueService
-   * @version 1.21.06.11
+   * @version 1.21.06.29
    * @since 1.21.06.11
    */
   public function getServices()
-  { return $this->ParentDelegueServices; }
+  { return $this->Services; }
 
   /**
    * @param array $urlParams
@@ -81,69 +76,8 @@ class AdminPageParentDeleguesBean extends AdminPageBean
 
     ///////////////////////////////////////////
     // Analyse de l'action éventuelle.
-    if (isset($this->urlParams['filter_action'])) {
-      // On ne fait que filtrer, il n'y a pas d'actions associées.
-    } elseif (isset($this->urlParams[self::CST_POSTACTION])) {
-      switch ($this->urlParams[self::CST_POSTACTION]) {
-        case self::CST_CREATION :
-          // Exécution de la création
-          $this->ParentDelegue->setParentId($this->urlParams[self::FIELD_PARENT_ID]);
-          $this->ParentDelegue->setDivisionId($this->urlParams[self::FIELD_DIVISION_ID]);
-          $this->ParentDelegue->insert($notif, $msg);
-          $this->ParentDelegue = new ParentDelegue();
-        break;
-        case self::CST_EDITION :
-          // Exécution de la création
-          $this->ParentDelegue->setParentId($this->urlParams[self::FIELD_PARENT_ID]);
-          $this->ParentDelegue->setDivisionId($this->urlParams[self::FIELD_DIVISION_ID]);
-          $this->ParentDelegue->update($notif, $msg);
-          $initPanel = self::CST_EDIT;
-        break;
-        case self::CST_SUPPRESSION :
-          // Exécution de la suppression unitaire ou groupée
-          $this->delete($notif, $msg);
-          $this->ParentDelegue = new ParentDelegue();
-        break;
-        case self::CST_IMPORT :
-          // Exécution de l'import
-          $this->import($notif, $msg);
-          $this->ParentDelegue = new ParentDelegue();
-        break;
-        case self::CST_BULK :
-          // Gestion des Actions groupées
-          switch ($this->urlParams[self::CST_ACTION]) {
-            case self::CST_TRASH :
-              // Confirmation de la Suppression de masse
-              if (empty($this->urlParams[self::CST_POST])) {
-                $msg = self::MSG_BULK_DELETE_IMPOSSIBLE;
-                $notif = self::NOTIF_WARNING;
-              } else {
-                $initPanel = self::CST_BULK_TRASH;
-              }
-            break;
-            case self::CST_EXPORT :
-              // Exécution de l'exportation
-              if (empty($this->urlParams[self::CST_POST])) {
-                $msg = self::MSG_BULK_EXPORT_IMPOSSIBLE;
-                $notif = self::NOTIF_WARNING;
-              } else {
-                $msg = ExportActions::dealWithStaticExport(self::PAGE_PARENT_DELEGUE, $this->urlParams[self::CST_POST]);
-                $notif = self::NOTIF_SUCCESS;
-                $initPanel = self::CST_BULK_EXPORT;
-              }
-            break;
-            default :
-              // Erreur sur l'action groupée, non reconnue
-              $notif = self::NOTIF_WARNING;
-              $msg   = sprintf(self::MSG_BULK_ACTION_INDEFINIE, array($this->urlParams[self::CST_ACTION]));
-            break;
-          }
-        break;
-        default :
-          // Affichage des écrans simples : création ou édition
-          $initPanel = $this->urlParams[self::CST_POSTACTION];
-        break;
-      }
+    if (!isset($this->urlParams['filter_action']) && isset($this->urlParams[self::CST_POSTACTION])) {
+      $this->parseUrlParams($initPanel, $notif, $msg);
     }
 
     ///////////////////////////////////////////
@@ -183,6 +117,21 @@ class AdminPageParentDeleguesBean extends AdminPageBean
     return $this->getListingPage();
   }
 
+  /**
+   * @version 1.21.06.29
+   * @since 1.21.06.29
+   */
+  public function setLocalObject()
+  {
+    $this->LocalObject->setParentId($this->urlParams[self::FIELD_PARENT_ID]);
+    $this->LocalObject->setDivisionId($this->urlParams[self::FIELD_DIVISION_ID]);
+  }
+  /**
+   * @version 1.21.06.29
+   * @since 1.21.06.29
+   */
+  public function initLocalObject()
+  { $this->LocalObject = new ParentDelegue(); }
 
   /**
    * Gestion de l'affichage de la page.

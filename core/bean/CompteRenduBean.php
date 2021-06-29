@@ -67,44 +67,44 @@ class CompteRenduBean extends LocalBean
     return $this->getTdParentActions($label, $href);
   }
 
+  /**
+   * @return string
+   * @version 1.21.06.29
+   * @since 1.21.06.01
+   */
   public function getStep6()
   {
     $content  = '<div class="row apercuPdf">';
     // Première page
-    $content .= '<div class="col-md-6 border">';
-    $content .= $this->getStep1();
-    $content .= $this->getStep2BilanMatieres();
-    $content .= '</div>';
+    $content .= '<div class="col-md-6 border">'.$this->getStep1().$this->getStep2BilanMatieres().'</div>';
     // Deuxième page
-    $content .= '<div class="col-md-6 border">';
-    $content .= $this->getStep2BilanProf();
-    $content .= $this->getStep3();
-    $content .= $this->getStep4();
-    $content .= $this->getStep5();
-    $content .= '</div>';
-    $content .= '</div>';
-    return $content;
+    $content .= '<div class="col-md-6 border">'.$this->getStep2BilanProf().$this->getStep3().$this->getStep4().$this->getStep5().'</div>';
+    return $content.'</div>';
   }
 
+  /**
+   * @return string
+   * @version 1.21.06.29
+   * @since 1.21.06.01
+   */
   public function getStep5()
   {
-    $content  = '<div class="alert alert-info"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>';
-    $content .= '<div class="pdfParagrapheTitre">Informations générales</div>';
-    $content .= "Réunions mensuelles : L'association des Parents d'Élèves se réunit un mercredi par mois (hors vacances scolaires). Vous pouvez également découvrir la vie du collège et les actions de l'association sur son site internet.<br>";
+    $crStep5 = 'web/pages/admin/fragments/cr-step5.php';
 
     $valeur = $this->CompteRendu->getValue(self::FIELD_DATEREDACTION);
-    $texte  = (empty($valeur) ? '<strong>Données manquantes : [Date de rédaction]</strong>' : $valeur);
-    $content .= 'Compte rendu fait le '.$texte;
+    $strDateRedaction = (empty($valeur) ? '<strong>Données manquantes : [Date de rédaction]</strong>' : $valeur);
 
     $valeur = $this->CompteRendu->getValue(self::FIELD_AUTEURREDACTION);
-    $texte  = (empty($valeur) ? '<strong>Données manquantes : [Auteur du Compte-Rendu]</strong>' : $valeur);
-    $content .= ' par '.$texte;
-    if (!empty($valeur)) {
-      $content .= ', sous '.(strpos($texte, ' et ')!==false ? 'leur' : 'sa')." responsabilité.";
-    }
+    $strAuteurRedaction = (empty($valeur) ? '<strong>Données manquantes : [Auteur du Compte-Rendu]</strong>' : $valeur);
 
-    $content .= '</div>';
-    return $content;
+    $strResponsabilite = (!empty($valeur) ? ', sous '.(strpos($texte, ' et ')!==false ? 'leur' : 'sa').' responsabilité.' : '');
+
+    $args = array(
+      $strDateRedaction,
+      $strAuteurRedaction,
+      $strResponsabilite,
+    );
+    return $this->getRender($crStep5, $args);
   }
 
   /**
@@ -223,6 +223,11 @@ class CompteRenduBean extends LocalBean
     return $content;
   }
 
+  /**
+   * @return string
+   * @version 1.21.06.29
+   * @since 1.21.06.01
+   */
   public function getStep1()
   {
     $crStep1 = 'web/pages/admin/fragments/cr-step1.php';

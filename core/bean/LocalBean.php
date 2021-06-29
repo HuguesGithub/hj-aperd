@@ -92,9 +92,6 @@ class LocalBean extends UtilitiesBean implements ConstantsInterface
     if (isset($params[self::AJAX_UPLOAD])) {
       $selClass .= self::CST_BLANK.self::AJAX_UPLOAD;
     }
-    if (isset($params[self::ATTR_REQUIRED]) && ($selectedId==-1 || $selectedId==self::CST_DEFAULT_SELECT)) {
-      //$selClass .= self::CST_BLANK.self::NOTIF_IS_INVALID;
-    }
     $attributes = array(
       self::ATTR_CLASS => $selClass,
       self::ATTR_NAME  => $tagId,
