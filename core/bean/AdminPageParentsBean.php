@@ -22,7 +22,7 @@ class AdminPageParentsBean extends AdminPageBean
     $this->AdulteServices = new AdulteServices();
     $this->Services       = new AdulteServices();
     // Initialisation du Parent sélectionné s'il y en a une.
-    $this->LocalObject = ($urlParams!=null && isset($urlParams[self::FIELD_ID]) ? : $this->AdulteServices->selectLocal($urlParams[self::FIELD_ID]) : new Adulte());
+    $this->LocalObject = ($urlParams!=null && isset($urlParams[self::FIELD_ID]) ? $this->AdulteServices->selectLocal($urlParams[self::FIELD_ID]) : new Adulte());
     // On stocke les paramètres
     $this->urlParams = $urlParams;
     // On prépare le stockage pour les ids multiples si existants.
