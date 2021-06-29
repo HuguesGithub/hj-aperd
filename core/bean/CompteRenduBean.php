@@ -147,7 +147,7 @@ class CompteRenduBean extends LocalBean
    */
   public function getStep3()
   {
-    $crStep4 = 'web/pages/admin/fragments/cr-step3.php';
+    $crStep3 = 'web/pages/admin/fragments/cr-step3.php';
 
     $valeur = str_replace(array("\r\n", "\r", "\n"), array("<br>", "<br>", "<br>"), $this->CompteRendu->getValue(self::FIELD_BILANELEVES));
     $strBilanEleves = (empty($valeur) ? '<strong>Données manquantes : [Bilan Délégués Elèves]</strong>' : $valeur);
@@ -168,12 +168,14 @@ class CompteRenduBean extends LocalBean
    */
   public function getStep2BilanProf()
   {
-    $content  = '<div class="alert alert-info"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>';
-    $content .= '<div class="pdfParagrapheTitre">Bilan du Professeur Principal</div><div>';
+    $crStep2 = 'web/pages/admin/fragments/cr-step2-bilanProfPrinc.php';
     $valeur = $this->CompteRendu->getValue(self::FIELD_BILANPROFPRINCIPAL);
-    $content .= (empty($valeur) ? '<strong>Données manquantes : [Bilan Professeur Principal]</strong>' : $valeur);
-    $content .= '</div></div>';
-    return $content;
+    $strBilanProfPrinc = (empty($valeur) ? '<strong>Données manquantes : [Bilan Professeur Principal]</strong>' : $valeur);
+
+    $args = array(
+      $strBilanProfPrinc,
+    );
+    return $this->getRender($crStep2, $args);
   }
 
   /**
@@ -223,39 +225,46 @@ class CompteRenduBean extends LocalBean
 
   public function getStep1()
   {
-    $content  = '<div class="alert alert-info"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>';
+    $crStep1 = 'web/pages/admin/fragments/cr-step1.php';
+
     // Année Scolaire
-    $content .= '<div class="pdfParagrapheTitre" style="text-align: center;">'.'ANNÉE SCOLAIRE '.$this->CompteRendu->getAnneeScolaire()->getAnneeScolaire().'</div>';
+    $strAnneeScolaire = $this->CompteRendu->getAnneeScolaire()->getAnneeScolaire();
+
     // Trimestre / Classe / Effectifs
-    $content .= '<div style="text-align: center;">';
     $trim = $this->CompteRendu->getValue(self::FIELD_TRIMESTRE);
-    $frmtTrimestre = $trim.($trim==1 ? 'er' : 'ème');
-    $content .= 'Compte-rendu du conseil de classe du '.$frmtTrimestre.' trimestre<br>';
+    $strTrimestre = $trim.($trim==1 ? 'er' : 'ème');
+    $strClasse = str_replace('0', 'è', $this->CompteRendu->getDivision()->getLabelDivision());
     $valeur = $this->CompteRendu->getValue(self::FIELD_NBELEVES);
-    $texte  = ($valeur==0 ? '<strong>Données manquantes : [Nombre d\'élèves]</strong>' : $valeur);
-    $content .= 'Classe de : '.str_replace('0', 'è', $this->CompteRendu->getDivision()->getLabelDivision()).'. Effectif de la classe : '.$texte.' élèves';
-    $content .= '</div>';
-    $content .= '<br>';
+    $strNbEleves = ($valeur==0 ? '<strong>Données manquantes : [Nombre d\'élèves]</strong>' : $valeur);
+
     // Texte Introduction
-    $content .= '<div>';
     $valeur = $this->CompteRendu->getValue(self::FIELD_DATECONSEIL);
-    $texte  = (empty($valeur) ? '<strong>Données manquantes : [Date du Conseil]</strong>' : $valeur);
-    $content .= "Le conseil de classe s'est tenu le ".$texte;
+    $strDateConseil  = (empty($valeur) ? '<strong>Données manquantes : [Date du Conseil]</strong>' : $valeur);
+
     $valeur = $this->CompteRendu->getAdministrationId();
-    $texte  = ($valeur==0 ? '<strong>Données manquantes : [Présidence]</strong>' : $this->CompteRendu->getAdministration()->getFullInfo());
-    $content .= " sous la présidence de ".$texte;
+    $strPresidence  = ($valeur==0 ? '<strong>Données manquantes : [Présidence]</strong>' : $this->CompteRendu->getAdministration()->getFullInfo());
+
     $valeur = $this->CompteRendu->getValue(self::FIELD_ENSEIGNANT_ID);
-    $texte  = ($valeur==0 ? '<strong>Données manquantes : [Professeur Principal]</strong>' : $this->CompteRendu->getEnseignant()->getProfPrincipal());
-    $content .= ", en présence de ".$texte.", des autres professeurs de la classe, ";
+    $strProfPrinc  = ($valeur==0 ? '<strong>Données manquantes : [Professeur Principal]</strong>' : $this->CompteRendu->getEnseignant()->getProfPrincipal());
+
     $valeur = $this->CompteRendu->getValue(self::FIELD_PARENT1);
-    $texte  = (empty($valeur) ? '<strong>Données manquantes : [Parents Délégués]</strong>' : $this->CompteRendu->getStrParentsDelegues());
-    $content .= $texte;
+    $strParentsDelegues  = (empty($valeur) ? '<strong>Données manquantes : [Parents Délégués]</strong>' : $this->CompteRendu->getStrParentsDelegues());
+
     $valeur = $this->CompteRendu->getValue(self::FIELD_ENFANT1);
-    $texte  = (empty($valeur) ? '<strong>Données manquantes : [Elèves Délégués]</strong>' : $this->CompteRendu->getStrElevesDelegues());
-    $content .= $texte;
-    $content .= '</div>';
-    $content .= '</div>';
-    return $content;
+    $strElevesDelegues  = (empty($valeur) ? '<strong>Données manquantes : [Elèves Délégués]</strong>' : $this->CompteRendu->getStrElevesDelegues());
+
+    $args = array(
+      $strAnneeScolaire,
+      $strTrimestre,
+      $strClasse,
+      $strNbEleves,
+      $strDateConseil,
+      $strPresidence,
+      $strProfPrinc,
+      $strParentsDelegues,
+      $strElevesDelegues,
+    );
+    return $this->getRender($crStep1, $args);
   }
 
 

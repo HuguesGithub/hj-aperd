@@ -66,14 +66,14 @@ class CompteRenduActions extends LocalActions
         $CompteRendu->setField($this->post['name'], $this->post['value']);
         $this->CompteRenduServices->updateLocal($CompteRendu);
         $Bean = $CompteRendu->getBean();
-        return '{"renduStep1": '.json_encode($Bean->getStep1()).',"renduStep6": '.json_encode($Bean->getStep6()).'}';
+        $contentStep = '{"renduStep1": '.json_encode($Bean->getStep1());
       break;
       case self::FIELD_BILANPROFPRINCIPAL  :
         $CompteRendu = $this->CompteRenduServices->getCompteRenduByCrKey($this->post['crKey']);
         $CompteRendu->setField($this->post['name'], $this->post['value']);
         $this->CompteRenduServices->updateLocal($CompteRendu);
         $Bean = $CompteRendu->getBean();
-        return '{"renduStep2": '.json_encode($Bean->getStep2()).',"renduStep6": '.json_encode($Bean->getStep6()).'}';
+        $contentStep = '{"renduStep2": '.json_encode($Bean->getStep2());
       break;
       case self::FIELD_BILANELEVES  :
       case self::FIELD_BILANPARENTS :
@@ -81,7 +81,7 @@ class CompteRenduActions extends LocalActions
         $CompteRendu->setField($this->post['name'], $this->post['value']);
         $this->CompteRenduServices->updateLocal($CompteRendu);
         $Bean = $CompteRendu->getBean();
-        return '{"renduStep3": '.json_encode($Bean->getStep3()).',"renduStep6": '.json_encode($Bean->getStep6()).'}';
+        $contentStep = '{"renduStep3": '.json_encode($Bean->getStep3());
       break;
       case self::FIELD_NBCOMPLIMENTS  :
       case self::FIELD_NBENCOURAGEMENTS :
@@ -93,7 +93,7 @@ class CompteRenduActions extends LocalActions
         $CompteRendu->setField($this->post['name'], $this->post['value']);
         $this->CompteRenduServices->updateLocal($CompteRendu);
         $Bean = $CompteRendu->getBean();
-        return '{"renduStep4": '.json_encode($Bean->getStep4()).',"renduStep6": '.json_encode($Bean->getStep6()).'}';
+        $contentStep = '{"renduStep4": '.json_encode($Bean->getStep4());
       break;
       case self::FIELD_DATEREDACTION  :
       case self::FIELD_AUTEURREDACTION :
@@ -101,7 +101,7 @@ class CompteRenduActions extends LocalActions
         $CompteRendu->setField($this->post['name'], $this->post['value']);
         $this->CompteRenduServices->updateLocal($CompteRendu);
         $Bean = $CompteRendu->getBean();
-        return '{"renduStep5": '.json_encode($Bean->getStep5()).',"renduStep6": '.json_encode($Bean->getStep6()).'}';
+        $contentStep = '{"renduStep5": '.json_encode($Bean->getStep5());
       break;
       case 'status[]' :
       case 'observations[]' :
@@ -112,6 +112,7 @@ class CompteRenduActions extends LocalActions
         return '';
       break;
     }
+    return $contentStep.',"renduStep6": '.json_encode($Bean->getStep6()).'}';
   }
 
   public function dealWithBilanMatiere()
