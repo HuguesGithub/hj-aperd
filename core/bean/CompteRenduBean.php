@@ -97,7 +97,7 @@ class CompteRenduBean extends LocalBean
     $valeur = $this->CompteRendu->getValue(self::FIELD_AUTEURREDACTION);
     $strAuteurRedaction = (empty($valeur) ? '<strong>Données manquantes : [Auteur du Compte-Rendu]</strong>' : $valeur);
 
-    $strResponsabilite = (!empty($valeur) ? ', sous '.(strpos($texte, ' et ')!==false ? 'leur' : 'sa').' responsabilité.' : '');
+    $strResponsabilite = (!empty($valeur) ? ', sous '.(strpos($strAuteurRedaction, ' et ')!==false ? 'leur' : 'sa').' responsabilité.' : '');
 
     $args = array(
       $strDateRedaction,
