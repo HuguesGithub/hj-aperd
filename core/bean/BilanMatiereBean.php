@@ -140,8 +140,7 @@ class BilanMatiereBean extends LocalBean
       self::ATTR_CLASS=>self::CST_MD_SELECT.' ajaxUpload',
       self::ATTR_ID=>'statut-'.$matiereId
     );
-    $strContentPanel .= $this->getBalise(self::TAG_SELECT, $optionsSelectStatus, $args);
-    $strContentPanel .= '</div>';
+    $strContentPanel .= $this->getBalise(self::TAG_SELECT, $optionsSelectStatus, $args).'</div>';
 
     /////////////////////////////////////////////////////////////////////////
     // Et on construit le Textarea
@@ -155,8 +154,7 @@ class BilanMatiereBean extends LocalBean
     $strContentPanel .= '<label class="'.($observations!=''?'active':'').'" for="observation-'.$matiereId.'">Observations</label>';
     $strContentPanel .= '</div>';
 
-    $strContentPanel .= '</div>';
-    $strContentPanel .= '</div>';
+    $strContentPanel .= '</div></div>';
 
     $strPanelMatieres  .= $strContentPanel;
     // Fin du Panel

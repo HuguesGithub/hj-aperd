@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 /**
  * Classe WpPageCompteRendusBean
  * @author Hugues
- * @version 1.21.06.17
+ * @version 1.21.06.29
  * @since 1.21.06.01
  */
 class WpPageCompteRendusBean extends WpPageBean
@@ -64,7 +64,7 @@ class WpPageCompteRendusBean extends WpPageBean
   }
   /**
    * @return string
-   * @version 1.21.06.17
+   * @version 1.21.06.29
    * @since 1.21.06.01
    */
   public function getContent()
@@ -139,16 +139,8 @@ class WpPageCompteRendusBean extends WpPageBean
     $strObservationsByMatieres .= $BilanMatiereBean->getFragmentObservationMatiere();
 
     $strNewObservationsByMatieres .= '<div class="form-row" style="width:100%;">';
-    $strNewObservationsByMatieres .= '<div class="form-group col-md-3 btn-group-vertical btn-group-sm">';
-    $strNewObservationsByMatieres .= $strButtonMatieres;
-    $strNewObservationsByMatieres .= '</div>';
-    $strNewObservationsByMatieres .= '<div class="form-group col-md-9">';
-    $strNewObservationsByMatieres .= '  <div class="tab-content" id="v-pills-tabContent">';
-    $strNewObservationsByMatieres .= $strPanelMatieres;
-    $strNewObservationsByMatieres .= '  </div>';
-    $strNewObservationsByMatieres .= '</div>';
-    $strNewObservationsByMatieres .= '</div>';
-
+    $strNewObservationsByMatieres .= '<div class="form-group col-md-3 btn-group-vertical btn-group-sm">'.$strButtonMatieres.'</div>';
+    $strNewObservationsByMatieres .= '<div class="form-group col-md-9"><div class="tab-content" id="v-pills-tabContent">'.$strPanelMatieres.'</div></div></div>';
 
     //////////////////////////////////////////////////////////////////
 

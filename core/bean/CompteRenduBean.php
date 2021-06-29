@@ -5,12 +5,15 @@ if (!defined('ABSPATH')) {
 /**
  * Classe CompteRenduBean
  * @author Hugues
- * @version 1.21.06.17
+ * @version 1.21.06.29
  * @since 1.21.06.01
  */
 class CompteRenduBean extends LocalBean
 {
   protected $urlTemplateRowAdmin = 'web/pages/admin/fragments/row-compte-rendu.php';
+  protected $strNonRenseigne     = '<strong>Non renseigné</strong>';
+
+
   /**
    * Class Constructor
    * @param CompteRendu $CompteRendu
@@ -104,71 +107,88 @@ class CompteRenduBean extends LocalBean
     return $content;
   }
 
+  /**
+   * @return string
+   * @version 1.21.06.29
+   * @since 1.21.06.01
+   */
   public function getStep4()
   {
-    $content  = '<div class="alert alert-info"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>';
-    $content .= '<div class="pdfParagrapheTitre">Attributions du conseil de classe</div>';
-    $content .= '<div class="row">';
+    $crStep4 = 'web/pages/admin/fragments/cr-step4.php';
+
     $valeur = $this->CompteRendu->getValue(self::FIELD_NBFELICITATIONS);
-    $content .= '<div class="col-md-6">Félicitations : '.($valeur==-1 ? '<strong>Non renseigné</strong>' : $valeur).'</div>';
+    $nbFelicitations = ($valeur==-1 ? $this->strNonRenseigne : $valeur);
     $valeur = $this->CompteRendu->getValue(self::FIELD_NBMGTVL);
-    $content .= '<div class="col-md-6">Mises en Garde Travail : '.($valeur==-1 ? '<strong>Non renseigné</strong>' : $valeur).'</div>';
+    $nbMgTvl = ($valeur==-1 ? $this->strNonRenseigne : $valeur);
     $valeur = $this->CompteRendu->getValue(self::FIELD_NBCOMPLIMENTS);
-    $content .= '<div class="col-md-6">Compliments : '.($valeur==-1 ? '<strong>Non renseigné</strong>' : $valeur).'</div>';
+    $nbCompliments = ($valeur==-1 ? $this->strNonRenseigne : $valeur);
     $valeur = $this->CompteRendu->getValue(self::FIELD_NBMGCPT);
-    $content .= '<div class="col-md-6">Mises en Garde Comportement : '.($valeur==-1 ? '<strong>Non renseigné</strong>' : $valeur).'</div>';
+    $nbMgCpt = ($valeur==-1 ? $this->strNonRenseigne : $valeur);
     $valeur = $this->CompteRendu->getValue(self::FIELD_NBENCOURAGEMENTS);
-    $content .= '<div class="col-md-6">Encouragements : '.($valeur==-1 ? '<strong>Non renseigné</strong>' : $valeur).'</div>';
+    $nbEnc = ($valeur==-1 ? $this->strNonRenseigne : $valeur);
     $valeur = $this->CompteRendu->getValue(self::FIELD_NBMGCPTTVL);
-    $content .= '<div class="col-md-6">Mises en Garde Comportement et Travail : '.($valeur==-1 ? '<strong>Non renseigné</strong>' : $valeur).'</div>';
-    $content .= '</div>';
-    $content .= '</div>';
-    return $content;
+    $nbMgcCptTvl = ($valeur==-1 ? $this->strNonRenseigne : $valeur);
+
+    $args = array(
+      $nbFelicitations,
+      $nbMgTvl,
+      $nbCompliments,
+      $nbMgCpt,
+      $nbEnc,
+      $nbMgcCptTvl,
+    );
+    return $this->getRender($crStep4, $args);
   }
 
+  /**
+   * @return string
+   * @version 1.21.06.29
+   * @since 1.21.06.01
+   */
   public function getStep3()
   {
-    $content  = '<div class="alert alert-info"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>';
-    $content .= '<div class="pdfParagrapheTitre">Intervention des délégués élèves</div>';
-    $content .= '<div>';
+    $crStep4 = 'web/pages/admin/fragments/cr-step3.php';
+
     $valeur = str_replace(array("\r\n", "\r", "\n"), array("<br>", "<br>", "<br>"), $this->CompteRendu->getValue(self::FIELD_BILANELEVES));
-    $content .= (empty($valeur) ? '<strong>Données manquantes : [Bilan Délégués Elèves]</strong>' : $valeur);
-    $content .= '</div>';
-    $content .= '<div class="pdfParagrapheTitre">Intervention des délégués parents</div>';
-    $content .= '<div>';
+    $strBilanEleves = (empty($valeur) ? '<strong>Données manquantes : [Bilan Délégués Elèves]</strong>' : $valeur);
     $valeur = str_replace(array("\r\n", "\r", "\n"), array("<br>", "<br>", "<br>"), $this->CompteRendu->getValue(self::FIELD_BILANPARENTS));
-    $content .= (empty($valeur) ? '<strong>Données manquantes : [Bilan Délégués Parents]</strong>' : $valeur);
-    $content .= '</div>';
-    $content .= '</div>';
-    return $content;
+    $strBilanParents = (empty($valeur) ? '<strong>Données manquantes : [Bilan Délégués Parents]</strong>' : $valeur);
+
+    $args = array(
+      $strBilanEleves,
+      $strBilanParents,
+    );
+    return $this->getRender($crStep3, $args);
   }
 
+  /**
+   * @return string
+   * @version 1.21.06.29
+   * @since 1.21.06.01
+   */
   public function getStep2BilanProf()
   {
     $content  = '<div class="alert alert-info"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>';
-    $content .= '<div class="pdfParagrapheTitre">Bilan du Professeur Principal</div>';
-    $content .= '<div>';
+    $content .= '<div class="pdfParagrapheTitre">Bilan du Professeur Principal</div><div>';
     $valeur = $this->CompteRendu->getValue(self::FIELD_BILANPROFPRINCIPAL);
     $content .= (empty($valeur) ? '<strong>Données manquantes : [Bilan Professeur Principal]</strong>' : $valeur);
-    $content .= '</div>';
-    $content .= '</div>';
+    $content .= '</div></div>';
     return $content;
   }
 
   /**
-   * @version 1.21.06.17
+   * @return string
+   * @version 1.21.06.29
    * @since 1.21.06.01
    */
   public function getStep2BilanMatieres()
   {
+    $BilanMatieres = $this->BilanMatiereServices->getBilanMatieresWithFilters(array(self::FIELD_COMPTERENDU_ID => $this->CompteRendu->getId()));
+
     $content  = '<div class="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>';
     $content .= '<table class="table table-sm table-striped">';
     $content .= '<tr><th style="width:18%;">Matière (Nom)</th><th style="width:9%;">Statut</th><th>Observations</th></tr>';
 
-    $args = array(
-      self::FIELD_COMPTERENDU_ID => $this->CompteRendu->getId(),
-    );
-    $BilanMatieres = $this->BilanMatiereServices->getBilanMatieresWithFilters($args);
     foreach ($BilanMatieres as $BilanMatiere) {
       $content .= '<tr><td>'.$BilanMatiere->getMatiere()->getLabelMatiere();
       if ($BilanMatiere->getEnseignantId()=='') {
