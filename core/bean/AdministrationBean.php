@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 /**
  * Classe AdministrationBean
  * @author Hugues
- * @version 1.21.06.10
+ * @version 1.21.06.29
  * @since 1.21.06.10
  */
 class AdministrationBean extends LocalBean
@@ -62,25 +62,23 @@ class AdministrationBean extends LocalBean
     );
     return $this->getRender($this->urlTemplateRowAdmin, $attributes);
   }
-
-
-
-
-
-
   /**
-   * @param string $tagId
-   * @param mixed $selectedId
-   * @param boolean $isMandatory
+   * @param array $params
    * @return string
-   * @version 1.00.00
-   * @since 1.00.00
+   * @version 1.21.06.29
+   * @since 1.21.06.01
    */
-  public function getSelect($tagId=self::CST_ID, $label=self::CST_DEFAULT_SELECT, $selectedId=-1, $isMandatory=false, $isAjaxUpload=false)
+  public function getSelect($params = array())
   {
-    $Administrations = $this->AdministrationServices->getAdministrationsWithFilters();
-    return $this->getLocalSelect($Administrations, $tagId, $label, $selectedId, $isMandatory, $isAjaxUpload);
+    $params['Objs'] = $this->AdministrationServices->getAdministrationsWithFilters();
+    return parent::getSelect($params);
   }
+
+
+
+
+
+
   /**
    * @param mixed $selectedId
    * @return string;

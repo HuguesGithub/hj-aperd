@@ -56,11 +56,11 @@ insert="INSERT INTO wp_14_aperd_eleve (nomEleve, prenomEleve, divisionId, delegu
 update="UPDATE wp_14_aperd_eleve SET nomEleve='%s', prenomEleve='%s', divisionId='%s', delegue='%s' "
 
 [Enseignant]
-select="SELECT id, nomEnseignant, matiereId, status, genre "
+select="SELECT id, genre, nomEnseignant, matiereId "
 from="FROM wp_14_aperd_enseignant "
-where="WHERE nomEnseignant LIKE '%s' AND matiereId LIKE '%s' AND status LIKE '%s' "
-insert="INSERT INTO wp_14_aperd_enseignant (nomEnseignant, matiereId, status, genre) VALUES ('%s', '%s', '%s', '%s');"
-update="UPDATE wp_14_aperd_enseignant SET nomEnseignant='%s', matiereId='%s', status='%s', genre='%s' "
+where="WHERE nomEnseignant LIKE '%s' AND matiereId LIKE '%s' "
+insert="INSERT INTO wp_14_aperd_enseignant (genre, nomEnseignant) VALUES ('%s', '%s');"
+update="UPDATE wp_14_aperd_enseignant SET genre='%s', nomEnseignant='%s' "
 
 [EnseignantMatiere]
 select="SELECT id, enseignantId, matiereId "

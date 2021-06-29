@@ -167,13 +167,13 @@ class WpPageCompteRendusBean extends WpPageBean
     // On enrichi le template puis on le restitue.
     $args = array(
       // Menu déroulant Année Scolaire - 1
-      $AnneeScolaireBean->getSelect(self::FIELD_ANNEESCOLAIRE_ID, self::CST_DEFAULT_SELECT, $this->CompteRendu->getAnneeScolaireId(), false, true),
+      $AnneeScolaireBean->getSelect(array('tag'=>self::FIELD_ANNEESCOLAIRE_ID, 'selectedId'=>$this->CompteRendu->getAnneeScolaireId(), 'readonly'=>'', self::AJAX_UPLOAD=>'')),
       // Menu déroulant Classe Scolaire - 2
-      $DivisionBean->getSelect(self::FIELD_DIVISION_ID, self::CST_DEFAULT_SELECT, $this->CompteRendu->getDivisionId(), false, true),
+      $DivisionBean->getSelect(array('tag'=>self::FIELD_DIVISION_ID, 'selectedId'=>$this->CompteRendu->getDivisionId(), 'readonly'=>'', self::AJAX_UPLOAD=>'')),
       // Menu déroulant Présidence - 3
-      $AdministrationBean->getSelect(self::FIELD_ADMINISTRATION_ID, self::CST_DEFAULT_SELECT, $this->CompteRendu->getValue(self::FIELD_ADMINISTRATION_ID), true, true),
+      $AdministrationBean->getSelect(array('tag'=>self::FIELD_ADMINISTRATION_ID, 'selectedId'=>$this->CompteRendu->getValue(self::FIELD_ADMINISTRATION_ID), 'required'=>'', self::AJAX_UPLOAD=>'')),
       // Menu déroulant Prof Principal - 4
-      $EnseignantBean->getSelect(self::FIELD_ENSEIGNANT_ID, self::CST_DEFAULT_SELECT, $profPrincId, true, true),
+      $EnseignantBean->getSelect(array('tag'=>self::FIELD_ENSEIGNANT_ID, 'selectedId'=>$profPrincId, 'required'=>'', self::AJAX_UPLOAD=>'')),
       // Premier bloc d'observations par matière - 5
       (self::isAdmin() ? $strNewObservationsByMatieres : $strObservationsByMatieres),
       // Menu déroulant pour le trimestre - 6

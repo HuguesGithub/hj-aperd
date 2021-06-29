@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 /**
  * Classe EnseignantServices
  * @author Hugues
- * @version 1.21.06.04
+ * @version 1.21.06.29
  * @since 1.21.06.04
  */
 class EnseignantServices extends LocalServices
@@ -38,7 +38,7 @@ class EnseignantServices extends LocalServices
   /**
    * @param array $arrFilters
    * @return array
-   * @version 1.21.06.04
+   * @version 1.21.06.29
    * @since 1.21.06.04
    */
   private function buildFilters($arrFilters)
@@ -46,7 +46,6 @@ class EnseignantServices extends LocalServices
     $arrParams = array();
     array_push($arrParams, $this->getValueToSearch($arrFilters, self::FIELD_NOMENSEIGNANT));
     array_push($arrParams, $this->getValueToSearch($arrFilters, self::FIELD_MATIERE_ID));
-    array_push($arrParams, $this->getValueToSearch($arrFilters, self::FIELD_STATUS));
     return $arrParams;
   }
   /**

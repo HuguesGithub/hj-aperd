@@ -2,7 +2,7 @@
 /**
  * Interface Constants
  * @author Hugues
- * @version 1.21.06.10
+ * @version 1.21.06.29
  * @since 1.21.06.04
  */
 interface ConstantsInterface
@@ -21,6 +21,7 @@ interface ConstantsInterface
   const ATTR_CLASS             = 'class';
   const ATTR_HREF              = 'href';
   const ATTR_ID                = 'id';
+  const ATTR_MULTIPLE          = 'multiple';
   const ATTR_NAME              = 'name';
   const ATTR_PLACEHOLDER       = 'placeholder';
   const ATTR_READONLY          = 'readonly';

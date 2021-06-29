@@ -5,8 +5,8 @@ if (!defined('ABSPATH')) {
 /**
  * Classe BilanMatiereBean
  * @author Hugues
- * @version 1.00.00
- * @since 1.00.00
+ * @version 1.21.06.29
+ * @since 1.21.06.01
  */
 class BilanMatiereBean extends LocalBean
 {
@@ -24,8 +24,8 @@ class BilanMatiereBean extends LocalBean
   }
   /**
    * @return string
-   * @version 1.00.00
-   * @since 1.00.00
+   * @version 1.21.06.29
+   * @since 1.21.06.01
    */
   public function getFragmentObservationMatiere()
   {
@@ -51,9 +51,9 @@ class BilanMatiereBean extends LocalBean
       // Identifiant de l'observation - 1
       '',
       // Menu déroulant des matières - 2
-      $MatiereBean->getSelect(self::FIELD_MATIERE_ID.'s[]', self::CST_DEFAULT_SELECT, $this->BilanMatiere->getMatiereId()),
+      $MatiereBean->getSelect(array('tag'=>self::FIELD_MATIERE_ID.'s[]', 'selectedId'=>$this->BilanMatiere->getMatiereId())),
       // Menu déroulant des enseignants - 3
-      $EnseignantBean->getSelect(self::FIELD_ENSEIGNANT_ID.'s[]', self::CST_DEFAULT_SELECT, $this->BilanMatiere->getEnseignantId()),
+      $EnseignantBean->getSelect(array('tag'=>self::FIELD_ENSEIGNANT_ID.'s[]', 'selectedId'=>$this->BilanMatiere->getEnseignantId())),
       // Menu déroulant des statuts - 4
       $this->getBalise(self::TAG_SELECT, $optionsSelectStatus, array(self::ATTR_NAME=>'status[]', self::ATTR_CLASS=>self::CST_MD_SELECT)),
       // Textarea de saisie des observations - 5
@@ -64,6 +64,13 @@ class BilanMatiereBean extends LocalBean
     return $this->getRender($this->urlFragmentObservationMatiere, $args);
   }
 
+  /**
+   * @param string $strButtonMatires
+   * @param string $strPanelMatieres
+   * @param boolean $isFirstButton
+   * @version 1.21.06.29
+   * @since 1.21.06.01
+   */
   public function getBilanMatiere(&$strButtonMatieres, &$strPanelMatieres, &$isFirstButton=false)
   {
     /////////////////////////////////////////////////////////////////////////
@@ -116,7 +123,7 @@ class BilanMatiereBean extends LocalBean
     $strContentPanel .= '<div class="form-group col-md-8">';
     $strContentPanel .= '<label for="enseignantId-'.$matiereId.'">Enseignant</label>';
     $EnseignantBean = new EnseignantBean();
-    $strContentPanel .= $EnseignantBean->getSelect(self::FIELD_ENSEIGNANT_ID.'s[]', self::CST_DEFAULT_SELECT, $enseignantId, false, true);
+    $strContentPanel .= $EnseignantBean->getSelect(array('tag'=>self::FIELD_ENSEIGNANT_ID.'s[]', 'selectedId'=>$enseignantId, self::AJAX_UPLOAD=>''));
     $strContentPanel .= '</div>';
 
     /////////////////////////////////////////////////////////////////////////

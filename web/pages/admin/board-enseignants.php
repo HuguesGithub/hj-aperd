@@ -43,9 +43,8 @@
               <tr>
                 <td id="cb" class="manage-column column-cb check-column"><input id="cb-select-all-1" type="checkbox"></td>
                 <th scope="col" id="nomEnseignant" class="manage-column">Nom Enseignant</th>
-                <th scope="col" id="matiereId" class="manage-column">Matière</th>
-                <th scope="col" id="division" class="manage-column">Division</th>
-                <th scope="col" id="anneeScolaire" class="manage-column">Année Scolaire</th>
+                <th scope="col" id="matiereId" class="manage-column">Matière(s)</th>
+                <th scope="col" id="division" class="manage-column">Division (PP)</th>
                 <th scope="col" id="actionEnseignant" class="manage-column column-actions">Actions</th>
               </tr>
             </thead>
@@ -54,9 +53,8 @@
               <tr>
                 <td class="manage-column column-cb check-column"><input id="cb-select-all-2" type="checkbox"></td>
                 <th scope="col" class="manage-column">Nom Enseignant</th>
-                <th scope="col" class="manage-column">Matière</th>
-                <th scope="col" class="manage-column">Division</th>
-                <th scope="col" class="manage-column">Année Scolaire</th>
+                <th scope="col" class="manage-column">Matière(s)</th>
+                <th scope="col" class="manage-column">Division (PP)</th>
                 <th scope="col" class="manage-column">Actions</th>
               </tr>
             </tfoot>

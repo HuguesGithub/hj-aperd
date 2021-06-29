@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 /**
  * Classe Enseignant
  * @author Hugues
- * @version 1.21.06.17
+ * @version 1.21.06.21
  * @since 1.21.06.04
  */
 class Enseignant extends LocalDomain
@@ -43,6 +43,9 @@ class Enseignant extends LocalDomain
    * @var bool $status
    */
   protected $status;
+
+  protected $matiereIds;
+  protected $divisionId;
 
   //////////////////////////////////////////////////
   // GETTERS & SETTERS
@@ -224,28 +227,23 @@ class Enseignant extends LocalDomain
    */
   public function controleDonnees(&$notif, &$msg)
   {
-    // TODO : Contrôle sur la Division et l'Année Scolaire des Profs Principaux.
+    $returned = true;
     // Le nom de l'Enseignant et la matière doivent être renseignés
-    if (empty($this->nomEnseignant) || empty($this->matiereId)) {
+    if (empty($this->nomEnseignant)) {
       $notif = self::NOTIF_DANGER;
       $msg   = self::MSG_ERREUR_CONTROL_EXISTENCE;
-      return false;
+      $returned = false;
     }
-    // Le nom de l'Enseignant doit être unique et donc, ne pas exister en base
-    $Enseignants = $this->EnseignantServices->getEnseignantsWithFilters(array(self::FIELD_NOMENSEIGNANT=>$this->nomEnseignant));
-    if (!empty($Enseignants)) {
-      $notif = self::NOTIF_DANGER;
-      $msg   = self::MSG_ERREUR_CONTROL_UNICITE;
-      return false;
+    if ($returned) {
+      // Le nom de l'Enseignant doit être unique et donc, ne pas exister en base
+      $Enseignants = $this->EnseignantServices->getEnseignantsWithFilters(array(self::FIELD_NOMENSEIGNANT=>$this->nomEnseignant));
+      if (!empty($Enseignants)) {
+        $notif = self::NOTIF_DANGER;
+        $msg   = self::MSG_ERREUR_CONTROL_UNICITE;
+        $returned = false;
+      }
     }
-    // La Matière doit exister
-    $Matiere = $this->getMatiere();
-    if ($Matiere->getId()=='') {
-      $notif = self::NOTIF_DANGER;
-      $msg   = sprintf(self::MSG_ERREUR_CONTROL_INEXISTENCE, 'Matière');
-      return false;
-    }
-    return true;
+    return $returned;
   }
   /**
    * @param string $rowContent
@@ -298,6 +296,23 @@ class Enseignant extends LocalDomain
       }
     }
     return false;
+  }
+
+  /**
+   * @param string &$notif
+   * @param string &$msg
+   * @return boolean
+   * @version 1.21.06.23
+   * @since 1.21.06.23
+   */
+  public function insert(&$notif, &$msg)
+  {
+    $returned = parent::insert($notif, $msg);
+    if ($returned) {
+      // On doit voir pour insérer les jointures Enseignant-Matiere(s) et une éventuelle entrée Prof Principal.
+      echo "[".$this->matiereIds."][".$this->divisionId."]";
+    }
+    return $returned;
   }
 
 

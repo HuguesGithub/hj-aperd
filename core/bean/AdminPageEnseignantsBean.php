@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 /**
  * AdminPageEnseignantsBean
  * @author Hugues
- * @version 1.21.06.21
+ * @version 1.21.06.22
  * @since 1.21.06.01
  */
 class AdminPageEnseignantsBean extends AdminPageBean
@@ -22,12 +22,7 @@ class AdminPageEnseignantsBean extends AdminPageBean
     $this->EnseignantServices = new EnseignantServices();
     $this->Services           = new EnseignantServices();
     // Initialisation de l'Enseignant sélectionné s'il y en a un.
-    if ($urlParams!=null && isset($urlParams['id'])) {
-      $this->Enseignant = $this->EnseignantServices->selectLocal($urlParams['id']);
-    } else {
-      $this->Enseignant = new Enseignant();
-    }
-    $this->LocalObject    = $this->Enseignant;
+    $this->LocalObject = ($urlParams!=null && isset($urlParams[self::FIELD_ID]) ? $this->EnseignantServices->selectLocal($urlParams[self::FIELD_ID]) : new Enseignant());
     // On stocke les paramètres
     $this->urlParams = $urlParams;
     // On prépare le stockage pour les ids multiples si existants.
@@ -41,19 +36,19 @@ class AdminPageEnseignantsBean extends AdminPageBean
   /**
    * Retourne l'Enseignant
    * @return Enseignant
-   * @version 1.21.06.06
+   * @version 1.21.06.22
    * @since 1.21.06.06
    */
   public function getObject()
-  { return $this->Enseignant; }
+  { return $this->LocalObject; }
   /**
    * Retourne le Service
    * @return EnseignantServices
-   * @version 1.21.06.06
+   * @version 1.21.06.22
    * @since 1.21.06.06
    */
   public function getServices()
-  { return $this->EnseignantServices; }
+  { return $this->Services; }
   /**
    * @param array $urlParams
    * @return $Bean
@@ -70,7 +65,7 @@ class AdminPageEnseignantsBean extends AdminPageBean
   /**
    * @param array $urlParams
    * @return string
-   * @version 1.21.06.21
+   * @version 1.21.06.22
    * @since 1.21.06.06
    */
   public function getContentPage()
@@ -80,68 +75,10 @@ class AdminPageEnseignantsBean extends AdminPageBean
     $msg = '';
     $initPanel = self::CST_CREATE;
 
+    ///////////////////////////////////////////
     // Analyse de l'action éventuelle.
     if (!isset($this->urlParams['filter_action']) && isset($this->urlParams[self::CST_POSTACTION])) {
-      switch($this->urlParams[self::CST_POSTACTION]) {
-        case self::CST_CREATION :
-          // Exécution de la création
-          $this->Enseignant->setNomEnseignant($this->urlParams[self::FIELD_NOMENSEIGNANT]);
-          $this->Enseignant->setMatiereId($this->urlParams[self::FIELD_MATIERE_ID]);
-          $this->Enseignant->insert($notif, $msg);
-          $this->Enseignant = new Enseignant();
-        break;
-        case self::CST_EDITION :
-          // Exécution de la mise à jour
-          $this->Enseignant->setNomEnseignant($this->urlParams[self::FIELD_NOMENSEIGNANT]);
-          $this->Enseignant->setMatiereId($this->urlParams[self::FIELD_MATIERE_ID]);
-          $this->Enseignant->update($notif, $msg);
-          $initPanel = self::CST_EDIT;
-        break;
-        case self::CST_SUPPRESSION :
-          // Exécution de la suppression unitaire ou groupée
-          $this->delete($notif, $msg);
-          $this->Enseignant = new Enseignant();
-        break;
-        case self::CST_IMPORT :
-          // Exécution de l'import
-          $this->import($notif, $msg);
-          $this->Enseignant = new Enseignant();
-        break;
-        case self::CST_BULK :
-          // Gestion des Actions groupées
-          switch ($this->urlParams[self::CST_ACTION]) {
-            case self::CST_TRASH :
-              // Confirmation de la Suppression de masse
-              if (empty($this->urlParams[self::CST_POST])) {
-                $msg = self::MSG_BULK_DELETE_IMPOSSIBLE;
-                $notif = self::NOTIF_WARNING;
-              } else {
-                $initPanel = self::CST_BULK_TRASH;
-              }
-            break;
-            case self::CST_EXPORT :
-              // Exécution de l'exportation
-              if (empty($this->urlParams[self::CST_POST])) {
-                $msg = self::MSG_BULK_EXPORT_IMPOSSIBLE;
-                $notif = self::NOTIF_WARNING;
-              } else {
-                $msg = ExportActions::dealWithStaticExport(self::PAGE_ENSEIGNANT, $this->urlParams[self::CST_POST]);
-                $notif = self::NOTIF_SUCCESS;
-                $initPanel = self::CST_BULK_EXPORT;
-              }
-            break;
-            default :
-              // Erreur sur l'action groupée, non reconnue
-              $notif = self::NOTIF_WARNING;
-              $msg   = sprintf(self::MSG_BULK_ACTION_INDEFINIE, array($this->urlParams[self::CST_ACTION]));
-            break;
-          }
-        break;
-        default :
-          // Affichage des écrans simples : création ou édition
-          $initPanel = $this->urlParams[self::CST_POSTACTION];
-        break;
-      }
+      $this->parseUrlParams($initPanel, $notif, $msg);
     }
 
     ///////////////////////////////////////////
@@ -151,7 +88,7 @@ class AdminPageEnseignantsBean extends AdminPageBean
     }
     ///////////////////////////////////////////:
     // On initialise les panneaux latéraux droit
-    $this->msgConfirmDelete = sprintf(self::MSG_CONFIRM_SUPPR_ENSEIGNANT, $this->Enseignant->getFullName());
+    $this->msgConfirmDelete = sprintf(self::MSG_CONFIRM_SUPPR_ENSEIGNANT, $this->LocalObject->getFullName());
     $this->tagConfirmDeleteMultiple = self::MSG_CONFIRM_SUPPR_ENSEIGNANTS;
 
     $MatiereBean = new MatiereBean();
@@ -159,38 +96,39 @@ class AdminPageEnseignantsBean extends AdminPageBean
     $AnneeScolaireBean = new AnneeScolaireBean();
 
     $argMatSelect = array(
-      'tag'        => self::FIELD_MATIERE_ID,
-      self::ATTR_REQUIRED => '',
+      'tag'        => self::FIELD_MATIERE_ID.'s[]',
+      self::ATTR_MULTIPLE => '',
     );
     $argDivSelect = array(
       'tag'        => self::FIELD_DIVISION_ID,
-      self::ATTR_REQUIRED => '',
-    );
-    $argAsSelect = array(
-      'tag'        => self::FIELD_ANNEESCOLAIRE_ID,
-      self::ATTR_REQUIRED => '',
     );
     $this->attributesFormNew = array(
-      '', '', '',
+      // Genre de l'Enseignant - 1
+      '',
+      // Nom de l'Enseignant - 2
+      '',
+      // Prénom de l'Enseignant - 3
+      '',
+      // Liste déroulante sur la Matière enseignée par l'Enseignant - 4
       $MatiereBean->getSelect($argMatSelect),
+      // Liste déroulante sur la Division où l'Enseignant est Prof Principal- 5
       $DivisionBean->getSelect($argDivSelect),
-      $AnneeScolaireBean->getSelect($argAsSelect),
     );
 
-    $ProfPrincipals = $this->ProfPrincipalServices->getProfPrincipalsWithFilters(array(self::FIELD_ENSEIGNANT_ID=>$this->Enseignant->getId()));
+    $ProfPrincipals = $this->ProfPrincipalServices->getProfPrincipalsWithFilters(array(self::FIELD_ENSEIGNANT_ID=>$this->LocalObject->getId()));
     $ProfPrincipal = (empty($ProfPrincipals) ? new ProfPrincipal() : array_shift($ProfPrincipals));
 
-    $argMatSelect['selectedId'] = $this->Enseignant->getMatiereId();
+    $argMatSelect['selectedId'] = $this->LocalObject->getMatiereId();
     $argDivSelect['selectedId'] = $ProfPrincipal->getDivisionId();
     $argAsSelect['selectedId'] = $ProfPrincipal->getAnneeScolaireId();
 
     $this->attributesFormEdit = array(
       // Genre de l'Enseignant - 1
-      $this->Enseignant->getGenre(),
+      $this->LocalObject->getGenre(),
       // Nom de l'Enseignant - 2
-      $this->Enseignant->getNomEnseignant(),
+      $this->LocalObject->getNomEnseignant(),
       // Prénom de l'Enseignant - 3
-      $this->Enseignant->getPrenomEnseignant(),
+      $this->LocalObject->getPrenomEnseignant(),
       // Liste déroulante sur la Matière enseignée par l'Enseignant - 4
       $MatiereBean->getSelect($argMatSelect),
       // Liste déroulante sur la Division enseignée par l'Enseignant - 5
@@ -204,6 +142,25 @@ class AdminPageEnseignantsBean extends AdminPageBean
     // On retourne le listing et les panneaux latéraux droit
     return $this->getListingPage();
   }
+
+  /**
+   * @version 1.21.06.22
+   * @since 1.21.06.22
+   */
+  public function setLocalObject()
+  {
+    $this->LocalObject->setGenre($this->urlParams[self::FIELD_GENRE]);
+    $this->LocalObject->setNomEnseignant($this->urlParams[self::FIELD_NOMENSEIGNANT]);
+    //$this->LocalObject->setPrenomEnseignant($this->urlParams[self::FIELD_PRENOMENSEIGNANT]);
+    $this->LocalObject->setField('matiereIds', $this->urlParams[self::FIELD_MATIERE_ID.'s']);
+    $this->LocalObject->setField(self::FIELD_DIVISION_ID, $this->urlParams[self::FIELD_DIVISION_ID]);
+  }
+  /**
+   * @version 1.21.06.22
+   * @since 1.21.06.22
+   */
+  public function initLocalObject()
+  { $this->LocalObject = new Enseignant(); }
 
   /**
    * Gestion de l'affichage de la page.
@@ -225,6 +182,7 @@ class AdminPageEnseignantsBean extends AdminPageBean
     // On récupère toutes les matières puis on concatène les rows.
     $strRows = '';
     $Enseignants = $this->EnseignantServices->getEnseignantsWithFilters($argFilters);
+    echo "[".MySQL::wpdbLastQuery()."]";
     foreach ($Enseignants as $Enseignant) {
       $Bean = $Enseignant->getBean();
       $strRows .= $Bean->getRowForAdminPage(in_array($Enseignant->getId(), $this->arrIds));

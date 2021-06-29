@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 /**
  * AdminPageAnneeScolairesBean
  * @author Hugues
- * @version 1.21.06.19
+ * @version 1.21.06.21
  * @since 1.21.06.10
  */
 class AdminPageAnneeScolairesBean extends AdminPageBean
@@ -22,12 +22,7 @@ class AdminPageAnneeScolairesBean extends AdminPageBean
     $this->AnneeScolaireServices = new AnneeScolaireServices();
     $this->Services              = new AnneeScolaireServices();
     // Initialisation de l'Année colaire sélectionnée s'il y en a une.
-    if ($urlParams!=null && isset($urlParams[self::FIELD_ID])) {
-      $this->AnneeScolaire = $this->AnneeScolaireServices->selectLocal($urlParams[self::FIELD_ID]);
-    } else {
-      $this->AnneeScolaire = new AnneeScolaire();
-    }
-    $this->LocalObject    = $this->AnneeScolaire;
+    $this->LocalObject = ($urlParams!=null && isset($urlParams[self::FIELD_ID]) ? $this->AnneeScolaireServices->selectLocal($urlParams[self::FIELD_ID]) : new AnneeScolaire());
     // On stocke les paramètres
     $this->urlParams = $urlParams;
     // On prépare le stockage pour les ids multiples si existants.
@@ -37,19 +32,19 @@ class AdminPageAnneeScolairesBean extends AdminPageBean
   /**
    * Retourne l'Année Scolaire
    * @return AnneeScolaire
-   * @version 1.21.06.10
+   * @version 1.21.06.21
    * @since 1.21.06.10
    */
   public function getObject()
-  { return $this->AnneeScolaire; }
+  { return $this->LocalObject; }
   /**
    * Retourne le Service
    * @return AnneeScolaireService
-   * @version 1.21.06.10
+   * @version 1.21.06.21
    * @since 1.21.06.10
    */
   public function getServices()
-  { return $this->AnneeScolaireServices; }
+  { return $this->Services; }
 
   /**
    * @param array $urlParams
@@ -67,7 +62,7 @@ class AdminPageAnneeScolairesBean extends AdminPageBean
   /**
    * @param array $urlParams
    * @return string
-   * @version 1.21.06.19
+   * @version 1.21.06.21
    * @since 1.21.06.10
    */
   public function getContentPage()
@@ -80,64 +75,7 @@ class AdminPageAnneeScolairesBean extends AdminPageBean
     ///////////////////////////////////////////
     // Analyse de l'action éventuelle.
     if (isset($this->urlParams[self::CST_POSTACTION])) {
-      switch($this->urlParams[self::CST_POSTACTION]) {
-        case self::CST_CREATION :
-          // Exécution de la création
-          $this->AnneeScolaire->setAnneeScolaire($this->urlParams[self::FIELD_ANNEESCOLAIRE]);
-          $this->AnneeScolaire->insert($notif, $msg);
-          $this->AnneeScolaire = new AnneeScolaire();
-        break;
-        case self::CST_EDITION :
-          // Exécution de la mise à jour
-          $this->AnneeScolaire->setAnneeScolaire($this->urlParams[self::FIELD_ANNEESCOLAIRE]);
-          $this->AnneeScolaire->update($notif, $msg);
-          $initPanel = self::CST_EDIT;
-        break;
-        case self::CST_SUPPRESSION :
-          // Exécution de la suppression unitaire ou groupée
-          $this->delete($notif, $msg);
-          $this->AnneeScolaire = new AnneeScolaire();
-        break;
-        case self::CST_IMPORT :
-          // Exécution de l'import
-          $this->import($notif, $msg);
-          $this->AnneeScolaire = new AnneeScolaire();
-        break;
-        case self::CST_BULK :
-          // Gestion des Actions groupées
-          switch ($this->urlParams[self::CST_ACTION]) {
-            case self::CST_TRASH :
-              // Confirmation de la Suppression de masse
-              if (empty($this->urlParams[self::CST_POST])) {
-                $msg = self::MSG_BULK_DELETE_IMPOSSIBLE;
-                $notif = self::NOTIF_WARNING;
-              } else {
-                $initPanel = self::CST_BULK_TRASH;
-              }
-            break;
-            case self::CST_EXPORT :
-              // Exécution de l'exportation
-              if (empty($this->urlParams[self::CST_POST])) {
-                $msg = self::MSG_BULK_EXPORT_IMPOSSIBLE;
-                $notif = self::NOTIF_WARNING;
-              } else {
-                $msg = ExportActions::dealWithStaticExport(self::PAGE_ANNEE_SCOLAIRE, $this->urlParams[self::CST_POST]);
-                $notif = self::NOTIF_SUCCESS;
-                $initPanel = self::CST_BULK_EXPORT;
-              }
-            break;
-            default :
-              // Erreur sur l'action groupée, non reconnue
-              $notif = self::NOTIF_WARNING;
-              $msg   = sprintf(self::MSG_BULK_ACTION_INDEFINIE, array($this->urlParams[self::CST_ACTION]));
-            break;
-          }
-        break;
-        default :
-          // Affichage des écrans simples : création ou édition
-          $initPanel = $this->urlParams[self::CST_POSTACTION];
-        break;
-      }
+      $this->parseUrlParams($initPanel, $notif, $msg);
     }
 
     ///////////////////////////////////////////
@@ -147,7 +85,7 @@ class AdminPageAnneeScolairesBean extends AdminPageBean
     }
     ///////////////////////////////////////////:
     // On initialise les panneaux latéraux droit
-    $this->msgConfirmDelete = sprintf(self::MSG_CONFIRM_SUPPR_ANNEESCOLAIRE, $this->AnneeScolaire->getAnneeScolaire());
+    $this->msgConfirmDelete = sprintf(self::MSG_CONFIRM_SUPPR_ANNEESCOLAIRE, $this->LocalObject->getAnneeScolaire());
     $this->tagConfirmDeleteMultiple = self::MSG_CONFIRM_SUPPR_ANNEESCOLAIRES;
     $this->attributesFormNew = $this->LocalObject->toArrayForm();
     $this->attributesFormEdit  = $this->LocalObject->toArrayForm(false);
@@ -156,6 +94,21 @@ class AdminPageAnneeScolairesBean extends AdminPageBean
     // On retourne le listing et les panneaux latéraux droit
     return $this->getListingPage();
   }
+
+  /**
+   * @version 1.21.06.21
+   * @since 1.21.06.21
+   */
+  public function setLocalObject()
+  {
+    $this->LocalObject->setAnneeScolaire($this->urlParams[self::FIELD_ANNEESCOLAIRE]);
+  }
+  /**
+   * @version 1.21.06.21
+   * @since 1.21.06.21
+   */
+  public function initLocalObject()
+  { $this->LocalObject = new AnneeScolaire(); }
 
   /**
    * Gestion de l'affichage de la page.

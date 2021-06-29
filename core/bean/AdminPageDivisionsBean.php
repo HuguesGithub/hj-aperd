@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 /**
  * AdminPageDivisionsBean
  * @author Hugues
- * @version 1.21.06.21
+ * @version 1.21.06.29
  * @since 1.21.06.01
  */
 class AdminPageDivisionsBean extends AdminPageBean
@@ -22,7 +22,7 @@ class AdminPageDivisionsBean extends AdminPageBean
     $this->DivisionServices = new DivisionServices();
     $this->Services = new DivisionServices();
     // Initialisation de la Division sélectionnée s'il y en a une.
-    $this->LocalObject    = ($urlParams!=null && isset($urlParams[self::FIELD_ID]) ? $this->DivisionServices->selectLocal($urlParams[self::FIELD_ID]) : new Division());
+    $this->LocalObject = ($urlParams!=null && isset($urlParams[self::FIELD_ID]) ? $this->DivisionServices->selectLocal($urlParams[self::FIELD_ID]) : new Division());
     // On stocke les paramètres
     $this->urlParams = $urlParams;
     // On prépare le stockage pour les ids multiples si existants.
@@ -62,7 +62,7 @@ class AdminPageDivisionsBean extends AdminPageBean
   /**
    * @param array $urlParams
    * @return string
-   * @version 1.21.06.21
+   * @version 1.21.06.29
    * @since 1.21.06.06
    */
   public function getContentPage()
@@ -86,8 +86,8 @@ class AdminPageDivisionsBean extends AdminPageBean
     ///////////////////////////////////////////:
     // On initialise les panneaux latéraux droit
     $this->msgConfirmDelete = sprintf(self::MSG_CONFIRM_SUPPR_DIVISION, $this->LocalObject->getFullName());
-    $this->attributesFormNew = array('');
     $this->tagConfirmDeleteMultiple = self::MSG_CONFIRM_SUPPR_DIVISIONS;
+    $this->attributesFormNew = array('');
     $this->attributesFormEdit  = array(
       // Libellé de la Division - 1
       $this->LocalObject->getLabelDivision(),

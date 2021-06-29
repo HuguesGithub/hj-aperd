@@ -5,8 +5,8 @@ if (!defined('ABSPATH')) {
 /**
  * AdminPageCompteRendusBean
  * @author Hugues
- * @version 1.00.01
- * @since 1.00.01
+ * @version 1.21.06.29
+ * @since 1.21.06.01
  */
 class AdminPageCompteRendusBean extends AdminPageBean
 {
@@ -91,6 +91,8 @@ class AdminPageCompteRendusBean extends AdminPageBean
   }
   /**
    * @return string
+   * @version 1.21.06.29
+   * @since 1.21.06.01
    */
   public function getListingPage($urlParams)
   {
@@ -118,7 +120,12 @@ class AdminPageCompteRendusBean extends AdminPageBean
     /////////////////////////////////////////////////////////////////////////////
     $strFiltres = '';
     $AnneeScolaireBean = new AnneeScolaireBean();
-    $strFiltres .= $AnneeScolaireBean->getSelect(self::FIELD_ANNEESCOLAIRE_ID, 'Toutes les années scolaires', $anneeScolaireId);
+    $argAsSelect = array(
+      'tag'        => self::FIELD_ANNEESCOLAIRE_ID,
+      'label'      => 'Toutes les années scolaires',
+      'selectedId' => $anneeScolaireId,
+    );
+    $strFiltres .= $AnneeScolaireBean->getSelect($argAsSelect);
     /////////////////////////////////////////////////////////////////////////////
     $attributes = array(
       self::ATTR_CLASS => self::CST_MD_SELECT,
@@ -131,7 +138,12 @@ class AdminPageCompteRendusBean extends AdminPageBean
     $strFiltres .= $this->getBalise(self::TAG_SELECT, $strOptions, $attributes);
     /////////////////////////////////////////////////////////////////////////////
     $DivisionBean = new DivisionBean();
-    $strFiltres .= $DivisionBean->getSelect(self::FIELD_DIVISION_ID, 'Toutes les divisions', $filterClasseId);
+    $argDivisionSelect = array(
+      'tag'        => self::FIELD_DIVISION_ID,
+      'label'      => 'Toutes les divisions',
+      'selectedId' => $filterClasseId,
+    );
+    $strFiltres .= $DivisionBean->getSelect($argDivisionSelect);
     /////////////////////////////////////////////////////////////////////////////
     $attributes = array(
       self::ATTR_CLASS => self::CST_MD_SELECT,
@@ -178,7 +190,7 @@ class AdminPageCompteRendusBean extends AdminPageBean
     // On restitue le template enrichi.
     $attibutes = array(
       // Un Select des Années Scolaires - 1
-      $AnneeScolaireBean->getSelect(self::FIELD_ANNEESCOLAIRE_ID, self::CST_DEFAULT_SELECT),
+      $AnneeScolaireBean->getSelect(array('tag'=>self::FIELD_ANNEESCOLAIRE_ID)),
       // Un Select des Trimestres - 2
       $strSelectTrimestre,
       // Le message d'erreur si la génération s'est mal passée - 3
@@ -204,7 +216,7 @@ class AdminPageCompteRendusBean extends AdminPageBean
       // Date du conseil de classe - 13
       $this->CompteRendu==null ? '' : $this->CompteRendu->getDateConseil(),
       // Président de séance (c'est un select) - 14
-      $AdministrationBean->getSelect(self::FIELD_ADMINISTRATION_ID, self::CST_DEFAULT_SELECT, ($this->CompteRendu==null ? -1 : $this->CompteRendu->getAdministrationId())),
+      $AdministrationBean->getSelect(array('tag'=>self::FIELD_ADMINISTRATION_ID, 'selectedId'=>($this->CompteRendu==null ? -1 : $this->CompteRendu->getAdministrationId()))),
       '','','','','','','','','','','','','','','','',
     );
     return $this->getRender($this->urlTemplatePageCompteRenduAdmin, $attibutes);

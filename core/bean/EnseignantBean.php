@@ -5,8 +5,8 @@ if (!defined('ABSPATH')) {
 /**
  * Classe EnseignantBean
  * @author Hugues
- * @version 1.00.01
- * @since 1.00.00
+ * @version 1.21.06.29
+ * @since 1.21.06.01
  */
 class EnseignantBean extends LocalBean
 {
@@ -14,16 +14,19 @@ class EnseignantBean extends LocalBean
   /**
    * Class Constructor
    * @param Enseignant $Enseignant
-   * @version 1.00.00
-   * @since 1.00.00
    */
   public function __construct($Enseignant='')
   {
     $this->EnseignantServices = new EnseignantServices();
     $this->ProfPrincipalServices = new ProfPrincipalServices();
     $this->Enseignant = ($Enseignant=='' ? new Enseignant() : $Enseignant);
+    $this->EnseignantMatiereServices = new EnseignantMatiereServices();
   }
   /**
+   * @param boolean $checked
+   * @return string
+   * @version 1.21.06.29
+   * @since 1.21.06.01
    */
   public function getRowForAdminPage($checked=false)
   {
@@ -44,6 +47,18 @@ class EnseignantBean extends LocalBean
     $ProfPrincipals = $this->ProfPrincipalServices->getProfPrincipalsWithFilters(array(self::FIELD_ENSEIGNANT_ID=>$this->Enseignant->getId()));
     $ProfPrincipal  = (empty($ProfPrincipals) ? new ProfPrincipal() : array_shift($ProfPrincipals));
 
+    ////////////////////////////////////////////////////////
+    // Gestion des Matières
+    $EnseignantMatieres = $this->EnseignantMatiereServices->getEnseignantMatieresWithFilters(array(self::FIELD_ENSEIGNANT_ID=>$this->Enseignant->getId()));
+    $arrEnseignantMatieres = array();
+    while (!empty($EnseignantMatieres)) {
+      $EnseignantMatiere = array_shift($EnseignantMatieres);
+      array_push($arrEnseignantMatieres, $EnseignantMatiere->getMatiere()->getLabelMatiere());
+    }
+    ////////////////////////////////////////////////////////
+
+    ////////////////////////////////////////////////////////
+    // On enrichi le template et on le retourne
     $attributes = array(
       // Identifiant de l'Enseignant
       $this->Enseignant->getId(),
@@ -52,30 +67,26 @@ class EnseignantBean extends LocalBean
       // Nom de l'Enseignant - 3
       $this->Enseignant->getFullName(),
       // Matière de l'Enseignant - 4
-      $this->Enseignant->getMatiere()->getLabelMatiere(),
+      implode(', ', $arrEnseignantMatieres),
       // Url de Suppression - 5
       $urlSuppression,
       // Checked or not checked - 6
       $checked ? ' checked' : '',
       // Division de l'enseignant s'il est Prof Principal - 7
       $ProfPrincipal->getDivision()->getLabelDivision(),
-      // Année Scolaire de l'enseignant s'il est Prof Principal - 8
-      $ProfPrincipal->getAnneeScolaire()->getAnneeScolaire(),
     );
     return $this->getRender($this->urlTemplateRowAdmin, $attributes);
   }
   /**
-   * @param string $tagId
-   * @param mixed $selectedId
-   * @param boolean $isMandatory
+   * @param array $params
    * @return string
-   * @version 1.00.00
-   * @since 1.00.00
+   * @version 1.21.06.22
+   * @since 1.21.06.01
    */
-  public function getSelect($tagId=self::CST_ID, $label=self::CST_DEFAULT_SELECT, $selectedId=-1, $isMandatory=false, $isAjaxUpload=false)
+  public function getSelect($params = array())
   {
-    $Enseignants = $this->EnseignantServices->getEnseignantsWithFilters();
-    return $this->getLocalSelect($Enseignants, $tagId, $label, $selectedId, $isMandatory, $isAjaxUpload);
+    $params['Objs'] = $this->EnseignantServices->getEnseignantsWithFilters();
+    return parent::getSelect($params);
   }
   /**
    * @param mixed $selectedId

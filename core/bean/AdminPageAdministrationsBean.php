@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 /**
  * AdminPageAdministrationsBean
  * @author Hugues
- * @version 1.21.06.17
+ * @version 1.21.06.21
  * @since 1.21.06.10
  */
 class AdminPageAdministrationsBean extends AdminPageBean
@@ -22,12 +22,7 @@ class AdminPageAdministrationsBean extends AdminPageBean
     $this->AdministrationServices = new AdministrationServices();
     $this->Services               = new AdministrationServices();
     // Initialisation de l'Administratif sélectionné s'il y en a un.
-    if ($urlParams!=null && isset($urlParams[self::FIELD_ID])) {
-      $this->Administration = $this->AdministrationServices->selectLocal($urlParams[self::FIELD_ID]);
-    } else {
-      $this->Administration = new Administration();
-    }
-    $this->LocalObject    = $this->Administration;
+    $this->LocalObject = ($urlParams!=null && isset($urlParams[self::FIELD_ID]) ? $this->AdministrationServices->selectLocal($urlParams[self::FIELD_ID]) : new Administration());
     // On stocke les paramètres
     $this->urlParams = $urlParams;
     // On prépare le stockage pour les ids multiples si existants.
@@ -37,19 +32,19 @@ class AdminPageAdministrationsBean extends AdminPageBean
   /**
    * Retourne l'Administration
    * @return Administration
-   * @version 1.21.06.10
+   * @version 1.21.06.21
    * @since 1.21.06.10
    */
   public function getObject()
-  { return $this->Administration; }
+  { return $this->LocalObject; }
   /**
    * Retourne le Service
    * @return AdministrationService
-   * @version 1.21.06.10
+   * @version 1.21.06.21
    * @since 1.21.06.10
    */
   public function getServices()
-  { return $this->AdministrationServices; }
+  { return $this->Services; }
 
   /**
    * @param array $urlParams
@@ -80,68 +75,7 @@ class AdminPageAdministrationsBean extends AdminPageBean
     ///////////////////////////////////////////
     // Analyse de l'action éventuelle.
     if (isset($this->urlParams[self::CST_POSTACTION])) {
-      switch($this->urlParams[self::CST_POSTACTION]) {
-        case self::CST_CREATION :
-          // Exécution de la création
-          $this->Administration->setGenre($this->urlParams[self::FIELD_GENRE]);
-          $this->Administration->setNomTitulaire($this->urlParams[self::FIELD_NOMTITULAIRE]);
-          $this->Administration->setLabelPoste($this->urlParams[self::FIELD_LABELPOSTE]);
-          $this->Administration->insert($notif, $msg);
-          $this->Administration = new Administration();
-        break;
-        case self::CST_EDITION :
-          // Exécution de la mise à jour
-          $this->Administration->setGenre($this->urlParams[self::FIELD_GENRE]);
-          $this->Administration->setNomTitulaire($this->urlParams[self::FIELD_NOMTITULAIRE]);
-          $this->Administration->setLabelPoste($this->urlParams[self::FIELD_LABELPOSTE]);
-          $this->Administration->update($notif, $msg);
-          $initPanel = self::CST_EDIT;
-        break;
-        case self::CST_SUPPRESSION :
-          // Exécution de la suppression unitaire ou groupée
-          $this->delete($notif, $msg);
-          $this->Administration = new Administration();
-        break;
-        case self::CST_IMPORT :
-          // Exécution de l'import
-          $this->import($notif, $msg);
-          $this->Administration = new Administration();
-        break;
-        case self::CST_BULK :
-          // Gestion des Actions groupées
-          switch ($this->urlParams[self::CST_ACTION]) {
-            case self::CST_TRASH :
-              // Confirmation de la Suppression de masse
-              if (empty($this->urlParams[self::CST_POST])) {
-                $msg = self::MSG_BULK_DELETE_IMPOSSIBLE;
-                $notif = self::NOTIF_WARNING;
-              } else {
-                $initPanel = self::CST_BULK_TRASH;
-              }
-            break;
-            case self::CST_EXPORT :
-              // Exécution de l'exportation
-              if (empty($this->urlParams[self::CST_POST])) {
-                $msg = self::MSG_BULK_EXPORT_IMPOSSIBLE;
-                $notif = self::NOTIF_WARNING;
-              } else {
-                $msg = ExportActions::dealWithStaticExport(self::PAGE_ADMINISTRATION, $this->urlParams[self::CST_POST]);
-                $notif = self::NOTIF_SUCCESS;
-                $initPanel = self::CST_BULK_EXPORT;
-              }
-            break;
-            default :
-              // Erreur sur l'action groupée, non reconnue
-              $notif = self::NOTIF_WARNING;
-              $msg   = sprintf(self::MSG_BULK_ACTION_INDEFINIE, array($this->urlParams[self::CST_ACTION]));
-            break;
-          }
-        break;
-        default :
-          // Affichage des écrans simples : création ou édition
-          $initPanel = $this->urlParams[self::CST_POSTACTION];
-        break;
-      }
+      $this->parseUrlParams($initPanel, $notif, $msg);
     }
 
     ///////////////////////////////////////////
@@ -160,6 +94,24 @@ class AdminPageAdministrationsBean extends AdminPageBean
     // On retourne le listing et les panneaux latéraux droit
     return $this->getListingPage();
   }
+
+  /**
+   * @version 1.21.06.21
+   * @since 1.21.06.21
+   */
+  public function setLocalObject()
+  {
+    $this->LocalObject->setGenre($this->urlParams[self::FIELD_GENRE]);
+    $this->LocalObject->setNomTitulaire($this->urlParams[self::FIELD_NOMTITULAIRE]);
+    $this->LocalObject->setLabelPoste($this->urlParams[self::FIELD_LABELPOSTE]);
+  }
+  /**
+   * @version 1.21.06.21
+   * @since 1.21.06.21
+   */
+  public function initLocalObject()
+  { $this->LocalObject = new Administration(); }
+
 
   /**
    * Gestion de l'affichage de la page.

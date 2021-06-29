@@ -5,8 +5,8 @@ if (!defined('ABSPATH')) {
 /**
  * Classe LocalBean
  * @author Hugues
- * @version 1.00.01
- * @since 1.00.00
+ * @version 1.26.01.21
+ * @since 1.26.01.01
  */
 class LocalBean extends UtilitiesBean implements ConstantsInterface
 {
@@ -104,6 +104,9 @@ class LocalBean extends UtilitiesBean implements ConstantsInterface
     }
     if (isset($params[self::ATTR_READONLY])) {
       $attributes[self::ATTR_READONLY] = '';
+    }
+    if (isset($params[self::ATTR_MULTIPLE])) {
+      $attributes[self::ATTR_MULTIPLE] = '';
     }
     /////////////////////////////////////////////////////////////////
 
