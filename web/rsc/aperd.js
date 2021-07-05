@@ -24,6 +24,14 @@ $hj(document).ready(function(){
     $hj($hj(this).data('bs-target')+' textarea').focus();
   });
 
+  //
+  $hj('a[data-toggle="pill"]').on('click', function(e){
+    $hj('.nav-link').removeClass('active');
+    $hj('.tab-pane').removeClass('active').removeClass('show');
+    $hj(this).addClass('active');
+    $hj($hj(this).attr('href')).addClass('active').addClass('show');
+  });
+
 });
 function addBilanEvent() {
   $hj('select[name^="matiereId"]').unbind().change(function(){

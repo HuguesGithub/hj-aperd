@@ -5,8 +5,8 @@ if (!defined('ABSPATH')) {
 /**
  * Classe EleveBean
  * @author Hugues
- * @version 1.00.00
- * @since 1.00.00
+ * @version 1.21.07.05
+ * @since 1.21.06.01
  */
 class EleveBean extends LocalBean
 {
@@ -21,6 +21,19 @@ class EleveBean extends LocalBean
   {
     $this->EleveServices = new EleveServices();
     $this->Eleve = ($Eleve=='' ? new Eleve() : $Eleve);
+  }
+  /**
+   * @return string
+   * @version 1.21.07.05
+   * @since 1.21.06.29
+   */
+  public function getRowForPublicPage()
+  {
+	$content  = '<tr>';
+	$content .= $this->getTdStandard($this->Eleve->getNomEleve());
+	$content .= $this->getTdStandard($this->Eleve->getPrenomEleve());
+	$content .= $this->getTdStandard(($this->Eleve->isDelegue() ? '<span class="badge badge-success">Oui</span>' : ''));
+	return $content.'</tr>';
   }
   /**
    */

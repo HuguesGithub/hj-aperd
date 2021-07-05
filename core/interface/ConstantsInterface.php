@@ -2,7 +2,7 @@
 /**
  * Interface Constants
  * @author Hugues
- * @version 1.21.06.29
+ * @version 1.21.07.05
  * @since 1.21.06.04
  */
 interface ConstantsInterface
@@ -161,6 +161,7 @@ interface ConstantsInterface
   const NOTIF_DANGER           = 'danger';
   const NOTIF_INFO             = 'info';
   const NOTIF_IS_INVALID       = 'is-invalid';
+  const NOTIF_LIGHT             = 'light';
   const NOTIF_SUCCESS          = 'success';
   const NOTIF_WARNING          = 'warning';
 
@@ -184,6 +185,9 @@ interface ConstantsInterface
   const STATUS_ARCHIVED        = 'archived';
   const STATUS_FUTURE          = 'future';
   const STATUS_PUBLISHED       = 'published';
+  const STATUS_PENDING       = 'pending';
+  const STATUS_WORKING       = 'working';
+  const STATUS_MAILED       = 'mailed';
 
   /////////////////////////////////////////////////
   // Tags

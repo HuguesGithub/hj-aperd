@@ -8,7 +8,6 @@
  */
 define('PLUGIN_PATH', plugin_dir_path(__FILE__));
 define('PLUGIN_PACKAGE', 'APERD');
-date_default_timezone_set('Europe/Paris');
 session_start([]);
 
 class Aperd
@@ -88,6 +87,7 @@ function aperd_menu()
         'parent'         => 'Parents',
         'parent-delegue' => 'Parents Délégués',
         '-'              => '-----------------',
+
         'compte-rendu'  => 'Compte-Rendus',
         'enseignant'    => 'Enseignants',
         'compodivision' => 'Composition Division',

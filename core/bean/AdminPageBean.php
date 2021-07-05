@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 /**
  * Classe AdminPageBean
  * @author Hugues
- * @version 1.21.06.17
+ * @version 1.21.07.05
  * @since 1.21.06.01
  */
 class AdminPageBean extends MainPageBean
@@ -22,6 +22,9 @@ class AdminPageBean extends MainPageBean
   {
     parent::__construct();
     $this->analyzeUri();
+    $this->AdministrationServices = new AdministrationServices();
+    $this->AnneeScolaireServices = new AnneeScolaireServices();
+    $this->DivisionServices = new DivisionServices();
   }
 
   /**
@@ -107,11 +110,6 @@ class AdminPageBean extends MainPageBean
       }
     }
     return $returned;
-  }
-  public function getBoard()
-  {
-    $urlTemplatePageAdmin = 'web/pages/admin/board-schema-table.php';
-    return $this->getRender($urlTemplatePageAdmin, array());
   }
   /**
    * Retourne la Notification
@@ -442,4 +440,177 @@ class AdminPageBean extends MainPageBean
       break;
     }
   }
+
+  /**
+   * Retourne le contenu de l'interface
+   * @return string
+   * @version 1.21.07.05
+   * @since 1.21.07.05
+   */
+  public function getBoard()
+  {
+    $urlTemplatePageAdmin = 'web/pages/admin/board-schema-table.php';
+    $urlTemplatePageAdmin = 'web/pages/admin/board-admin-accueil.php';
+    $attributes = array(
+      $this->getAdministratifCard().$this->getAnneeScolaireCard().$this->getDivisionCard(),
+    );
+    return $this->getRender($urlTemplatePageAdmin, $attributes);
+  }
+  /*
+   * Retourne le statut de la gestion de l'Administration
+   * @return string
+   * @version 1.21.07.05
+   * @since 1.21.07.05
+   */
+  private function getAdministratifCard()
+  {
+    //////////////////////////////////
+   // Le contenu du Body :
+    $style = '';
+    $Administratifs = $this->AdministrationServices->getAdministrationsWithFilters();
+    if ($this->checkDate('sup', '07/01') && $this->checkDate('inf', '07/15')) {
+      if (!empty($Administratifs)) {
+        $style = self::NOTIF_LIGHT;
+        $content = 'Pensez à supprimer les données de la table aperd_administratif.';
+      }
+    } elseif ($this->checkDate('sup', '07/16') && $this->checkDate('inf', '08/15')) {
+      if (!empty($Administratifs)) {
+        $style = self::NOTIF_WARNING;
+        $content = 'Vous devez supprimer les données de la table aperd_administratif.';
+      }
+    } elseif ($this->checkDate('sup', '08/16') && $this->checkDate('inf', '08/31')) {
+      if (empty($Administratifs)) {
+        $style = self::NOTIF_LIGHT;
+        $content = 'Pensez à créer les données de la table aperd_administratif.';
+      }
+    } elseif ($this->checkDate('sup', '09/01')) {
+      if (empty($Administratifs)) {
+        $style = self::NOTIF_WARNING;
+        $content = 'Vous devez créer les données de la table aperd_administratif.';
+      }
+    }
+
+    if ($style=='') {
+      return '';
+    }
+    $attributes = array(
+      'administratif',
+      $style,
+      'Administratifs',
+      $content,
+      '<a href="'.$this->getQueryArg(array(self::CST_ONGLET=>self::PAGE_ADMINISTRATION)).'">Y accèder</a>',
+    );
+    return $this->getRender('web/pages/admin/fragments/card-admin-accueil.php', $attributes);
+  }
+  /*
+   * Retourne le statut de la gestion de l'Administration
+   * @return string
+   * @version 1.21.07.05
+   * @since 1.21.07.05
+   */
+  private function getAnneeScolaireCard()
+  {
+    //////////////////////////////////
+   // Le contenu du Body :
+    $style = '';
+    $Objs = $this->AnneeScolaireServices->getAnneeScolairesWithFilters();
+    if ($this->checkDate('sup', '07/01') && $this->checkDate('inf', '07/15')) {
+      if (!empty($Objs)) {
+        $style = self::NOTIF_LIGHT;
+        $content = 'Pensez à supprimer les données de la table aperd_annee_scolaire.';
+      }
+    } elseif ($this->checkDate('sup', '07/16') && $this->checkDate('inf', '08/15')) {
+      if (!empty($Objs)) {
+        $style = self::NOTIF_WARNING;
+        $content = 'Vous devez supprimer les données de la table aperd_annee_scolaire.';
+      }
+    } elseif ($this->checkDate('sup', '08/16') && $this->checkDate('inf', '08/31')) {
+      if (empty($Objs)) {
+        $style = self::NOTIF_LIGHT;
+        $content = 'Pensez à créer les données de la table aperd_annee_scolaire.';
+      }
+    } elseif ($this->checkDate('sup', '09/01')) {
+      if (empty($Objs)) {
+        $style = self::NOTIF_WARNING;
+        $content = 'Vous devez créer les données de la table aperd_annee_scolaire.';
+      }
+    }
+
+    if ($style=='') {
+      return '';
+    }
+    $attributes = array(
+      'annee_scolaire',
+      $style,
+      'Année Scolaire',
+      $content,
+      '<a href="'.$this->getQueryArg(array(self::CST_ONGLET=>self::PAGE_ANNEE_SCOLAIRE)).'">Y accèder</a>',
+    );
+    return $this->getRender('web/pages/admin/fragments/card-admin-accueil.php', $attributes);
+  }
+  /*
+   * Retourne le statut de la gestion de l'Administration
+   * @return string
+   * @version 1.21.07.05
+   * @since 1.21.07.05
+   */
+  private function getDivisionCard()
+  {
+    //////////////////////////////////
+   // Le contenu du Body :
+    $style = '';
+    $Objs = $this->DivisionServices->getDivisionsWithFilters();
+    if ($this->checkDate('sup', '07/01') && $this->checkDate('inf', '07/15')) {
+      if (!empty($Objs)) {
+        $style = self::NOTIF_LIGHT;
+        $content = 'Pensez à supprimer les données de la table aperd_division.';
+      }
+    } elseif ($this->checkDate('sup', '07/16') && $this->checkDate('inf', '08/15')) {
+      if (!empty($Objs)) {
+        $style = self::NOTIF_WARNING;
+        $content = 'Vous devez supprimer les données de la table aperd_division.';
+      }
+    } elseif ($this->checkDate('sup', '08/16') && $this->checkDate('inf', '08/31')) {
+      if (empty($Objs)) {
+        $style = self::NOTIF_LIGHT;
+        $content = 'Pensez à créer les données de la table aperd_division.';
+      }
+    } elseif ($this->checkDate('sup', '09/01')) {
+      if (empty($Objs)) {
+        $style = self::NOTIF_WARNING;
+        $content = 'Vous devez créer les données de la table aperd_division.';
+      }
+    }
+
+    if ($style=='') {
+      return '';
+    }
+    $attributes = array(
+      'division',
+      $style,
+      'Divisions',
+      $content,
+      '<a href="'.$this->getQueryArg(array(self::CST_ONGLET=>self::PAGE_DIVISION)).'">Y accèder</a>',
+    );
+    return $this->getRender('web/pages/admin/fragments/card-admin-accueil.php', $attributes);
+  }
+
+  /*
+   * Permet de comparer la date courante avec une date saisie.
+   * @param string $type
+   * @param string $value
+   * @return boolean
+   * @version 1.21.07.05
+   * @since 1.21.07.05
+   */
+  private function checkDate($type, $value)
+  {
+    if ($type=='inf') {
+      return (date('m/d')<=$value);
+    } else {
+      return (date('m/d')>=$value);
+    }
+  }
+
 }
+

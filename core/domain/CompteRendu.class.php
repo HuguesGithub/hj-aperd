@@ -290,4 +290,20 @@ class CompteRendu extends LocalDomain
   public function setNotifications($notifications)
   { $this->notifications = $notifications; }
 
+  /**
+   * @param string &$notif
+   * @param string &$msg
+   * @version 1.21.07.05
+   * @since 1.21.07.05
+   */
+  public function controleDonnees(&$notif, &$msg)
+  {
+    // L'Année Scolaire doit être renseigné
+    if (empty($this->anneeScolaireId) || $this->anneeScolaireId==-1) {
+      $notif = self::NOTIF_DANGER;
+      $msg   = self::MSG_ERREUR_CONTROL_EXISTENCE;
+      return false;
+    }
+    return true;
+  }
 }

@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 /**
  * Classe EnseignantBean
  * @author Hugues
- * @version 1.21.06.29
+ * @version 1.21.07.05
  * @since 1.21.06.01
  */
 class EnseignantBean extends LocalBean
@@ -14,6 +14,8 @@ class EnseignantBean extends LocalBean
   /**
    * Class Constructor
    * @param Enseignant $Enseignant
+   * @version 1.00.00
+   * @since 1.00.00
    */
   public function __construct($Enseignant='')
   {
@@ -23,10 +25,21 @@ class EnseignantBean extends LocalBean
     $this->EnseignantMatiereServices = new EnseignantMatiereServices();
   }
   /**
-   * @param boolean $checked
    * @return string
-   * @version 1.21.06.29
-   * @since 1.21.06.01
+   * @version 1.21.07.05
+   * @since 1.21.07.05
+   */
+  public function getRowForPublicPage($divisionId=-1)
+  {
+	$ProfPrincipal  = $this->getProfPrincipal();
+
+	$content  = '<tr>';
+	$content .= $this->getTdStandard($this->Enseignant->getFullName());
+	$content .= $this->getTdStandard('WIP');
+	$content .= $this->getTdStandard(($ProfPrincipal->getDivisionId()==$divisionId ? '<span class="badge badge-success">Oui</span>' : ''));
+	return $content.'</tr>';
+  }
+  /**
    */
   public function getRowForAdminPage($checked=false)
   {
@@ -44,8 +57,7 @@ class EnseignantBean extends LocalBean
     );
     $urlSuppression = $this->getQueryArg($queryArgs);
 
-    $ProfPrincipals = $this->ProfPrincipalServices->getProfPrincipalsWithFilters(array(self::FIELD_ENSEIGNANT_ID=>$this->Enseignant->getId()));
-    $ProfPrincipal  = (empty($ProfPrincipals) ? new ProfPrincipal() : array_shift($ProfPrincipals));
+    $ProfPrincipal  = $this->getProfPrincipal();
 
     ////////////////////////////////////////////////////////
     // Gestion des Matières
@@ -77,11 +89,18 @@ class EnseignantBean extends LocalBean
     );
     return $this->getRender($this->urlTemplateRowAdmin, $attributes);
   }
+private function getProfPrincipal()
+{
+    $ProfPrincipals = $this->ProfPrincipalServices->getProfPrincipalsWithFilters(array(self::FIELD_ENSEIGNANT_ID=>$this->Enseignant->getId()));
+    return (empty($ProfPrincipals) ? new ProfPrincipal() : array_shift($ProfPrincipals));
+}
   /**
-   * @param array $params
+   * @param string $tagId
+   * @param mixed $selectedId
+   * @param boolean $isMandatory
    * @return string
    * @version 1.21.06.22
-   * @since 1.21.06.01
+   * @since 1.00.00
    */
   public function getSelect($params = array())
   {

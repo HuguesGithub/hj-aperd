@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 /**
  * AdminPageElevesBean
  * @author Hugues
- * @version 1.21.06.29
+ * @version 1.21.06.21
  * @since 1.21.06.01
  */
 class AdminPageElevesBean extends AdminPageBean
@@ -22,7 +22,12 @@ class AdminPageElevesBean extends AdminPageBean
     $this->EleveServices  = new EleveServices();
     $this->Services       = new EleveServices();
     // Initialisation de l'Elève sélectionné s'il y en a un.
-    $this->LocalObject = ($urlParams!=null && isset($urlParams[self::FIELD_ID]) ? $this->EleveServices->selectLocal($urlParams[self::FIELD_ID]) : new Eleve());
+    if ($urlParams!=null && isset($urlParams[self::FIELD_ID])) {
+      $this->Eleve = $this->EleveServices->selectLocal($urlParams[self::FIELD_ID]);
+    } else {
+      $this->Eleve = new Eleve();
+    }
+    $this->LocalObject    = $this->Eleve;
     // On stocke les paramètres
     $this->urlParams = $urlParams;
     // On prépare le stockage pour les ids multiples si existants.
@@ -34,19 +39,19 @@ class AdminPageElevesBean extends AdminPageBean
   /**
    * Retourne l'Elève
    * @return Eleve
-   * @version 1.21.06.29
+   * @version 1.21.06.11
    * @since 1.21.06.01
    */
   public function getObject()
-  { return $this->LocalObject; }
+  { return $this->Eleve; }
   /**
    * Retourne le Service
-   * @return AdulteService
-   * @version 1.21.06.29
+   * @return EleveServices
+   * @version 1.21.06.11
    * @since 1.21.06.11
    */
   public function getServices()
-  { return $this->Services; }
+  { return $this->EleveServices; }
 
   /**
    * @param array $urlParams
@@ -77,7 +82,70 @@ class AdminPageElevesBean extends AdminPageBean
     ///////////////////////////////////////////
     // Analyse de l'action éventuelle.
     if (!isset($this->urlParams['filter_action']) && isset($this->urlParams[self::CST_POSTACTION])) {
-      $this->parseUrlParams($initPanel, $notif, $msg);
+      switch ($this->urlParams[self::CST_POSTACTION]) {
+        case self::CST_CREATION :
+          // Exécution de la création
+          $this->Eleve->setNomEleve($this->urlParams[self::FIELD_NOMELEVE]);
+          $this->Eleve->setPrenomEleve($this->urlParams[self::FIELD_PRENOMELEVE]);
+          $this->Eleve->setDivisionId($this->urlParams[self::FIELD_DIVISION_ID]);
+          $this->Eleve->setDelegue(isset($this->urlParams[self::FIELD_DELEGUE]));
+          $this->Eleve->insert($notif, $msg);
+          $this->Eleve = new Eleve();
+        break;
+        case self::CST_EDITION :
+          // Exécution de la création
+          $this->Eleve->setNomEleve($this->urlParams[self::FIELD_NOMELEVE]);
+          $this->Eleve->setPrenomEleve($this->urlParams[self::FIELD_PRENOMELEVE]);
+          $this->Eleve->setDivisionId($this->urlParams[self::FIELD_DIVISION_ID]);
+          $this->Eleve->setDelegue(isset($this->urlParams[self::FIELD_DELEGUE]));
+          $this->Eleve->update($notif, $msg);
+          $initPanel = self::CST_EDIT;
+        break;
+        case self::CST_SUPPRESSION :
+          // Exécution de la suppression unitaire ou groupée
+          $this->delete($notif, $msg);
+          $this->Eleve = new Eleve();
+        break;
+        case self::CST_IMPORT :
+          // Exécution de l'import
+          $this->import($notif, $msg);
+          $this->Eleve = new Eleve();
+        break;
+        case self::CST_BULK :
+          // Gestion des Actions groupées
+          switch ($this->urlParams[self::CST_ACTION]) {
+            case self::CST_TRASH :
+              // Confirmation de la Suppression de masse
+              if (empty($this->urlParams[self::CST_POST])) {
+                $msg = self::MSG_BULK_DELETE_IMPOSSIBLE;
+                $notif = self::NOTIF_WARNING;
+              } else {
+                $initPanel = self::CST_BULK_TRASH;
+              }
+            break;
+            case self::CST_EXPORT :
+              // Exécution de l'exportation
+              if (empty($this->urlParams[self::CST_POST])) {
+                $msg = self::MSG_BULK_EXPORT_IMPOSSIBLE;
+                $notif = self::NOTIF_WARNING;
+              } else {
+                $msg = ExportActions::dealWithStaticExport(self::PAGE_ELEVE, $this->urlParams[self::CST_POST]);
+                $notif = self::NOTIF_SUCCESS;
+                $initPanel = self::CST_BULK_EXPORT;
+              }
+            break;
+            default :
+              // Erreur sur l'action groupée, non reconnue
+              $notif = self::NOTIF_WARNING;
+              $msg   = sprintf(self::MSG_BULK_ACTION_INDEFINIE, array($this->urlParams[self::CST_ACTION]));
+            break;
+          }
+        break;
+        default :
+          // Affichage des écrans simples : création ou édition
+          $initPanel = $this->urlParams[self::CST_POSTACTION];
+        break;
+      }
     }
 
     ///////////////////////////////////////////
@@ -114,24 +182,6 @@ class AdminPageElevesBean extends AdminPageBean
   }
 
   /**
-   * @version 1.21.06.29
-   * @since 1.21.06.29
-   */
-  public function setLocalObject()
-  {
-    $this->LocalObject->setNomEleve($this->urlParams[self::FIELD_NOMELEVE]);
-    $this->LocalObject->setPrenomEleve($this->urlParams[self::FIELD_PRENOMELEVE]);
-    $this->LocalObject->setDivisionId($this->urlParams[self::FIELD_DIVISION_ID]);
-    $this->LocalObject->setDelegue(isset($this->urlParams[self::FIELD_DELEGUE]));
-  }
-  /**
-   * @version 1.21.06.29
-   * @since 1.21.06.29
-   */
-  public function initLocalObject()
-  { $this->LocalObject = new Eleve(); }
-
-  /**
    * Gestion de l'affichage de la page.
    * @return string
    * @version 1.21.06.21
@@ -154,7 +204,11 @@ class AdminPageElevesBean extends AdminPageBean
     $nbPerPage = (isset($this->urlParams[self::FIELD_DIVISION_ID]) ? 50 : 10);
     $orderby = $this->initVar(self::WP_ORDERBY, self::FIELD_NOMELEVE);
     $order = $this->initVar(self::WP_ORDER, self::ORDER_ASC);
-    $Eleves = ($searchTerm!='' ? $this->EleveServices->getElevesWithFilteredSearch($argFilters, $orderby, $order) : $this->EleveServices->getElevesWithFilters($argFilters, $orderby, $order));
+    if ($searchTerm!='') {
+      $Eleves = $this->EleveServices->getElevesWithFilteredSearch($argFilters, $orderby, $order);
+    } else {
+      $Eleves = $this->EleveServices->getElevesWithFilters($argFilters, $orderby, $order);
+    }
     $nbElements = count($Eleves);
     $nbPages = ceil($nbElements/$nbPerPage);
     $curPage = $this->initVar(self::WP_CURPAGE, 1);

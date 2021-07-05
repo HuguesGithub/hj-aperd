@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 /**
  * Classe Adulte
  * @author Hugues
- * @version 1.21.06.17
+ * @version 1.21.06.29
  * @since 1.21.06.10
  */
 class Adulte extends LocalDomain
@@ -207,4 +207,13 @@ class Adulte extends LocalDomain
     return true;
   }
 
+  /**
+   * @return string
+   * @version 1.21.06.29
+   * @since 1.21.06.29
+   */
+  public function getLogin()
+  {
+    return strtolower(substr($this->prenomParent, 0, 1)).ucfirst(str_replace(array(' ', '-'), array('', ''), $this->nomParent));
+  }
 }
