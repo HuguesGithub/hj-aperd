@@ -2,7 +2,7 @@
 /**
  * Interface Constants
  * @author Hugues
- * @version 1.21.07.05
+ * @version 1.21.07.06
  * @since 1.21.06.04
  */
 interface ConstantsInterface
@@ -51,12 +51,14 @@ interface ConstantsInterface
   const CST_HIDDEN           = 'hidden';
   const CST_ID               = 'id';
   const CST_IMPORT           = 'import';
+  const CST_INF              = 'inf';
   const CST_MD_SELECT        = 'form-control md-select';
   const CST_MD_TEXTAREA      = 'form-control md-textarea';
   const CST_ONGLET           = 'onglet';
   const CST_POST             = 'post';
   const CST_POSTACTION       = 'postAction';
   const CST_SELECTED         = 'selected';
+  const CST_SUP              = 'sup';
   const CST_SUPPRESSION      = 'Suppression';
   const CST_TEXT             = 'text';
   const CST_TRASH            = 'trash';

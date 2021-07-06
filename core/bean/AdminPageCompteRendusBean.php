@@ -80,7 +80,7 @@ class AdminPageCompteRendusBean extends AdminPageBean
           $CompteRendu = new CompteRendu();
           $anneeScolaireId = $this->urlParams[self::FIELD_ANNEESCOLAIRE_ID];
           $CompteRendu->setField(self::FIELD_ANNEESCOLAIRE_ID, $anneeScolaireId);
-          
+
           $trimestre = $this->urlParams[self::FIELD_TRIMESTRE];
           if ($trimestre=='') {
             $arrTrimestre = array(1, 2, 3);
@@ -96,7 +96,7 @@ class AdminPageCompteRendusBean extends AdminPageBean
             $Divisions = array($Division);
           }
 
-	  foreach ($arrTrimestre as $trimestre) {
+    foreach ($arrTrimestre as $trimestre) {
               foreach ($Divisions as $Division) {
                   $CpteRdus = $this->CompteRenduServices->getCompteRendusWithFilters(array(self::FIELD_ANNEESCOLAIRE_ID=>$anneeScolaireId, self::FIELD_TRIMESTRE=>$trimestre, self::FIELD_DIVISION_ID=>$Division->getId()));
                   if (empty($CpteRdus)) {
@@ -150,12 +150,12 @@ class AdminPageCompteRendusBean extends AdminPageBean
           $strSelectTrimestre,
         // Select sur les Divisions - 3
           $DivisionBean->getSelect(array('tag'=>self::FIELD_DIVISION_ID, 'label'=>'Toutes')),
-	// Url d'annulation de l'opération - 4
+  // Url d'annulation de l'opération - 4
           $this->getQueryArg(array(self::CST_ONGLET=>$this->subMenuValue)),
         );
       break;
       default :
-	$this->initPanels($initPanel);
+  $this->initPanels($initPanel);
       break;
     }
     ///////////////////////////////////////////:
@@ -193,10 +193,10 @@ class AdminPageCompteRendusBean extends AdminPageBean
     // Les Trimestres
     $filterTrimestre = (isset($this->urlParams[self::FIELD_TRIMESTRE]) ? $this->urlParams[self::FIELD_TRIMESTRE] : '');
     $argFilters[self::FIELD_TRIMESTRE] = $filterTrimestre;
-	// La Division
+  // La Division
     $filterDivisionId = (isset($this->urlParams[self::FIELD_DIVISION_ID]) ? $this->urlParams[self::FIELD_DIVISION_ID] : '');
     $argFilters[self::FIELD_DIVISION_ID] = $filterDivisionId;
-	// Le Statut
+  // Le Statut
     $filterStatus = (isset($this->urlParams[self::FIELD_STATUS]) ? $this->urlParams[self::FIELD_STATUS] : '');
     $argFilters[self::FIELD_STATUS] = $filterStatus;
     // Fin récupèration des données éventuelles des filtres
@@ -215,7 +215,7 @@ class AdminPageCompteRendusBean extends AdminPageBean
     $strFiltres .= '<label for="anneeScolaireId">Années Scolaires</label>';
     $strFiltres .= '</div></div><div class="col-md"><div class="form-floating">';
     /////////////////////////////////////////////////////////////////////////////
-	// Les Trimestres
+  // Les Trimestres
     $attributes = array(
       self::ATTR_CLASS => self::CST_MD_SELECT,
       self::ATTR_NAME  => self::FIELD_TRIMESTRE,
@@ -228,7 +228,7 @@ class AdminPageCompteRendusBean extends AdminPageBean
     $strFiltres .= '<label for="trimestre">Trimestres</label>';
     $strFiltres .= '</div></div><div class="col-md"><div class="form-floating">';
     /////////////////////////////////////////////////////////////////////////////
-	// La Division
+  // La Division
     $DivisionBean = new DivisionBean();
     $argDivisionSelect = array(
       'tag'        => self::FIELD_DIVISION_ID,
@@ -238,7 +238,7 @@ class AdminPageCompteRendusBean extends AdminPageBean
     $strFiltres .= '<label for="divisionId">Divisions</label>';
     $strFiltres .= '</div></div><div class="col-md"><div class="form-floating">';
     /////////////////////////////////////////////////////////////////////////////
-	// Le Statut
+  // Le Statut
     $attributes = array(
       self::ATTR_CLASS => self::CST_MD_SELECT,
       self::ATTR_NAME  => self::FIELD_STATUS,
@@ -279,7 +279,7 @@ class AdminPageCompteRendusBean extends AdminPageBean
       $strRows = '';
       while (!empty($DisplayedComptesRendus)) {
         $CompteRendu = array_shift($DisplayedComptesRendus);
-        $strRows .= $CompteRendu->getBean()->getRowForAdminPage($queryArg);
+        $strRows .= $CompteRendu->getBean()->getRowForAdminPage(in_array($CompteRendu->getId(), $this->arrIds), $queryArg);
       }
     }
     //////////////////////////////////////////////////////////////////
@@ -288,7 +288,7 @@ class AdminPageCompteRendusBean extends AdminPageBean
     // Pagination
     $strPagination = $this->getPagination($queryArg, $curPage, $nbPages, $nbElements);
     //////////////////////////////////////////////////////////////////
-	
+
     /////////////////////////////////////////////////////////////////////////////
     // On restitue le template enrichi.
     $attributes = array(

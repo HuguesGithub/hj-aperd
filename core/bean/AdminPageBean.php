@@ -25,6 +25,12 @@ class AdminPageBean extends MainPageBean
     $this->AdministrationServices = new AdministrationServices();
     $this->AnneeScolaireServices = new AnneeScolaireServices();
     $this->DivisionServices = new DivisionServices();
+    $this->EleveServices = new EleveServices();
+    $this->MatiereServices = new MatiereServices();
+    $this->AdulteServices = new AdulteServices();
+    $this->ParentDelegueServices = new ParentDelegueServices();
+    $this->EnseignantServices = new EnseignantServices();
+    $this->CompteRenduServices = new CompteRenduServices();
   }
 
   /**
@@ -451,42 +457,79 @@ class AdminPageBean extends MainPageBean
   {
     $urlTemplatePageAdmin = 'web/pages/admin/board-schema-table.php';
     $urlTemplatePageAdmin = 'web/pages/admin/board-admin-accueil.php';
+
+    //////////////////////////////////////////////////////////////////
+    // Construction du contenu
+    $content = '';
+    // Les Administratifs
+    $Objs = $this->AdministrationServices->getAdministrationsWithFilters();
+    $content .= $this->getBoardCard($Objs, self::PAGE_ADMINISTRATION, 'Administrations');
+    // Les Années Scolaires
+    $Objs = $this->AnneeScolaireServices->getAnneeScolairesWithFilters();
+    $content .= $this->getBoardCard($Objs, self::PAGE_ANNEE_SCOLAIRE, 'Années Scolaires');
+    // Les Divisions
+    $Objs = $this->DivisionServices->getDivisionsWithFilters();
+    $content .= $this->getBoardCard($Objs, self::PAGE_DIVISION, 'Divisions');
+    // Les Elèves
+    $Objs = $this->EleveServices->getElevesWithFilters();
+    $content .= $this->getBoardCard($Objs, self::PAGE_ELEVE, 'Elèves');
+    // Les Matières
+    $Objs = $this->MatiereServices->getMatieresWithFilters();
+    $content .= $this->getBoardCard($Objs, self::PAGE_MATIERE, 'Matières');
+    // Les Adultes
+    $Objs = $this->AdulteServices->getAdultesWithFilters();
+    $content .= $this->getBoardCard($Objs, self::PAGE_PARENT, 'Parents');
+    // Les Parents Délégués
+    $Objs = $this->ParentDelegueServices->getParentDeleguesWithFilters();
+    $content .= $this->getBoardCard($Objs, self::PAGE_PARENT_DELEGUE, 'Parents Délégués');
+    // Les Enseignants
+    $Objs = $this->EnseignantServices->getEnseignantsWithFilters();
+    $content .= $this->getBoardCard($Objs, self::PAGE_ENSEIGNANT, 'Enseignants');
+    // Les Comptes Rendus
+    $Objs = $this->CompteRenduServices->getCompteRendusWithFilters();
+    $content .= $this->getBoardCard($Objs, self::PAGE_COMPTE_RENDU, 'Comptes Rendus');
+    //////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////
+    // On enrichi le Template et on le retourne.
     $attributes = array(
-      $this->getAdministratifCard().$this->getAnneeScolaireCard().$this->getDivisionCard(),
+      $content,
     );
     return $this->getRender($urlTemplatePageAdmin, $attributes);
   }
   /*
-   * Retourne le statut de la gestion de l'Administration
+   * Gestion générique pour retourner une Card
+   * @param array $Objs
+   * @param string $tagPage
+   * @param string $labelPage
    * @return string
-   * @version 1.21.07.05
-   * @since 1.21.07.05
+   * @version 1.21.07.06
+   * @since 1.21.07.06
    */
-  private function getAdministratifCard()
+  private function getBoardCard($Objs, $tagPage, $labelPage)
   {
     //////////////////////////////////
    // Le contenu du Body :
     $style = '';
-    $Administratifs = $this->AdministrationServices->getAdministrationsWithFilters();
-    if ($this->checkDate('sup', '07/01') && $this->checkDate('inf', '07/15')) {
-      if (!empty($Administratifs)) {
+    if ($this->checkDate(self::CST_SUP, '07/01') && $this->checkDate(self::CST_INF, '07/15')) {
+      if (!empty($Objs)) {
         $style = self::NOTIF_LIGHT;
-        $content = 'Pensez à supprimer les données de la table aperd_administratif.';
+        $content = 'Pensez à supprimer les données de la table aperd_'.$tagPage.'.';
       }
-    } elseif ($this->checkDate('sup', '07/16') && $this->checkDate('inf', '08/15')) {
-      if (!empty($Administratifs)) {
+    } elseif ($this->checkDate(self::CST_SUP, '07/16') && $this->checkDate(self::CST_INF, '08/15')) {
+      if (!empty($Objs)) {
         $style = self::NOTIF_WARNING;
-        $content = 'Vous devez supprimer les données de la table aperd_administratif.';
+        $content = 'Vous devez supprimer les données de la table aperd_'.$tagPage.'.';
       }
-    } elseif ($this->checkDate('sup', '08/16') && $this->checkDate('inf', '08/31')) {
-      if (empty($Administratifs)) {
+    } elseif ($this->checkDate(self::CST_SUP, '08/16') && $this->checkDate(self::CST_INF, '08/31')) {
+      if (empty($Objs)) {
         $style = self::NOTIF_LIGHT;
-        $content = 'Pensez à créer les données de la table aperd_administratif.';
+        $content = 'Pensez à créer les données de la table aperd_'.$tagPage.'.';
       }
-    } elseif ($this->checkDate('sup', '09/01')) {
-      if (empty($Administratifs)) {
+    } elseif ($this->checkDate(self::CST_SUP, '09/01')) {
+      if (empty($Objs)) {
         $style = self::NOTIF_WARNING;
-        $content = 'Vous devez créer les données de la table aperd_administratif.';
+        $content = 'Vous devez créer les données de la table aperd_'.$tagPage.'.';
       }
     }
 
@@ -494,103 +537,11 @@ class AdminPageBean extends MainPageBean
       return '';
     }
     $attributes = array(
-      'administratif',
+      $tagPage,
       $style,
-      'Administratifs',
+      $labelPage,
       $content,
-      '<a href="'.$this->getQueryArg(array(self::CST_ONGLET=>self::PAGE_ADMINISTRATION)).'">Y accèder</a>',
-    );
-    return $this->getRender('web/pages/admin/fragments/card-admin-accueil.php', $attributes);
-  }
-  /*
-   * Retourne le statut de la gestion de l'Administration
-   * @return string
-   * @version 1.21.07.05
-   * @since 1.21.07.05
-   */
-  private function getAnneeScolaireCard()
-  {
-    //////////////////////////////////
-   // Le contenu du Body :
-    $style = '';
-    $Objs = $this->AnneeScolaireServices->getAnneeScolairesWithFilters();
-    if ($this->checkDate('sup', '07/01') && $this->checkDate('inf', '07/15')) {
-      if (!empty($Objs)) {
-        $style = self::NOTIF_LIGHT;
-        $content = 'Pensez à supprimer les données de la table aperd_annee_scolaire.';
-      }
-    } elseif ($this->checkDate('sup', '07/16') && $this->checkDate('inf', '08/15')) {
-      if (!empty($Objs)) {
-        $style = self::NOTIF_WARNING;
-        $content = 'Vous devez supprimer les données de la table aperd_annee_scolaire.';
-      }
-    } elseif ($this->checkDate('sup', '08/16') && $this->checkDate('inf', '08/31')) {
-      if (empty($Objs)) {
-        $style = self::NOTIF_LIGHT;
-        $content = 'Pensez à créer les données de la table aperd_annee_scolaire.';
-      }
-    } elseif ($this->checkDate('sup', '09/01')) {
-      if (empty($Objs)) {
-        $style = self::NOTIF_WARNING;
-        $content = 'Vous devez créer les données de la table aperd_annee_scolaire.';
-      }
-    }
-
-    if ($style=='') {
-      return '';
-    }
-    $attributes = array(
-      'annee_scolaire',
-      $style,
-      'Année Scolaire',
-      $content,
-      '<a href="'.$this->getQueryArg(array(self::CST_ONGLET=>self::PAGE_ANNEE_SCOLAIRE)).'">Y accèder</a>',
-    );
-    return $this->getRender('web/pages/admin/fragments/card-admin-accueil.php', $attributes);
-  }
-  /*
-   * Retourne le statut de la gestion de l'Administration
-   * @return string
-   * @version 1.21.07.05
-   * @since 1.21.07.05
-   */
-  private function getDivisionCard()
-  {
-    //////////////////////////////////
-   // Le contenu du Body :
-    $style = '';
-    $Objs = $this->DivisionServices->getDivisionsWithFilters();
-    if ($this->checkDate('sup', '07/01') && $this->checkDate('inf', '07/15')) {
-      if (!empty($Objs)) {
-        $style = self::NOTIF_LIGHT;
-        $content = 'Pensez à supprimer les données de la table aperd_division.';
-      }
-    } elseif ($this->checkDate('sup', '07/16') && $this->checkDate('inf', '08/15')) {
-      if (!empty($Objs)) {
-        $style = self::NOTIF_WARNING;
-        $content = 'Vous devez supprimer les données de la table aperd_division.';
-      }
-    } elseif ($this->checkDate('sup', '08/16') && $this->checkDate('inf', '08/31')) {
-      if (empty($Objs)) {
-        $style = self::NOTIF_LIGHT;
-        $content = 'Pensez à créer les données de la table aperd_division.';
-      }
-    } elseif ($this->checkDate('sup', '09/01')) {
-      if (empty($Objs)) {
-        $style = self::NOTIF_WARNING;
-        $content = 'Vous devez créer les données de la table aperd_division.';
-      }
-    }
-
-    if ($style=='') {
-      return '';
-    }
-    $attributes = array(
-      'division',
-      $style,
-      'Divisions',
-      $content,
-      '<a href="'.$this->getQueryArg(array(self::CST_ONGLET=>self::PAGE_DIVISION)).'">Y accèder</a>',
+      '<a href="'.$this->getQueryArg(array(self::CST_ONGLET=>$tagPage)).'">Y accèder</a>',
     );
     return $this->getRender('web/pages/admin/fragments/card-admin-accueil.php', $attributes);
   }
@@ -604,13 +555,7 @@ class AdminPageBean extends MainPageBean
    * @since 1.21.07.05
    */
   private function checkDate($type, $value)
-  {
-    if ($type=='inf') {
-      return (date('m/d')<=$value);
-    } else {
-      return (date('m/d')>=$value);
-    }
-  }
+  { return ($type==self::CST_INF && date('m/d')<=$value || $type==self::CST_SUP && date('m/d')>=$value); }
 
 }
 

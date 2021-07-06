@@ -30,7 +30,7 @@ class CompteRenduBean extends LocalBean
    * @version 1.21.07.05
    * @since 1.21.06.01
    */
-  public function getRowForAdminPage($args=array())
+  public function getRowForAdminPage($checked=false, $args=array())
   {
     $queryArgs = array_merge(
       $args,
