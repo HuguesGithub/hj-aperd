@@ -5,8 +5,8 @@ if (!defined('ABSPATH')) {
 /**
  * Classe UtilitiesBean
  * @author Hugues
- * @version 1.00.00
- * @since 1.00.00
+ * @version 1.21.07.07
+ * @since 1.21.06.01
  */
 class UtilitiesBean implements ConstantsInterface
 {
@@ -69,15 +69,15 @@ class UtilitiesBean implements ConstantsInterface
   /**
    * @param string $label
    * @param mixed $valueId
-   * @param string $selectedId
+   * @param mixed $selectedId
    * @return string
-   * @version 1.00.00
-   * @since 1.00.00
+   * @version 1.21.07.07
+   * @since 1.21.06.01
    */
   protected function getLocalOption($label, $valueId, $selectedId)
   {
     $attributes = array(self::ATTR_VALUE=>$valueId);
-    if ($selectedId==$valueId) {
+    if (is_array($selectedId) && in_array($valueId, $selectedId) || !is_array($selectedId) && $selectedId==$valueId) {
       $attributes[self::ATTR_SELECTED] = self::CST_SELECTED;
     }
     return $this->getBalise(self::TAG_OPTION, $label, $attributes);

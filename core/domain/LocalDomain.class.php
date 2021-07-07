@@ -101,11 +101,12 @@ class LocalDomain extends GlobalDomain implements ConstantsInterface
   /**
    * @param string &$notif
    * @param string &$msg
+   * @param array $urlParams
    * @return boolean
    * @version 1.21.06.08
    * @since 1.21.06.01
    */
-  public function insert(&$notif, &$msg)
+  public function insert(&$notif, &$msg, $urlParams=array())
   {
     if ($this->controleDonnees($notif, $msg)) {
       $this->Services->insertLocal($this);
@@ -118,11 +119,12 @@ class LocalDomain extends GlobalDomain implements ConstantsInterface
   /**
    * @param string &$notif
    * @param string &$msg
+   * @param array $urlParams
    * @return boolean
    * @version 1.21.06.08
    * @since 1.21.06.01
    */
-  public function update(&$notif, &$msg)
+  public function update(&$notif, &$msg, $urlParams=array())
   {
     if ($this->controleDonnees($notif, $msg)) {
       if ($this->id=='') {

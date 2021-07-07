@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 /**
  * AdminPageEnseignantsBean
  * @author Hugues
- * @version 1.21.06.22
+ * @version 1.21.07.06
  * @since 1.21.06.01
  */
 class AdminPageEnseignantsBean extends AdminPageBean
@@ -95,9 +95,18 @@ class AdminPageEnseignantsBean extends AdminPageBean
     $DivisionBean = new DivisionBean();
     $AnneeScolaireBean = new AnneeScolaireBean();
 
+    $arrIds = array();
+    if ($this->LocalObject->getId()!='') {
+      $Matieres = $this->LocalObject->getMatieres();
+      while (!empty($Matieres)) {
+        $Matiere = array_shift($Matieres);
+        array_push($arrIds, $Matiere->getId());
+      }
+    }
     $argMatSelect = array(
       'tag'        => self::FIELD_MATIERE_ID.'s[]',
       self::ATTR_MULTIPLE => '',
+      'selectedId' => $arrIds,
     );
     $argDivSelect = array(
       'tag'        => self::FIELD_DIVISION_ID,
@@ -118,9 +127,8 @@ class AdminPageEnseignantsBean extends AdminPageBean
     $ProfPrincipals = $this->ProfPrincipalServices->getProfPrincipalsWithFilters(array(self::FIELD_ENSEIGNANT_ID=>$this->LocalObject->getId()));
     $ProfPrincipal = (empty($ProfPrincipals) ? new ProfPrincipal() : array_shift($ProfPrincipals));
 
-    $argMatSelect['selectedId'] = $this->LocalObject->getMatiereId();
+//    $argMatSelect['selectedId'] = $this->LocalObject->getMatiereId();
     $argDivSelect['selectedId'] = $ProfPrincipal->getDivisionId();
-    $argAsSelect['selectedId'] = $ProfPrincipal->getAnneeScolaireId();
 
     $this->attributesFormEdit = array(
       // Genre de l'Enseignant - 1
@@ -133,8 +141,6 @@ class AdminPageEnseignantsBean extends AdminPageBean
       $MatiereBean->getSelect($argMatSelect),
       // Liste déroulante sur la Division enseignée par l'Enseignant - 5
       $DivisionBean->getSelect($argDivSelect),
-      // Liste déroulante sur l'Année Scolaire enseignée par l'Enseignant - 6
-      $AnneeScolaireBean->getSelect($argAsSelect),
     ) ;
 
     $this->initPanels($initPanel);
@@ -151,7 +157,7 @@ class AdminPageEnseignantsBean extends AdminPageBean
   {
     $this->LocalObject->setGenre($this->urlParams[self::FIELD_GENRE]);
     $this->LocalObject->setNomEnseignant($this->urlParams[self::FIELD_NOMENSEIGNANT]);
-    //$this->LocalObject->setPrenomEnseignant($this->urlParams[self::FIELD_PRENOMENSEIGNANT]);
+    $this->LocalObject->setPrenomEnseignant($this->urlParams[self::FIELD_PRENOMENSEIGNANT]);
     $this->LocalObject->setField('matiereIds', $this->urlParams[self::FIELD_MATIERE_ID.'s']);
     $this->LocalObject->setField(self::FIELD_DIVISION_ID, $this->urlParams[self::FIELD_DIVISION_ID]);
   }
@@ -165,7 +171,7 @@ class AdminPageEnseignantsBean extends AdminPageBean
   /**
    * Gestion de l'affichage de la page.
    * @return string
-   * @version 1.21.06.06
+   * @version 1.21.07.06
    * @since 1.21.06.01
    */
   public function getListingPage()
@@ -181,9 +187,13 @@ class AdminPageEnseignantsBean extends AdminPageBean
     /////////////////////////////////////////////////////////////////////////////
     // On récupère toutes les matières puis on concatène les rows.
     $strRows = '';
-    $Enseignants = $this->EnseignantServices->getEnseignantsWithFilters($argFilters);
-    echo "[".MySQL::wpdbLastQuery()."]";
+    $prevId = '';
+    $Enseignants = $this->EnseignantServices->getEnseignantsJointsWithFilters($argFilters);
     foreach ($Enseignants as $Enseignant) {
+      if ($prevId==$Enseignant->getId()) {
+        continue;
+      }
+      $prevId = $Enseignant->getId();
       $Bean = $Enseignant->getBean();
       $strRows .= $Bean->getRowForAdminPage(in_array($Enseignant->getId(), $this->arrIds));
     }

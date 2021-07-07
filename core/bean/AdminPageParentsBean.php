@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 /**
  * AdminPageParentsBean
  * @author Hugues
- * @version 1.21.06.29
+ * @version 1.21.07.07
  * @since 1.21.06.10
  */
 class AdminPageParentsBean extends AdminPageBean
@@ -85,18 +85,18 @@ class AdminPageParentsBean extends AdminPageBean
     }
     ///////////////////////////////////////////:
     // On initialise les panneaux latéraux droit
-    $this->msgConfirmDelete = sprintf(self::MSG_CONFIRM_SUPPR_PARENT, $this->Adulte->getFullName());
+    $this->msgConfirmDelete = sprintf(self::MSG_CONFIRM_SUPPR_PARENT, $this->LocalObject->getFullName());
     $this->tagConfirmDeleteMultiple = self::MSG_CONFIRM_SUPPR_PARENTS;
     $this->attributesFormNew = array('','','','');
     $this->attributesFormEdit  = array(
       // Nom du Parent - 1
-      $this->Adulte->getNomParent(),
+      $this->LocalObject->getNomParent(),
       // Préom du Parent - 2
-      $this->Adulte->getPrenomParent(),
+      $this->LocalObject->getPrenomParent(),
       // Mail du Parent - 3
-      $this->Adulte->getMailParent(),
+      $this->LocalObject->getMailParent(),
       // Est adhérent ? - 4
-      ($this->Adulte->isAdherent() ? self::CST_BLANK.self::CST_CHECKED : ''),
+      ($this->LocalObject->isAdherent() ? self::CST_BLANK.self::CST_CHECKED : ''),
     ) ;
     $this->initPanels($initPanel);
     ///////////////////////////////////////////:
@@ -125,7 +125,7 @@ class AdminPageParentsBean extends AdminPageBean
   /**
    * Gestion de l'affichage de la page.
    * @return string
-   * @version 1.21.06.10
+   * @version 1.21.07.07
    * @since 1.21.06.10
    */
   public function getListingPage()
@@ -134,9 +134,13 @@ class AdminPageParentsBean extends AdminPageBean
     // On récupère toutes les matières puis on concatène les rows.
     $strRows = '';
     $Adultes = $this->AdulteServices->getAdultesWithFilters();
-    foreach ($Adultes as $Adulte) {
-      $Bean = $Adulte->getBean();
-      $strRows .= $Bean->getRowForAdminPage(in_array($Adulte->getId(), $this->arrIds));
+    if (empty($Adultes)) {
+      $strRows = '<tr><td colspan="7"><em>Aucun résultat</em></td></tr>';
+    } else {
+      foreach ($Adultes as $Adulte) {
+        $Bean = $Adulte->getBean();
+        $strRows .= $Bean->getRowForAdminPage(in_array($Adulte->getId(), $this->arrIds));
+      }
     }
 
     /////////////////////////////////////////////////////////////////////////////

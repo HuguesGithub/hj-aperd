@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 /**
  * Classe ProfPrincipalServices
  * @author Hugues
- * @version 1.21.06.04
+ * @version 1.21.07.07
  * @since 1.21.06.04
  */
 class ProfPrincipalServices extends LocalServices
@@ -44,7 +44,6 @@ class ProfPrincipalServices extends LocalServices
   private function buildFilters($arrFilters)
   {
     $arrParams = array();
-    array_push($arrParams, $this->getValueToSearch($arrFilters, self::FIELD_ANNEESCOLAIRE_ID));
     array_push($arrParams, $this->getValueToSearch($arrFilters, self::FIELD_DIVISION_ID));
     array_push($arrParams, $this->getValueToSearch($arrFilters, self::FIELD_ENSEIGNANT_ID));
     return $arrParams;

@@ -83,15 +83,16 @@ function aperd_menu()
         'annee-scolaire' => 'Années Scolaires',
         'division'       => 'Divisions',
         'eleve'          => 'Élèves',
+        'enseignant'    => 'Enseignants',
         'matiere'        => 'Matières',
         'parent'         => 'Parents',
         'parent-delegue' => 'Parents Délégués',
         '-'              => '-----------------',
 
         'compte-rendu'  => 'Compte-Rendus',
-        'enseignant'    => 'Enseignants',
         'compodivision' => 'Composition Division',
         'questionnaire' => 'Questionnaire',
+        'schema-table'  => 'Adm : Schéma Base',
       );
       foreach ($arrUrlSubMenu as $key => $value) {
         $urlSubMenu = $urlRoot.'&amp;onglet='.$key;

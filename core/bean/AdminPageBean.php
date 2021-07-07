@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 /**
  * Classe AdminPageBean
  * @author Hugues
- * @version 1.21.07.05
+ * @version 1.21.07.07
  * @since 1.21.06.01
  */
 class AdminPageBean extends MainPageBean
@@ -109,6 +109,9 @@ class AdminPageBean extends MainPageBean
         break;
         case self::PAGE_QUESTIONNAIRE :
           $returned = AdminPageQuestionnairesBean::getStaticContentPage($this->urlParams);
+        break;
+        case 'schema-table' :
+          $returned = $this->getSchemaTable();
         break;
         default       :
           $returned = $this->getBoard();
@@ -391,13 +394,13 @@ class AdminPageBean extends MainPageBean
       case self::CST_CREATION :
         // Exécution de la création
         $this->setLocalObject();
-        $this->LocalObject->insert($notif, $msg);
+        $this->LocalObject->insert($notif, $msg, $this->urlParams);
         $this->initLocalObject();
       break;
       case self::CST_EDITION :
         // Exécution de la mise à jour
         $this->setLocalObject();
-        $this->LocalObject->update($notif, $msg);
+        $this->LocalObject->update($notif, $msg, $this->urlParams);
         $initPanel = self::CST_EDIT;
       break;
       case self::CST_SUPPRESSION :
@@ -448,6 +451,18 @@ class AdminPageBean extends MainPageBean
   }
 
   /**
+   * Retourne le schéma de la table
+   * @return string
+   * @version 1.21.07.07
+   * @since 1.21.07.07
+   */
+  public function getSchemaTable()
+  {
+    $urlTemplatePageAdmin = 'web/pages/admin/board-schema-table.php';
+    $attributes = array();
+    return $this->getRender($urlTemplatePageAdmin, $attributes);
+  }
+  /**
    * Retourne le contenu de l'interface
    * @return string
    * @version 1.21.07.05
@@ -455,7 +470,6 @@ class AdminPageBean extends MainPageBean
    */
   public function getBoard()
   {
-    $urlTemplatePageAdmin = 'web/pages/admin/board-schema-table.php';
     $urlTemplatePageAdmin = 'web/pages/admin/board-admin-accueil.php';
 
     //////////////////////////////////////////////////////////////////
@@ -509,33 +523,27 @@ class AdminPageBean extends MainPageBean
   private function getBoardCard($Objs, $tagPage, $labelPage)
   {
     //////////////////////////////////
-   // Le contenu du Body :
+    // Le contenu du Body :
     $style = '';
-    if ($this->checkDate(self::CST_SUP, '07/01') && $this->checkDate(self::CST_INF, '07/15')) {
-      if (!empty($Objs)) {
-        $style = self::NOTIF_LIGHT;
-        $content = 'Pensez à supprimer les données de la table aperd_'.$tagPage.'.';
-      }
-    } elseif ($this->checkDate(self::CST_SUP, '07/16') && $this->checkDate(self::CST_INF, '08/15')) {
-      if (!empty($Objs)) {
-        $style = self::NOTIF_WARNING;
-        $content = 'Vous devez supprimer les données de la table aperd_'.$tagPage.'.';
-      }
-    } elseif ($this->checkDate(self::CST_SUP, '08/16') && $this->checkDate(self::CST_INF, '08/31')) {
-      if (empty($Objs)) {
-        $style = self::NOTIF_LIGHT;
-        $content = 'Pensez à créer les données de la table aperd_'.$tagPage.'.';
-      }
-    } elseif ($this->checkDate(self::CST_SUP, '09/01')) {
-      if (empty($Objs)) {
-        $style = self::NOTIF_WARNING;
-        $content = 'Vous devez créer les données de la table aperd_'.$tagPage.'.';
-      }
-    }
-
-    if ($style=='') {
+    if ($this->checkDate(self::CST_SUP, '07/01') && $this->checkDate(self::CST_INF, '07/15') && !empty($Objs)) {
+      $style = self::NOTIF_LIGHT;
+      $content = 'Pensez à supprimer les données de la table aperd_'.$tagPage.'.';
+    } elseif ($this->checkDate(self::CST_SUP, '07/16') && $this->checkDate(self::CST_INF, '08/15') && !empty($Objs)) {
+      $style = self::NOTIF_WARNING;
+      $content = 'Vous devez supprimer les données de la table aperd_'.$tagPage.'.';
+    } elseif ($this->checkDate(self::CST_SUP, '08/16') && $this->checkDate(self::CST_INF, '08/31') && empty($Objs)) {
+      $style = self::NOTIF_LIGHT;
+      $content = 'Pensez à créer les données de la table aperd_'.$tagPage.'.';
+    } elseif ($this->checkDate(self::CST_SUP, '09/01') && empty($Objs)) {
+      $style = self::NOTIF_WARNING;
+      $content = 'Vous devez créer les données de la table aperd_'.$tagPage.'.';
+    } else {
       return '';
     }
+    //////////////////////////////////
+
+    //////////////////////////////////
+    // On enrichi le Template et on le retourne
     $attributes = array(
       $tagPage,
       $style,

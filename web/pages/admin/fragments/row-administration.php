@@ -1,5 +1,5 @@
 <tr>
-  <td><input id="cb-select-%1$s" name="post[]" value="%1$s" type="checkbox"%7$s></td>
+  <td class="column-cb"><input id="cb-select-%1$s" name="post[]" value="%1$s" type="checkbox"%7$s></td>
   <td>%3$s</td>
   <td><strong><a class="row-title" href="%2$s">%4$s</a></strong></td>
   <td>%5$s</td>

@@ -56,11 +56,11 @@ insert="INSERT INTO wp_14_aperd_eleve (nomEleve, prenomEleve, divisionId, delegu
 update="UPDATE wp_14_aperd_eleve SET nomEleve='%s', prenomEleve='%s', divisionId='%s', delegue='%s' "
 
 [Enseignant]
-select="SELECT id, genre, nomEnseignant, matiereId "
+select="SELECT id, genre, nomEnseignant, prenomEnseignant "
 from="FROM wp_14_aperd_enseignant "
-where="WHERE nomEnseignant LIKE '%s' AND matiereId LIKE '%s' "
-insert="INSERT INTO wp_14_aperd_enseignant (genre, nomEnseignant) VALUES ('%s', '%s');"
-update="UPDATE wp_14_aperd_enseignant SET genre='%s', nomEnseignant='%s' "
+where="WHERE nomEnseignant LIKE '%s' "
+insert="INSERT INTO wp_14_aperd_enseignant (genre, nomEnseignant, prenomEnseignant) VALUES ('%s', '%s', '%s');"
+update="UPDATE wp_14_aperd_enseignant SET genre='%s', nomEnseignant='%s', prenomEnseignant='%s' "
 
 [EnseignantMatiere]
 select="SELECT id, enseignantId, matiereId "
@@ -84,11 +84,11 @@ insert="INSERT INTO wp_14_aperd_parent_delegue (parentId, divisionId) VALUES ('%
 update="UPDATE wp_14_aperd_parent_delegue SET parentId='%s', divisionId='%s' "
 
 [ProfPrincipal]
-select="SELECT id, anneeScolaireId, divisionId, enseignantId "
+select="SELECT id, divisionId, enseignantId "
 from="FROM wp_14_aperd_prof_princ "
-where="WHERE anneeScolaireId LIKE '%s' AND divisionId LIKE '%s' AND enseignantId LIKE '%s' "
-insert="INSERT INTO wp_14_aperd_prof_princ (anneeScolaireId, divisionId, enseignantId) VALUES ('%s', '%s', '%s');"
-update="UPDATE wp_14_aperd_prof_princ SET anneeScolaireId='%s', divisionId='%s', enseignantId='%s' "
+where="WHERE divisionId LIKE '%s' AND enseignantId LIKE '%s' "
+insert="INSERT INTO wp_14_aperd_prof_princ (divisionId, enseignantId) VALUES ('%s', '%s');"
+update="UPDATE wp_14_aperd_prof_princ SET divisionId='%s', enseignantId='%s' "
 
 [Questionnaire]
 select="SELECT configKey, configValue "

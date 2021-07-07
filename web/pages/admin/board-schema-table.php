@@ -66,12 +66,11 @@
       </div>
 
       <div id="prof_princ" class="card bg-light">
-        <div class="card-header"><strong>wp_14_aperd_prof_princ</strong></div>
+        <div class="card-header"><strong><a href="http://aperd.jhugues.fr/wp-admin/admin.php?page=hj-aperd/admin_manage.php&onglet=enseignant">wp_14_aperd_prof_princ</a></strong></div>
         <div class="card-body">
           <ul class="list-group list-group-condensed">
             <li class="list-group-item list-group-item-action d-flex justify-content-between" data-key="prof_princ">id <span class="badge badge-info" title="Clef">&nbsp;</span></li>
             <li class="list-group-item list-group-item-action d-flex justify-content-between" data-foreign-key="#enseignant">enseignantId <span class="badge badge-danger" title="required">&nbsp;</span></li>
-            <li class="list-group-item list-group-item-action d-flex justify-content-between" data-foreign-key="#anneeScolaire">anneeScolaireId <span class="badge badge-danger" title="required">&nbsp;</span></li>
             <li class="list-group-item list-group-item-action d-flex justify-content-between" data-foreign-key="#division">divisionId <span class="badge badge-danger" title="required">&nbsp;</span></li>
           </ul>
         </div>
@@ -102,12 +101,13 @@
       </div>
 
       <div id="enseignant" class="card bg-light">
-        <div class="card-header"><strong>wp_14_aperd_enseignant</strong></div>
+        <div class="card-header"><strong><a href="http://aperd.jhugues.fr/wp-admin/admin.php?page=hj-aperd/admin_manage.php&onglet=enseignant">wp_14_aperd_enseignant</a></strong></div>
         <div class="card-body">
           <ul class="list-group list-group-condensed">
             <li class="list-group-item list-group-item-action d-flex justify-content-between" data-key="enseignant">id <span class="badge badge-info" title="Clef">&nbsp;</span></li>
             <li class="list-group-item list-group-item-action d-flex justify-content-between text-success">genre</li>
             <li class="list-group-item list-group-item-action d-flex justify-content-between text-success">nomEnseignant <span class="badge badge-danger" title="required">&nbsp;</span></li>
+            <li class="list-group-item list-group-item-action d-flex justify-content-between text-success">prenomEnseignant</li>
           </ul>
         </div>
       </div>
@@ -126,7 +126,7 @@
       </div>
 
       <div id="enseignant_matiere" class="card bg-light">
-        <div class="card-header"><strong>wp_14_aperd_enseignant_matiere</strong></div>
+        <div class="card-header"><strong><a href="http://aperd.jhugues.fr/wp-admin/admin.php?page=hj-aperd/admin_manage.php&onglet=enseignant">wp_14_aperd_enseignant_matiere</a></strong></div>
         <div class="card-body">
           <ul class="list-group list-group-condensed">
             <li class="list-group-item list-group-item-action d-flex justify-content-between" data-key="enseignant_matiere">id <span class="badge badge-info" title="Clef">&nbsp;</span></li>
@@ -160,11 +160,10 @@
       </div>
 
       <div class="card bg-light">
-        <div class="card-header"><strong>wp_14_aperd_compo_division</strong></div>
+        <div class="card-header"><strong><a href="http://aperd.jhugues.fr/wp-admin/admin.php?page=hj-aperd/admin_manage.php&onglet=matiere">wp_14_aperd_compo_division</a></strong></div>
         <div class="card-body">
           <ul class="list-group list-group-condensed">
             <li class="list-group-item list-group-item-action d-flex justify-content-between">id <span class="badge badge-info" title="Clef">&nbsp;</span></li>
-            <li class="list-group-item list-group-item-action d-flex justify-content-between" data-foreign-key="#anneeScolaire">anneeScolaireId <span class="badge badge-danger" title="required">&nbsp;</span></li>
             <li class="list-group-item list-group-item-action d-flex justify-content-between" data-foreign-key="#division">divisionId <span class="badge badge-danger" title="required">&nbsp;</span></li>
             <li class="list-group-item list-group-item-action d-flex justify-content-between" data-foreign-key="#enseignant_matiere">enseignantMatiereId <span class="badge badge-danger" title="required">&nbsp;</span></li>
           </ul>

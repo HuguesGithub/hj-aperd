@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 /**
  * AdminPageElevesBean
  * @author Hugues
- * @version 1.21.06.21
+ * @version 1.21.07.06
  * @since 1.21.06.01
  */
 class AdminPageElevesBean extends AdminPageBean
@@ -184,7 +184,7 @@ class AdminPageElevesBean extends AdminPageBean
   /**
    * Gestion de l'affichage de la page.
    * @return string
-   * @version 1.21.06.21
+   * @version 1.21.07.06
    * @since 1.21.06.01
    */
   public function getListingPage()
@@ -225,7 +225,7 @@ class AdminPageElevesBean extends AdminPageBean
 
     $DisplayedEleves = array_slice($Eleves, ($curPage-1)*$nbPerPage, $nbPerPage);
     if (empty($DisplayedEleves)) {
-      $strRows = '<tr><td colspan="5"><em>Aucun résultat</em></td></tr>';
+      $strRows = '<tr><td colspan="6"><em>Aucun résultat</em></td></tr>';
     } else {
       $strRows = '';
       while (!empty($DisplayedEleves)) {

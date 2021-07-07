@@ -147,6 +147,7 @@ interface ConstantsInterface
   const MSG_CONFIRM_SUPPR_ELEVE     = 'Voulez-vous vraiment <strong>supprimer</strong> l\'Elève <strong>%s</strong>.';
   const MSG_ERREUR_CONTROL_ENTETE    = 'La première ligne ne correspond pas aux champs attendus : <strong>%s</strong>.';
   const MSG_ERREUR_CONTROL_EXISTENCE = 'Champ obligatoire non saisi. ';
+  const MSG_ERREUR_CONTROL_EXISTENCE_NORMEE = 'Champ obligatoire [<strong>%s</strong>] non saisi. ';
   const MSG_ERREUR_CONTROL_UNICITE   = 'Champ qui ne respecte pas le critère d\'unicité. ';
   const MSG_ERREUR_CONTROL_INEXISTENCE = 'Une donnée utilisée (%s) n\'existe pas en base. ';
   const MSG_ERREUR_CONTROL_ID        = 'Identifiant non valide. ';

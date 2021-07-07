@@ -42,4 +42,14 @@ class EnseignantDaoImpl extends LocalDaoImpl
    */
   public function select($file, $line, $arrParams)
   { return parent::localSelect($arrParams, new Enseignant()); }
+
+
+  public function getEnseignantsJointsWithFilters($filters)
+  {
+    $requete  = "SELECT ae.id AS id, genre, nomEnseignant, prenomEnseignant ";
+    $requete .= "FROM wp_14_aperd_enseignant ae ";
+    $requete .= 'LEFT JOIN wp_14_aperd_enseignant_matiere aem ON ae.id=aem.enseignantId ';
+    $requete .= $this->whereFilters."AND (matiereId LIKE '%s' OR matiereId IS NULL) ".$this->orderBy.$this->limit;
+    return $this->convertToArray($this->selectEntriesAndLogQuery(__FILE__, __LINE__, $requete, $filters));
+  }
 }

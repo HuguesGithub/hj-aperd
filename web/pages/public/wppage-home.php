@@ -8,4 +8,11 @@
     </fieldset>
   </section>
 
+  <section id="searchCr" class="row">
+    <fieldset>
+      <legend>Fermeture estivale</legend>
+      <p class="badge badge-warning">Du 6 juillet au 31 août, le site est fermé pour maintenance.</p>
+    </fieldset>
+  </section>
+
 </section>
