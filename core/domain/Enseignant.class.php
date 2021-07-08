@@ -325,8 +325,8 @@ class Enseignant extends LocalDomain
     $EnseignantMatiere->setEnseignantId($this->id);
     $matiereIds = $urlParams['matiereIds'];
     while (!empty($matiereIds)) {
-      $id = array_shift($matiereIds);
-      $EnseignantMatiere->setMatiereId($id);
+      $matiereId = array_shift($matiereIds);
+      $EnseignantMatiere->setMatiereId($matiereId);
       $this->EnseignantMatiereServices->insertLocal($EnseignantMatiere);
     }
   }

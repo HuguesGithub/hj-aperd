@@ -86,6 +86,7 @@ interface ConstantsInterface
   const FIELD_ENFANT1             = 'enfant1';
   const FIELD_ENFANT2             = 'enfant2';
   const FIELD_ENSEIGNANT_ID       = 'enseignantId';
+  const FIELD_ENSEIGNANT_MATIERE_ID = 'enseignantMatiereId';
   const FIELD_GENRE               = 'genre';
   const FIELD_LABELCLASSE         = 'labelClasse';
   const FIELD_LABELDIVISION       = 'labelDivision';

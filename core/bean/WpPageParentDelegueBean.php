@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 /**
  * Classe WpPageParentDelegueBean
  * @author Hugues
- * @version 1.21.06.29
+ * @version 1.21.07.07
  * @since 1.21.06.29
  */
 class WpPageParentDelegueBean extends WpPageBean
@@ -72,7 +72,7 @@ class WpPageParentDelegueBean extends WpPageBean
         $Enseignant = array_shift($Enseignants);
         $strEnseignants .= $Enseignant->getBean()->getRowForPublicPage();
       }
-	}
+  }
     /////////////////////////////////////////////////////////////
 
     /////////////////////////////////////////////////////////////
@@ -109,6 +109,7 @@ class WpPageParentDelegueBean extends WpPageBean
    */
   private function getLoginPage()
   {
+    $notifications = '';
     if (isset($_POST['login'])) {
       // Soit je suis en train d'essayer de m'identifier.
       $divisionCrKey = stripslashes($_POST['crKey']);
@@ -136,9 +137,6 @@ class WpPageParentDelegueBean extends WpPageBean
       } else {
         $notifications = 'Erreur de clé division.';
       }
-    } else {
-      // Soit je débarque.
-      $notifications = '';
     }
     $args = array(
       // Notifications - 1

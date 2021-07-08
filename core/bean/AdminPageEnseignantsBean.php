@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 /**
  * AdminPageEnseignantsBean
  * @author Hugues
- * @version 1.21.07.06
+ * @version 1.21.07.07
  * @since 1.21.06.01
  */
 class AdminPageEnseignantsBean extends AdminPageBean
@@ -65,7 +65,7 @@ class AdminPageEnseignantsBean extends AdminPageBean
   /**
    * @param array $urlParams
    * @return string
-   * @version 1.21.06.22
+   * @version 1.21.07.07
    * @since 1.21.06.06
    */
   public function getContentPage()
@@ -93,7 +93,6 @@ class AdminPageEnseignantsBean extends AdminPageBean
 
     $MatiereBean = new MatiereBean();
     $DivisionBean = new DivisionBean();
-    $AnneeScolaireBean = new AnneeScolaireBean();
 
     $arrIds = array();
     if ($this->LocalObject->getId()!='') {
@@ -127,7 +126,6 @@ class AdminPageEnseignantsBean extends AdminPageBean
     $ProfPrincipals = $this->ProfPrincipalServices->getProfPrincipalsWithFilters(array(self::FIELD_ENSEIGNANT_ID=>$this->LocalObject->getId()));
     $ProfPrincipal = (empty($ProfPrincipals) ? new ProfPrincipal() : array_shift($ProfPrincipals));
 
-//    $argMatSelect['selectedId'] = $this->LocalObject->getMatiereId();
     $argDivSelect['selectedId'] = $ProfPrincipal->getDivisionId();
 
     $this->attributesFormEdit = array(

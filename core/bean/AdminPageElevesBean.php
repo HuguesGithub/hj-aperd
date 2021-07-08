@@ -22,12 +22,7 @@ class AdminPageElevesBean extends AdminPageBean
     $this->EleveServices  = new EleveServices();
     $this->Services       = new EleveServices();
     // Initialisation de l'Elève sélectionné s'il y en a un.
-    if ($urlParams!=null && isset($urlParams[self::FIELD_ID])) {
-      $this->Eleve = $this->EleveServices->selectLocal($urlParams[self::FIELD_ID]);
-    } else {
-      $this->Eleve = new Eleve();
-    }
-    $this->LocalObject    = $this->Eleve;
+    $this->LocalObject    = ($urlParams!=null && isset($urlParams[self::FIELD_ID]) ? $this->EleveServices->selectLocal($urlParams[self::FIELD_ID]) : new Eleve());
     // On stocke les paramètres
     $this->urlParams = $urlParams;
     // On prépare le stockage pour les ids multiples si existants.
@@ -39,19 +34,19 @@ class AdminPageElevesBean extends AdminPageBean
   /**
    * Retourne l'Elève
    * @return Eleve
-   * @version 1.21.06.11
+   * @version 1.21.07.07
    * @since 1.21.06.01
    */
   public function getObject()
-  { return $this->Eleve; }
+  { return $this->LocalObject; }
   /**
    * Retourne le Service
    * @return EleveServices
-   * @version 1.21.06.11
+   * @version 1.21.07.07
    * @since 1.21.06.11
    */
   public function getServices()
-  { return $this->EleveServices; }
+  { return $this->Services; }
 
   /**
    * @param array $urlParams
@@ -69,7 +64,7 @@ class AdminPageElevesBean extends AdminPageBean
   /**
    * @param array $urlParams
    * @return string
-   * @version 1.21.06.21
+   * @version 1.21.07.07
    * @since 1.21.06.11
    */
   public function getContentPage()
@@ -82,70 +77,7 @@ class AdminPageElevesBean extends AdminPageBean
     ///////////////////////////////////////////
     // Analyse de l'action éventuelle.
     if (!isset($this->urlParams['filter_action']) && isset($this->urlParams[self::CST_POSTACTION])) {
-      switch ($this->urlParams[self::CST_POSTACTION]) {
-        case self::CST_CREATION :
-          // Exécution de la création
-          $this->Eleve->setNomEleve($this->urlParams[self::FIELD_NOMELEVE]);
-          $this->Eleve->setPrenomEleve($this->urlParams[self::FIELD_PRENOMELEVE]);
-          $this->Eleve->setDivisionId($this->urlParams[self::FIELD_DIVISION_ID]);
-          $this->Eleve->setDelegue(isset($this->urlParams[self::FIELD_DELEGUE]));
-          $this->Eleve->insert($notif, $msg);
-          $this->Eleve = new Eleve();
-        break;
-        case self::CST_EDITION :
-          // Exécution de la création
-          $this->Eleve->setNomEleve($this->urlParams[self::FIELD_NOMELEVE]);
-          $this->Eleve->setPrenomEleve($this->urlParams[self::FIELD_PRENOMELEVE]);
-          $this->Eleve->setDivisionId($this->urlParams[self::FIELD_DIVISION_ID]);
-          $this->Eleve->setDelegue(isset($this->urlParams[self::FIELD_DELEGUE]));
-          $this->Eleve->update($notif, $msg);
-          $initPanel = self::CST_EDIT;
-        break;
-        case self::CST_SUPPRESSION :
-          // Exécution de la suppression unitaire ou groupée
-          $this->delete($notif, $msg);
-          $this->Eleve = new Eleve();
-        break;
-        case self::CST_IMPORT :
-          // Exécution de l'import
-          $this->import($notif, $msg);
-          $this->Eleve = new Eleve();
-        break;
-        case self::CST_BULK :
-          // Gestion des Actions groupées
-          switch ($this->urlParams[self::CST_ACTION]) {
-            case self::CST_TRASH :
-              // Confirmation de la Suppression de masse
-              if (empty($this->urlParams[self::CST_POST])) {
-                $msg = self::MSG_BULK_DELETE_IMPOSSIBLE;
-                $notif = self::NOTIF_WARNING;
-              } else {
-                $initPanel = self::CST_BULK_TRASH;
-              }
-            break;
-            case self::CST_EXPORT :
-              // Exécution de l'exportation
-              if (empty($this->urlParams[self::CST_POST])) {
-                $msg = self::MSG_BULK_EXPORT_IMPOSSIBLE;
-                $notif = self::NOTIF_WARNING;
-              } else {
-                $msg = ExportActions::dealWithStaticExport(self::PAGE_ELEVE, $this->urlParams[self::CST_POST]);
-                $notif = self::NOTIF_SUCCESS;
-                $initPanel = self::CST_BULK_EXPORT;
-              }
-            break;
-            default :
-              // Erreur sur l'action groupée, non reconnue
-              $notif = self::NOTIF_WARNING;
-              $msg   = sprintf(self::MSG_BULK_ACTION_INDEFINIE, array($this->urlParams[self::CST_ACTION]));
-            break;
-          }
-        break;
-        default :
-          // Affichage des écrans simples : création ou édition
-          $initPanel = $this->urlParams[self::CST_POSTACTION];
-        break;
-      }
+      $this->parseUrlParams($initPanel, $notif, $msg);
     }
 
     ///////////////////////////////////////////
@@ -155,24 +87,26 @@ class AdminPageElevesBean extends AdminPageBean
     }
     ///////////////////////////////////////////:
     // On initialise les panneaux latéraux droit
-    $this->msgConfirmDelete = sprintf(self::MSG_CONFIRM_SUPPR_ELEVE, $this->Eleve->getNomComplet());
+    $this->msgConfirmDelete = sprintf(self::MSG_CONFIRM_SUPPR_ELEVE, $this->LocalObject->getNomComplet());
     $this->tagConfirmDeleteMultiple = self::MSG_CONFIRM_SUPPR_ELEVES;
+
+    $DivisionBean = new DivisionBean();
+
     $argSelect = array(
       'tag'        => self::FIELD_DIVISION_ID,
       self::ATTR_REQUIRED => '',
     );
-    $DivisionBean = new DivisionBean();
     $this->attributesFormNew = array('', '', $DivisionBean->getSelect($argSelect), '');
-    $argSelect['selectedId'] = $this->Eleve->getDivisionId();
+    $argSelect['selectedId'] = $this->LocalObject->getDivisionId();
     $this->attributesFormEdit  = array(
       // Nom de l'Elève - 1
-      $this->Eleve->getNomEleve(),
+      $this->LocalObject->getNomEleve(),
       // Prénom de l'Eleve - 2
-      $this->Eleve->getPrenomEleve(),
+      $this->LocalObject->getPrenomEleve(),
       // Division de l'Eleve - 3
       $DivisionBean->getSelect($argSelect),
       // Est délégué ? - 4
-      ($this->Eleve->isDelegue() ? self::CST_BLANK.self::CST_CHECKED : ''),
+      ($this->LocalObject->isDelegue() ? self::CST_BLANK.self::CST_CHECKED : ''),
     ) ;
 
     $this->initPanels($initPanel);
@@ -180,6 +114,24 @@ class AdminPageElevesBean extends AdminPageBean
     // On retourne le listing et les panneaux latéraux droit
     return $this->getListingPage();
   }
+
+  /**
+   * @version 1.21.07.07
+   * @since 1.21.07.07
+   */
+  public function setLocalObject()
+  {
+    $this->LocalObject->setNomEleve($this->urlParams[self::FIELD_NOMELEVE]);
+    $this->LocalObject->setPrenomEleve($this->urlParams[self::FIELD_PRENOMELEVE]);
+    $this->LocalObject->setDivisionId($this->urlParams[self::FIELD_DIVISION_ID]);
+    $this->LocalObject->setDelegue(isset($this->urlParams[self::FIELD_DELEGUE]));
+  }
+  /**
+   * @version 1.21.07.07
+   * @since 1.21.07.07
+   */
+  public function initLocalObject()
+  { $this->LocalObject = new Eleve(); }
 
   /**
    * Gestion de l'affichage de la page.

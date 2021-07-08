@@ -5,136 +5,139 @@ if (!defined('ABSPATH')) {
 /**
  * AdminPageCompoDivisionsBean
  * @author Hugues
- * @version 1.21.06.17
+ * @version 1.21.07.07
  * @since 1.21.06.01
  */
 class AdminPageCompoDivisionsBean extends AdminPageBean
 {
   protected $urlTemplatePageAdmin = 'web/pages/admin/board-compo-divisions.php';
+  protected $urlTemplateForm = 'web/pages/admin/fragments/form-compo-division.php';
+
   /**
    * Class Constructor
    */
   public function __construct($urlParams=null)
   {
     parent::__construct();
-    $this->title = 'Classes';
     $this->CompoDivisionServices = new CompoDivisionServices();
-    if ($urlParams!=null && isset($urlParams['id'])) {
-      $this->CompoDivision = $this->CompoDivisionServices->selectLocal($urlParams['id']);
-    } else {
-      $this->CompoDivision = new CompoDivision();
-    }
+    $this->Services       = new CompoDivisionServices();
+    // Initialisation de la Compo Division sélectionnée s'il y en a une.
+    $this->LocalObject = ($urlParams!=null && isset($urlParams['id']) ? $this->CompoDivisionServices->selectLocal($urlParams['id']) : new CompoDivision());
+    // On stocke les paramètres
     $this->urlParams = $urlParams;
+     // On prépare le stockage pour les ids multiples si existants.
     $this->arrIds = array();
+    $this->subMenuValue = self::PAGE_COMPO_DIVISION;
   }
-  public function getCompoDivision()
-  { return $this->CompoDivision; }
+  /**
+   * @return CompoDivision
+   * @version 1.21.07.07
+   * @since 1.21.06.01
+   */
+  public function getObject()
+  { return $this->LocalObject; }
+  /**
+   * Retourne le Service
+   * @return CompoDivisionServices
+   * @version 1.21.07.07
+   * @since 1.21.07.07
+   */
+  public function getServices()
+  { return $this->Services; }
   /**
    * @param array $urlParams
    * @return $Bean
+   * @version 1.21.07.07
+   * @since 1.21.06.01
    */
   public static function getStaticContentPage($urlParams)
   {
     ///////////////////////////////////////////:
     // Initialisation des valeurs par défaut
     $Bean = new AdminPageCompoDivisionsBean($urlParams);
-    $msg = '';
-    $initPanel = self::CST_CREATION;
-    // Analyse de l'action éventuelle.
-    if (isset($urlParams['filter_action'])) {
-      $Bean = new AdminPageCompoDivisionsBean($urlParams);
-    } elseif (isset($urlParams[self::CST_POSTACTION])) {
-      $Bean = new AdminPageCompoDivisionsBean($urlParams);
-      switch($urlParams[self::CST_POSTACTION]) {
-        case 'Import' :
-          // Exécution de l'import
-          $Bean->import($notif, $msg);
-          $Bean->CompoDivision = new CompoDivision();
-        break;
-        case self::CST_EDITION :
-          // Exécution de la mise à jour
-          $Bean->getCompoDivision()->setAnneeScolaireId($urlParams[self::FIELD_ANNEESCOLAIRE_ID]);
-          $Bean->getCompoDivision()->setDivisionId($urlParams[self::FIELD_DIVISION_ID]);
-          $Bean->getCompoDivision()->setMatiereId($urlParams[self::FIELD_MATIERE_ID]);
-          $Bean->getCompoDivision()->setEnseignantId($urlParams[self::FIELD_ENSEIGNANT_ID]);
-          $Bean->getCompoDivision()->update($notif, $msg);
-          $initPanel = self::CST_EDIT;
-        break;
-        case self::CST_CREATION :
-          // Exécution de la création
-          $Bean->getCompoDivision()->setAnneeScolaireId($urlParams[self::FIELD_ANNEESCOLAIRE_ID]);
-          $Bean->getCompoDivision()->setDivisionId($urlParams[self::FIELD_DIVISION_ID]);
-          $Bean->getCompoDivision()->setMatiereId($urlParams[self::FIELD_MATIERE_ID]);
-          $Bean->getCompoDivision()->setEnseignantId($urlParams[self::FIELD_ENSEIGNANT_ID]);
-          $Bean->getCompoDivision()->insert($notif, $msg);
-          $Bean->CompoDivision = new CompoDivision();
-        break;
-        case self::CST_SUPPRESSION :
-          // Exécution de la suppression unitaire ou groupée
-          $Bean->delete($notif, $msg);
-          $Bean->CompoDivision = new CompoDivision();
-        break;
-        case self::CST_BULK :
-          // Gestion des Actions groupées
-          switch ($urlParams['action']) {
-            case self::CST_TRASH :
-              // Confirmation de la Suppression de masse
-              if (empty($urlParams['post'])) {
-                $msg = 'Suppressions impossibles : aucune entrée sélectionnée.';
-                $notif = self::NOTIF_WARNING;
-              } else {
-                $initPanel = self::CST_BULK_TRASH;
-              }
-            break;
-            case self::CST_EXPORT :
-              // Exécution de l'exportation
-              if (empty($urlParams['post'])) {
-                $msg = 'Export impossible : aucune entrée sélectionnée.';
-                $notif = self::NOTIF_WARNING;
-              } else {
-                $msg = ExportActions::dealWithStaticExport(self::PAGE_COMPO_DIVISION, $urlParams['post']);
-                $notif = self::NOTIF_SUCCESS;
-              }
-              $initPanel = self::CST_BULK_EXPORT;
-            break;
-            default :
-              // Erreur sur l'action groupée, non reconnue
-              $notif = self::NOTIF_WARNING;
-              $msg   = 'Action Bulk indéterminée : <strong>'.$urlParams['action'].'</strong>';
-            break;
-          }
-        break;
-        default :
-          // Affichage des écrans simples : création ou édition
-          $initPanel = $urlParams[self::CST_POSTACTION];
-        break;
-      }
-    }
-    if ($msg!='') {
-      $Bean->createNotification($notif, $msg);
-    }
-    $Bean->initPanels($initPanel);
-    return $Bean->getListingPage();
+    return $Bean->getContentPage();
   }
-
-  public function delete(&$notif, &$msg)
+  /**
+   * @param array $urlParams
+   * @return string
+   * @version 1.21.07.07
+   * @since 1.21.07.07
+   */
+  public function getContentPage()
   {
-    if (strpos($this->urlParams['id'], ',')!==false) {
-      $this->CompoDivisionServices->deleteIn($this->urlParams['id']);
-      $msg   = 'Suppressions réussies.';
-      $notif = self::NOTIF_SUCCESS;
-    } else {
-      $this->getCompoDivision()->delete($notif, $msg);
+    ///////////////////////////////////////////
+    // Initialisation des valeurs par défaut
+    $msg = '';
+    $initPanel = self::CST_CREATE;
+
+    ///////////////////////////////////////////
+    // Analyse de l'action éventuelle.
+    if (!isset($this->urlParams['filter_action']) && isset($this->urlParams[self::CST_POSTACTION])) {
+      $this->parseUrlParams($initPanel, $notif, $msg);
+    }
+
+    ///////////////////////////////////////////
+    // Si $msg est renseigné, on a une notification à afficher.
+    if ($msg!='') {
       $this->createNotification($notif, $msg);
     }
+
+    ///////////////////////////////////////////:
+    // On initialise les panneaux latéraux droit
+    //$this->msgConfirmDelete = sprintf(self::MSG_CONFIRM_SUPPR_COMPO_DIVISION, $this->LocalObject->getFullName());
+    //$this->tagConfirmDeleteMultiple = self::MSG_CONFIRM_SUPPR_COMPO_DIVISIONS;
+
+    $DivisionBean = new DivisionBean();
+    $EnseignantMatiereBean = new EnseignantMatiereBean();
+    $argDivSelect = array(
+      'tag'        => self::FIELD_DIVISION_ID,
+      self::ATTR_REQUIRED => '',
+    );
+    $argEnsMatSelect = array(
+      'tag'        => self::FIELD_ENSEIGNANT_MATIERE_ID,
+      self::ATTR_REQUIRED => '',
+    );
+    $this->attributesFormNew = array(
+      $DivisionBean->getSelect($argDivSelect),
+      $EnseignantMatiereBean->getSelect($argEnsMatSelect),
+    );
+
+
+    $argDivSelect['selectedId'] = $this->LocalObject->getDivisionId();
+    $argEnsMatSelect['selectedId'] = $this->LocalObject->getEnseignantMatiereId();
+    $this->attributesFormEdit = array(
+      $DivisionBean->getSelect($argDivSelect),
+      $EnseignantMatiereBean->getSelect($argEnsMatSelect),
+    );
+
+    $this->initPanels($initPanel);
+
+    ///////////////////////////////////////////:
+    // On retourne le listing et les panneaux latéraux droit
+    return $this->getListingPage();
   }
 
-
-  public function createNotification($typeAlert, $msg)
-  { $this->notifications = '<div class="alert alert-'.$typeAlert.' alert-dismissible fade show" role="alert">'.$msg.'<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>'; }
+  /**
+   * @version 1.21.07.07
+   * @since 1.21.07.07
+   */
+  public function setLocalObject()
+  {
+    $this->LocalObject->setDivisionId($this->urlParams[self::FIELD_DIVISION_ID]);
+    $this->LocalObject->setEnseignantMatiereId($this->urlParams[self::FIELD_ENSEIGNANT_MATIERE_ID]);
+  }
+  /**
+   * @version 1.21.07.07
+   * @since 1.21.07.07
+   */
+  public function initLocalObject()
+  { $this->LocalObject = new CompoDivision(); }
 
   /**
+   * Gestion de l'affichage de la page.
    * @return string
+   * @version 1.21.07.07
+   * @since 1.21.06.01
    */
   public function getListingPage()
   {
@@ -143,8 +146,6 @@ class AdminPageCompoDivisionsBean extends AdminPageBean
     $argFilters = array();
     $filterDivisionId = (isset($this->urlParams[self::FIELD_DIVISION_ID]) ? $this->urlParams[self::FIELD_DIVISION_ID] : '');
     $argFilters[self::FIELD_DIVISION_ID] = $filterDivisionId;
-    $filterAnneeScolaireId = (isset($this->urlParams[self::FIELD_ANNEESCOLAIRE_ID]) ? $this->urlParams[self::FIELD_ANNEESCOLAIRE_ID] : '');
-    $argFilters[self::FIELD_ANNEESCOLAIRE_ID] = $filterAnneeScolaireId;
     $filterMatiereId = (isset($this->urlParams[self::FIELD_MATIERE_ID]) ? $this->urlParams[self::FIELD_MATIERE_ID] : '');
     $argFilters[self::FIELD_MATIERE_ID] = $filterMatiereId;
     $filterEnseignantId = (isset($this->urlParams[self::FIELD_ENSEIGNANT_ID]) ? $this->urlParams[self::FIELD_ENSEIGNANT_ID] : '');
@@ -153,7 +154,6 @@ class AdminPageCompoDivisionsBean extends AdminPageBean
 
     //////////////////////////////////////////////////////////////////
     // On récupère tous les Compos et on construit la base de la pagination et on restreint l'affichage
-    $strAdminRowsCompos = '';
     $nbPerPage = 10;
     $orderby = $this->initVar(self::WP_ORDERBY, self::FIELD_ID);
     $order = $this->initVar(self::WP_ORDER, self::ORDER_ASC);
@@ -175,8 +175,9 @@ class AdminPageCompoDivisionsBean extends AdminPageBean
 
     $DisplayedCompoDivisions = array_slice($CompoDivisions, ($curPage-1)*$nbPerPage, $nbPerPage);
     if (empty($DisplayedCompoDivisions)) {
-      $strAdminRowsCompos = '<tr><td colspan="6"><em>Aucun résultat</em></td></tr>';
+      $strRows = '<tr><td colspan="5"><em>Aucun résultat</em></td></tr>';
     } else {
+      $strRows = '';
       while (!empty($DisplayedCompoDivisions)) {
         $CompoDivision = array_shift($DisplayedCompoDivisions);
         $strAdminRowsCompos .= $CompoDivision->getBean()->getRowForAdminPage(false, $queryArg);
@@ -187,14 +188,32 @@ class AdminPageCompoDivisionsBean extends AdminPageBean
     //////////////////////////////////////////////////////////////////
     // Construction des filtres utilisés
     $strFiltres = '';
-    $AnneeScolaireBean = new AnneeScolaireBean();
-    $strFiltres .= $AnneeScolaireBean->getSelect(self::FIELD_ANNEESCOLAIRE_ID, 'Toutes les années scolaires', $filterAnneeScolaireId);
+    // La Division
     $DivisionBean = new DivisionBean();
-    $strFiltres .= $DivisionBean->getSelect(self::FIELD_DIVISION_ID, 'Toutes les divisions', $filterDivisionId);
-    $MatiereBean = new MatiereBean();
-    $strFiltres .= $MatiereBean->getSelect(self::FIELD_MATIERE_ID, 'Toutes les matières', $filterMatiereId);
+    $argSelect = array(
+      'tag'        => self::FIELD_DIVISION_ID,
+      'selectedId' => $filterDivisionId,
+    );
+    $strFiltres .= $DivisionBean->getSelect($argSelect);
+    $strFiltres .= '<label for="divisionId">Divisions</label>';
+    $strFiltres .= '</div></div><div class="col-md"><div class="form-floating">';
+    // L'Enseignant
     $EnseignantBean = new EnseignantBean();
-    $strFiltres .= $EnseignantBean->getSelect(self::FIELD_ENSEIGNANT_ID, 'Tous les enseignants', $filterEnseignantId);
+    $argSelect = array(
+      'tag'        => self::FIELD_ENSEIGNANT_ID,
+      'selectedId' => $filterEnseignantId,
+    );
+    $strFiltres .= $EnseignantBean->getSelect($argSelect);
+    $strFiltres .= '<label for="enseignantId">Enseignants</label>';
+    $strFiltres .= '</div></div><div class="col-md"><div class="form-floating">';
+    // La Matière
+    $MatiereBean = new MatiereBean();
+    $argSelect = array(
+      'tag'        => self::FIELD_MATIERE_ID,
+      'selectedId' => $filterMatiereId,
+    );
+    $strFiltres .= $MatiereBean->getSelect($argSelect);
+    $strFiltres .= '<label for="matiereId">Matière</label>';
     //////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////
@@ -202,101 +221,21 @@ class AdminPageCompoDivisionsBean extends AdminPageBean
     $strPagination = $this->getPagination($queryArg, $post_status, $curPage, $nbPages, $nbElements);
     //////////////////////////////////////////////////////////////////
 
-    $urlCancel = $this->getQueryArg($queryArg);
-
     $attributes = array(
-      // Liste des élèves - 1
-      $strAdminRowsCompos,
-      // Titre du bloc de Création / Edition pour Compo Divisions - 2
-      $this->cardCreationEditionTitre,
-      // - 3
-      $AnneeScolaireBean->getSelect(self::FIELD_ANNEESCOLAIRE_ID, self::CST_DEFAULT_SELECT, $this->CompoDivision->getAnneeScolaireId()),
-      // - 4
-      $DivisionBean->getSelect(self::FIELD_DIVISION_ID, self::CST_DEFAULT_SELECT, $this->CompoDivision->getDivisionId()),
-      // - 5
-      $MatiereBean->getSelect(self::FIELD_MATIERE_ID, self::CST_DEFAULT_SELECT, $this->CompoDivision->getMatiereId()),
-      // - 6
-      $EnseignantBean->getSelect(self::FIELD_ENSEIGNANT_ID, self::CST_DEFAULT_SELECT, $this->CompoDivision->getEnseignantId()),
-      // Identifiant de l'élément sélectionné - 7
-      $this->CompoDivision->getId(),
-      // Url d'annulation - 8
-      $urlCancel,
-      // Show Card Creation/Edition - 9
-      $this->showCardEditionCreation ? '' : self::CST_BLANK.self::CST_HIDDEN,
-      // Show Card Suppression - 10
-      $this->showCardSuppression ? '' : self::CST_BLANK.self::CST_HIDDEN,
-      // Show Suppression simple - 11
-      $this->showSuppressionSimple ? '' : self::CST_BLANK.self::CST_HIDDEN,
-      // Show Suppression multiple - 12
-      !$this->showSuppressionSimple ? '' : self::CST_BLANK.self::CST_HIDDEN,
-      // Libellé suppressions mumtiples - 13
-      $this->libellesMultiples,
-      // Id de la Suppression - 14
-      $this->ids,
-      // La Pagination - 15
-      $strPagination,
-      // Les filtres pour le listing - 16
-      $strFiltres,
-      // Notifications - 17
+      // Liste des matières affichées - 1
+      $strRows,
+      // Notification suite à soumission formulaire - 2
       $this->notifications,
-      /*
-      // Nom de l'élève - 3
-      '',//$this->CompoDivision->getNomEleve(),
-      // Prénom de l'élève - 4
-      '',//$this->Eleve->getPrenomEleve(),
-      // Menu Division pour l'édition - 5
-      '',//$DivisionBean->getSelect(self::FIELD_DIVISION_ID, self::CST_DEFAULT_SELECT, $this->Eleve->getDivisionId()),
-      */
-      '','','','','','','','','','','','','','','','','','',
-      '','','','','','','','','','','','','','','','','','',
+      // Card C(R)UD - 3
+      $this->getCardCRUD($this->crudType, $this->attributesCardCRUD),
+      // Card Importation - 4
+      $this->getCardImport(self::PAGE_COMPO_DIVISION),
+      // La Pagination - 5
+      $strPagination,
+      // Les Filtres - 6
+      $strFiltres,
     );
     return $this->getRender($this->urlTemplatePageAdmin, $attributes);
   }
 
-  public function initPanels($action)
-  {
-    switch ($action) {
-      case self::CST_BULK_EXPORT :
-      case self::CST_CREATION :
-        $this->cardCreationEditionTitre = self::CST_CREATION;
-        $this->showCardEditionCreation = true;
-        $this->showCardSuppression     = false;
-      break;
-      case self::CST_EDITION :
-      case self::CST_EDIT :
-        $this->cardCreationEditionTitre = self::CST_EDITION;
-        $this->showCardEditionCreation = true;
-        $this->showCardSuppression     = false;
-      break;
-      case self::CST_BULK_TRASH :
-        $this->cardCreationEditionTitre = '';
-        $this->showSuppressionSimple    = false;
-        $this->showCardEditionCreation  = false;
-        $this->showCardSuppression      = true;
-        $arrIds = array();
-        $arrLabels = array();
-        foreach($this->urlParams['post'] as $key=> $value) {
-          $CompoDivision = $this->CompoDivisionServices->selectLocal($value);
-          $arrLabels[] = $CompoDivision->getId();
-          $arrIds[] = $value;
-        }
-        $this->arrIds                   = $arrIds;
-        $this->ids                      = implode(',', $arrIds);
-        $this->libellesMultiples        = implode(', ', $arrLabels);
-      break;
-      case self::CST_DELETE :
-        $this->ids = $this->CompoDivision->getId();
-        $this->cardCreationEditionTitre = self::CST_SUPPRESSION;
-        $this->showSuppressionSimple    = true;
-        $this->showCardEditionCreation  = false;
-        $this->showCardSuppression      = true;
-      break;
-      default :
-        $this->cardCreationEditionTitre = 'WIP - '.$action.' -';
-        $this->showCardEditionCreation = true;
-        $this->showCardSuppression     = false;
-
-      break;
-    }
-  }
 }
