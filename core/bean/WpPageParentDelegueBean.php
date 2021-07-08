@@ -127,9 +127,7 @@ class WpPageParentDelegueBean extends WpPageBean
             return $this->getDashboardPage();
           }
         }
-        if (!$bln_isLoginCorrect) {
-          $notifications = 'Erreur de login Parent.';
-        }
+        $notifications = 'Erreur de login Parent.';
       } else {
         $notifications = 'Erreur de clé division.';
       }

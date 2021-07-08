@@ -98,9 +98,12 @@ class CompteRenduBean extends LocalBean
     return $content;
   }
 
+  private function getCloseButton()
+  { return '<div class="alert alert-info"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>'; }
+
   public function getStep5()
   {
-    $content  = '<div class="alert alert-info"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>';
+    $content  = $this->getCloseButton();
     $content .= '<div class="pdfParagrapheTitre">Informations générales</div>';
     $content .= "Réunions mensuelles : L'association des Parents d'Élèves se réunit un mercredi par mois (hors vacances scolaires). Vous pouvez également découvrir la vie du collège et les actions de l'association sur son site internet.<br>";
 
@@ -119,23 +122,26 @@ class CompteRenduBean extends LocalBean
     return $content;
   }
 
+  private function getDivAttributions($label, $valeur)
+  { return '<div class="col-md-6">'.$label.' : '.($valeur==-1 ? '<strong>Non renseigné</strong>' : $valeur).'</div>'; }
+
   public function getStep4()
   {
-    $content  = '<div class="alert alert-info"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>';
+    $content  = $this->getCloseButton();
     $content .= '<div class="pdfParagrapheTitre">Attributions du conseil de classe</div>';
     $content .= '<div class="row">';
     $valeur = $this->CompteRendu->getValue(self::FIELD_NBFELICITATIONS);
-    $content .= '<div class="col-md-6">Félicitations : '.($valeur==-1 ? '<strong>Non renseigné</strong>' : $valeur).'</div>';
+    $content .= $this->getDivAttributions('Félicitations', $valeur);
     $valeur = $this->CompteRendu->getValue(self::FIELD_NBMGTVL);
-    $content .= '<div class="col-md-6">Mises en Garde Travail : '.($valeur==-1 ? '<strong>Non renseigné</strong>' : $valeur).'</div>';
+    $content .= $this->getDivAttributions('Mises en Garde Travail', $valeur);
     $valeur = $this->CompteRendu->getValue(self::FIELD_NBCOMPLIMENTS);
-    $content .= '<div class="col-md-6">Compliments : '.($valeur==-1 ? '<strong>Non renseigné</strong>' : $valeur).'</div>';
+    $content .= $this->getDivAttributions('Compliments', $valeur);
     $valeur = $this->CompteRendu->getValue(self::FIELD_NBMGCPT);
-    $content .= '<div class="col-md-6">Mises en Garde Comportement : '.($valeur==-1 ? '<strong>Non renseigné</strong>' : $valeur).'</div>';
+    $content .= $this->getDivAttributions('Mises en Garde Comportement', $valeur);
     $valeur = $this->CompteRendu->getValue(self::FIELD_NBENCOURAGEMENTS);
-    $content .= '<div class="col-md-6">Encouragements : '.($valeur==-1 ? '<strong>Non renseigné</strong>' : $valeur).'</div>';
+    $content .= $this->getDivAttributions('Encouragements', $valeur);
     $valeur = $this->CompteRendu->getValue(self::FIELD_NBMGCPTTVL);
-    $content .= '<div class="col-md-6">Mises en Garde Comportement et Travail : '.($valeur==-1 ? '<strong>Non renseigné</strong>' : $valeur).'</div>';
+    $content .= $this->getDivAttributions('Mises en Garde Comportement et Travail', $valeur);
     $content .= '</div>';
     $content .= '</div>';
     return $content;
@@ -143,7 +149,7 @@ class CompteRenduBean extends LocalBean
 
   public function getStep3()
   {
-    $content  = '<div class="alert alert-info"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>';
+    $content  = $this->getCloseButton();
     $content .= '<div class="pdfParagrapheTitre">Intervention des délégués élèves</div>';
     $content .= '<div>';
     $valeur = str_replace(array("\r\n", "\r", "\n"), array("<br>", "<br>", "<br>"), $this->CompteRendu->getValue(self::FIELD_BILANELEVES));
@@ -160,7 +166,7 @@ class CompteRenduBean extends LocalBean
 
   public function getStep2BilanProf()
   {
-    $content  = '<div class="alert alert-info"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>';
+    $content  = $this->getCloseButton();
     $content .= '<div class="pdfParagrapheTitre">Bilan du Professeur Principal</div>';
     $content .= '<div>';
     $valeur = $this->CompteRendu->getValue(self::FIELD_BILANPROFPRINCIPAL);
@@ -170,9 +176,12 @@ class CompteRenduBean extends LocalBean
     return $content;
   }
 
+  private function getCellNonSaisie()
+  { return '<td class="bg-danger">Non saisi</td>'; }
+
   public function getStep2BilanMatieres()
   {
-    $content  = '<div class="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>';
+    $content  = $this->getCloseButton();
     $content .= '<table class="table table-sm table-striped">';
     $content .= '<tr><th style="width:18%;">Matière (Nom)</th><th style="width:9%;">Statut</th><th>Observations</th></tr>';
 
@@ -183,25 +192,23 @@ class CompteRenduBean extends LocalBean
     foreach ($BilanMatieres as $BilanMatiere) {
       $content .= '<tr><td>'.$BilanMatiere->getMatiere()->getLabelMatiere();
       if ($BilanMatiere->getEnseignantId()=='') {
-        $content .= '<td class="bg-danger">Non saisi</td>';
+        $content .= $this->getCellNonSaisie();
       } else {
         $nomEnseignant = $BilanMatiere->getEnseignant()->getGenre().' '.$BilanMatiere->getEnseignant()->getNomEnseignant();
         $content .= '<br>'.$nomEnseignant.'</td>';
       }
       if ($BilanMatiere->getStrStatut()=='') {
-        $content .= '<td class="bg-danger">Non saisi</td>';
+        $content .= $this->getCellNonSaisie();
       } else {
         $content .= '<td>'.$BilanMatiere->getStrStatut().'</td>';
       }
       if ($BilanMatiere->getObservations()=='') {
-        $content .= '<td class="bg-warning">Non saisi</td>';
+        $content .= $this->getCellNonSaisie();
       } else {
         $content .= '<td>'.$BilanMatiere->getObservations().'</td>';
       }
     }
 
-    for ($i=0; $i<10; $i++) {
-    }
     $content .= '</table>';
     $content .= '</div>';
     return $content;
@@ -216,7 +223,7 @@ class CompteRenduBean extends LocalBean
 
   public function getStep1()
   {
-    $content  = '<div class="alert alert-info"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>';
+    $content  = $this->getCloseButton();
     // Année Scolaire
     $content .= '<div class="pdfParagrapheTitre" style="text-align: center;">'.'ANNÉE SCOLAIRE '.$this->CompteRendu->getAnneeScolaire()->getAnneeScolaire().'</div>';
     // Trimestre / Classe / Effectifs

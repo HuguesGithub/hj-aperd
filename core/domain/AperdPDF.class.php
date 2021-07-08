@@ -46,25 +46,9 @@ class AperdPDF extends FPDF implements ConstantsInterface
     $this->conclusion2 = "Compte rendu fait le ".$this->CompteRendu->getValue(self::FIELD_DATEREDACTION)." par ".utf8_decode($this->CompteRendu->getValue(self::FIELD_AUTEURREDACTION)).", sous ".(strpos($this->CompteRendu->getValue(self::FIELD_AUTEURREDACTION), ' et ')!==false ? 'leur' : 'sa')." responsabilité.";
 
     $this->footerLine1 = '74 bis, rue Mazenod 69003 Lyon';
-    /*
-    $this->footerLine21 = 'Site : ';
-    $this->footerLine22 = ' - Email : ';
-    */
     $this->footerLine22 = 'Email : ';
 
     $this->urlLogo = dirname(__FILE__).'/../../web/rsc/img/Logo-APERD-3.png';
-  }
-  /**
-   * @param string $url
-   * @param string $txt
-   * @version 1.00.00
-   * @since 1.00.00
-   */
-  private function putLink($url, $txt='')
-  {
-    $this->SetTextColor(0, 0, 255);
-    $this->Write(5, ($txt=='' ? $url : $txt), $url);
-    $this->setColorDefault(0);
   }
   /**
    * @param CompteRendu $CompteRendu
@@ -224,10 +208,6 @@ class AperdPDF extends FPDF implements ConstantsInterface
     $this->Ln(3);
     $this->Write(5, $this->footerLine1);
     $this->Ln(3);
-    /*
-    $this->Write(5, $this->footerLine21);
-    $this->putLink('http://asso-parents-dufy.org');
-    */
     $this->Write(5, $this->footerLine22);
     $this->SetTextColor(0, 0, 255);
     $this->Write(5, 'secretariat.aperd.lyon@gmail.com');
@@ -292,7 +272,6 @@ class AperdPDF extends FPDF implements ConstantsInterface
     $nbHeaders = count($headers);
     $h = ($this->heightLine-1)*2;
     for ($i=0; $i<$nbHeaders; $i++) {
-      //$this->Cell($this->widths[$i], $this->heightLine, $headers[$i], 1, 0, 'C', $fill);
       $w = $this->widths[$i];
       // Save the current position
       $x = $this->GetX();
