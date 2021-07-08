@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 /**
  * AdminPageCompoDivisionsBean
  * @author Hugues
- * @version 1.21.07.07
+ * @version 1.21.07.08
  * @since 1.21.06.01
  */
 class AdminPageCompoDivisionsBean extends AdminPageBean
@@ -136,7 +136,7 @@ class AdminPageCompoDivisionsBean extends AdminPageBean
   /**
    * Gestion de l'affichage de la page.
    * @return string
-   * @version 1.21.07.07
+   * @version 1.21.07.08
    * @since 1.21.06.01
    */
   public function getListingPage()
@@ -180,7 +180,7 @@ class AdminPageCompoDivisionsBean extends AdminPageBean
       $strRows = '';
       while (!empty($DisplayedCompoDivisions)) {
         $CompoDivision = array_shift($DisplayedCompoDivisions);
-        $strAdminRowsCompos .= $CompoDivision->getBean()->getRowForAdminPage(false, $queryArg);
+        $strRows .= $CompoDivision->getBean()->getRowForAdminPage(false, $queryArg);
       }
     }
     //////////////////////////////////////////////////////////////////

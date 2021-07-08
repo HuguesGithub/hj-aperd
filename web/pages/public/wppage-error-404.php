@@ -11,11 +11,9 @@
       <a href="http://aperd.jhugues.fr/">Accueil</a>
       <div class="notfound-social">
         <a href="https://www.facebook.com/aperd.raouldufy.3"><i class="fa fa-facebook"></i></a>
-      <!--
         <a href="#"><i class="fa fa-twitter"></i></a>
         <a href="#"><i class="fa fa-pinterest"></i></a>
         <a href="#"><i class="fa fa-google-plus"></i></a>
-      -->
       </div>
     </div>
   </div>

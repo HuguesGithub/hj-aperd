@@ -47,6 +47,6 @@ class EnseignantMatiereBean extends LocalBean
     print_r($arrSelect);
     echo "</pre>";
     return 'WIP';
-    return parent::getSelect($params);
+
   }
 }

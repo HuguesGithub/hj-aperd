@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 /**
  * Classe WpPageParentDelegueBean
  * @author Hugues
- * @version 1.21.07.07
+ * @version 1.21.07.08
  * @since 1.21.06.29
  */
 class WpPageParentDelegueBean extends WpPageBean
@@ -104,7 +104,7 @@ class WpPageParentDelegueBean extends WpPageBean
 
   /**
    * @return string
-   * @version 1.21.06.29
+   * @version 1.21.07.08
    * @since 1.21.06.29
    */
   private function getLoginPage()
@@ -119,19 +119,15 @@ class WpPageParentDelegueBean extends WpPageBean
         // S'il y a une division avec cette clé
         $Division = array_shift($Divisions);
         $ParentDelegues = $this->ParentDelegueServices->getParentDeleguesWithFilters(array(self::FIELD_DIVISION_ID=>$Division->getId()));
-        $bln_isLoginCorrect = false;
         while (!empty($ParentDelegues)) {
           $ParentDelegue = array_shift($ParentDelegues);
           if (strtolower($ParentDelegue->getAdulte()->getLogin())==strtolower($loginParent)) {
-            $bln_isLoginCorrect = true;
-            break;
+            $_SESSION['userLogin'] = $loginParent;
+            $_SESSION['crKey'] = $divisionCrKey;
+            return $this->getDashboardPage();
           }
         }
-        if ($bln_isLoginCorrect) {
-          $_SESSION['userLogin'] = $loginParent;
-          $_SESSION['crKey'] = $divisionCrKey;
-          return $this->getDashboardPage();
-        } else {
+        if (!$bln_isLoginCorrect) {
           $notifications = 'Erreur de login Parent.';
         }
       } else {

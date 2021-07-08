@@ -79,8 +79,8 @@ section { margin-bottom: 20px; }
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
+    transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
-.md-form select.md-select { transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out; }
 .md-form select.md-select:focus { border-color: #80bdff; box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25); outline: 0; }
 
 

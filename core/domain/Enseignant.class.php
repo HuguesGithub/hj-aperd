@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 /**
  * Classe Enseignant
  * @author Hugues
- * @version 1.21.07.07
+ * @version 1.21.07.08
  * @since 1.21.06.04
  */
 class Enseignant extends LocalDomain
@@ -219,7 +219,7 @@ class Enseignant extends LocalDomain
   /**
    * @param string &$notif
    * @param string &$msg
-   * @version 1.21.07.06
+   * @version 1.21.07.08
    * @since 1.21.06.09
    */
   public function controleDonnees(&$notif, &$msg)
@@ -243,13 +243,6 @@ class Enseignant extends LocalDomain
         }
       }
     }
-    /*
-    if ($returned && empty($this->Matieres)) {
-      $notif = self::NOTIF_WARNING;
-      $msg   = sprintf(self::MSG_ERREUR_CONTROL_EXISTENCE_NORMEE, 'Matières');
-      $returned = false;
-    }
-    */
     return $returned;
   }
   /**
