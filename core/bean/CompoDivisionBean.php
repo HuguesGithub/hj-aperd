@@ -48,13 +48,11 @@ class CompoDivisionBean extends LocalBean
       $this->CompoDivision->getId(),
       // Url d'édition de la Classe - 2
       $urlEdition,
-      // Année scolaire - 3
-      $this->CompoDivision->getAnneeScolaire()->getAnneeScolaire(),
-      // Libellé de la Classe - 4
+      // Libellé de la Classe - 3
       $this->CompoDivision->getDivision()->getLabelDivision(),
-      // Matière - 5
+      // Matière - 4
       $this->CompoDivision->getMatiere()->getLabelMatiere(),
-      // Enseignant - 6
+      // Enseignant - 5
       $this->CompoDivision->getEnseignant()->getNomEnseignant(),
       // Lien pour suppression - 7
       $urlSuppression,

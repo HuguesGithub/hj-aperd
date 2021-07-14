@@ -34,11 +34,11 @@ insert="INSERT INTO wp_14_aperd_division (labelDivision, crKey) VALUES ('%s', '%
 update="UPDATE wp_14_aperd_division SET labelDivision='%s', crKey='%s' "
 
 [CompoDivision]
-select="SELECT id, anneeScolaireId, divisionId, matiereId, enseignantId "
+select="SELECT id, divisionId, enseignantMatiereId "
 from="FROM wp_14_aperd_compo_division "
-where="WHERE anneeScolaireId LIKE '%s' AND divisionId LIKE '%s' AND matiereId LIKE '%s' AND enseignantId LIKE '%s' "
-insert="INSERT INTO wp_14_aperd_compo_division (anneeScolaireId, divisionId, matiereId, enseignantId) VALUES ('%s', '%s', '%s', '%s');"
-update="UPDATE wp_14_aperd_compo_division SET anneeScolaireId='%s', divisionId='%s', matiereId='%s', enseignantId='%s' "
+where="WHERE divisionId LIKE '%s' AND enseignantMatiereId LIKE '%s' "
+insert="INSERT INTO wp_14_aperd_compo_division (divisionId, enseignantMatiereId) VALUES ('%s', '%s');"
+update="UPDATE wp_14_aperd_compo_division SET divisionId='%s', enseignantMatiereId='%s' "
 
 [CompteRendu]
 select="SELECT id, crKey, anneeScolaireId, trimestre, divisionId, nbEleves, dateConseil, administrationId, enseignantId, parent1, parent2, enfant1, enfant2, bilanProfPrincipal, bilanEleves, bilanParents, nbEncouragements, nbCompliments, nbFelicitations, nbMgComportement, nbMgTravail, nbMgComportementTravail, dateRedaction, auteurRedaction, mailContact, status "

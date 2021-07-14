@@ -10,13 +10,7 @@
           <div class="col-md">
             <div class="form-floating mb-3">
               %2$s
-              <label for="enseignantId">Enseignant</label>
-            </div>
-          </div>
-          <div class="col-md">
-            <div class="form-floating mb-3">
-              %3$s
-              <label for="matiereId">Matière</label>
+              <label for="enseignantmatiereId">Matière / Enseignant</label>
             </div>
           </div>
         </div>

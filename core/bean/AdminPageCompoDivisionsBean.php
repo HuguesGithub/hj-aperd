@@ -28,6 +28,7 @@ class AdminPageCompoDivisionsBean extends AdminPageBean
      // On prépare le stockage pour les ids multiples si existants.
     $this->arrIds = array();
     $this->subMenuValue = self::PAGE_COMPO_DIVISION;
+    $this->EnseignantMatiereServices = new EnseignantMatiereServices();
   }
   /**
    * @return CompoDivision
@@ -100,6 +101,7 @@ class AdminPageCompoDivisionsBean extends AdminPageBean
     $this->attributesFormNew = array(
       $DivisionBean->getSelect($argDivSelect),
       $EnseignantMatiereBean->getSelect($argEnsMatSelect),
+      ''
     );
 
 
@@ -108,6 +110,7 @@ class AdminPageCompoDivisionsBean extends AdminPageBean
     $this->attributesFormEdit = array(
       $DivisionBean->getSelect($argDivSelect),
       $EnseignantMatiereBean->getSelect($argEnsMatSelect),
+      ''
     );
 
     $this->initPanels($initPanel);
@@ -124,7 +127,12 @@ class AdminPageCompoDivisionsBean extends AdminPageBean
   public function setLocalObject()
   {
     $this->LocalObject->setDivisionId($this->urlParams[self::FIELD_DIVISION_ID]);
-    $this->LocalObject->setEnseignantMatiereId($this->urlParams[self::FIELD_ENSEIGNANT_MATIERE_ID]);
+    list($matiereId, $enseignantId) = explode ('|', $this->urlParams[self::FIELD_ENSEIGNANT_MATIERE_ID]);
+    $EnseignantMatieres = $this->EnseignantMatiereServices->getEnseignantMatieresWithFilters(array(self::FIELD_MATIERE_ID=>$matiereId, self::FIELD_ENSEIGNANT_ID=>$enseignantId));
+    if (!empty($EnseignantMatieres)) {
+      $EnseignantMatiere = array_shift($EnseignantMatieres);
+      $this->LocalObject->setEnseignantMatiereId($EnseignantMatiere->getId());
+    }
   }
   /**
    * @version 1.21.07.07
