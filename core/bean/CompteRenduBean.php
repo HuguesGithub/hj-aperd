@@ -44,7 +44,7 @@ class CompteRenduBean extends LocalBean
     $strDate = ($this->CompteRendu->getDateConseil()!='' ? $this->CompteRendu->getDateConseil() : 'Non définie');
     // On récupère le Nom de la Présidence
     $Administration = $this->CompteRendu->getAdministration();
-    $strPresidence = ($Administration->getId()!='' ? $Administration->getGenre().self::CST_BLANK.$Administration->getNomAdministration() : 'Non définie');
+    $strPresidence = ($Administration->getId()!='' ? $Administration->getGenre().self::CST_BLANK.$Administration->getNomTitulaire() : 'Non définie');
     // On défini le lien vers la page de saisie des Comptes Rendus
     $strUrlCard = get_permalink(get_page_by_path(self::PAGE_COMPTE_RENDU)).'?trimestre='.$strTrimestre;
 
@@ -207,29 +207,48 @@ class CompteRenduBean extends LocalBean
     return $content;
   }
 
-  private function getDivAttributions($label, $valeur)
-  { return '<div class="col-md-6">'.$label.' : '.($valeur==-1 ? '<strong>Non renseigné</strong>' : $valeur).'</div>'; }
-
   public function getStep4()
   {
-    $content  = $this->getCloseButton();
-    $content .= '<div class="pdfParagrapheTitre">Attributions du conseil de classe</div>';
-    $content .= '<div class="row">';
+    $urlTemplateStep4 = 'web/pages/public/fragments/apercu-compte-rendu-step4.php';
+    $strNonRenseigne  = '<strong>Non renseigné</strong>';
+    /////////////////////////////////////////////////////////////////////////
+    // Formattage nbFelicitations
     $valeur = $this->CompteRendu->getValue(self::FIELD_NBFELICITATIONS);
-    $content .= $this->getDivAttributions('Félicitations', $valeur);
+    $frmtNbFelicitations = ($valeur==-1 ? $strNomRenseigne : $valeur);
+    // Formattage nbFelicitations
     $valeur = $this->CompteRendu->getValue(self::FIELD_NBMGTVL);
-    $content .= $this->getDivAttributions('Mises en Garde Travail', $valeur);
+    $frmtNbMgTvl = ($valeur==-1 ? $strNomRenseigne : $valeur);
+    // Formattage nbFelicitations
     $valeur = $this->CompteRendu->getValue(self::FIELD_NBCOMPLIMENTS);
-    $content .= $this->getDivAttributions('Compliments', $valeur);
+    $frmtNbCompliments = ($valeur==-1 ? $strNomRenseigne : $valeur);
+    // Formattage nbFelicitations
     $valeur = $this->CompteRendu->getValue(self::FIELD_NBMGCPT);
-    $content .= $this->getDivAttributions('Mises en Garde Comportement', $valeur);
+    $frmtNbMgCpt = ($valeur==-1 ? $strNomRenseigne : $valeur);
+    // Formattage nbFelicitations
     $valeur = $this->CompteRendu->getValue(self::FIELD_NBENCOURAGEMENTS);
-    $content .= $this->getDivAttributions('Encouragements', $valeur);
+    $frmtNbEncouragements = ($valeur==-1 ? $strNomRenseigne : $valeur);
+    // Formattage nbFelicitations
     $valeur = $this->CompteRendu->getValue(self::FIELD_NBMGCPTTVL);
-    $content .= $this->getDivAttributions('Mises en Garde Comportement et Travail', $valeur);
-    $content .= '</div>';
-    $content .= '</div>';
-    return $content;
+    $frmtNbMgCptTvl = ($valeur==-1 ? $strNomRenseigne : $valeur);
+    /////////////////////////////////////////////////////////////////////////
+
+    /////////////////////////////////////////////////////////////////////////
+    // On enrichi le Template puis on le retourne.
+    $args = array(
+      // Nombre de Félicitations - 1
+      $frmtNbFelicitations,
+      // Nombre de Mises en Garde Travail - 2
+      $frmtNbMgTvl,
+      // Nombre de Compliments - 3
+      $frmtNbCompliments,
+      // Nombre de Mises en Garde Comportement - 4
+      $frmtNbMgCpt,
+      // Nombre de Encouragements - 5
+      $frmtNbEncouragements,
+      // Nombre de Mises en Garde Comportement et Travail - 6
+      $frmtNbMgCptTvl,
+    );
+    return $this->getRender($urlTemplateStep4, $args);
   }
 
   public function getStep3()
@@ -252,7 +271,7 @@ class CompteRenduBean extends LocalBean
       // Bilan Parents - 2
       $frmtBilanParents,
     );
-    return $this->getRender($urlTemplateStep1, $args);
+    return $this->getRender($urlTemplateStep3, $args);
   }
 
   public function getStep2BilanProf()

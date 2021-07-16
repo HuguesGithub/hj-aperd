@@ -69,27 +69,26 @@ class CompteRenduActions extends LocalActions
 
         $update = false;
         $CompteRendus = $this->CompteRenduServices->getCompteRendusWithFilters(array(self::FIELD_DIVISION_ID=>$this->Division->getId()), self::FIELD_TRIMESTRE);
-        while(!empty($CompteRendus) && !$update) {
-          $CompteRendu = array_shift($CompteRendus);
-          switch ($CompteRendu->getStatus()) {
-            case self::STATUS_FUTURE :
-              $CompteRendu->setField(self::FIELD_STATUS, self::STATUS_WORKING);
-              $CompteRendu->setField($this->post['name'], $this->post['value']);
-              // TODO : Mettre à jour l'auteur
-              $update = true;
-            break;
-            case self::STATUS_WORKING :
-            case self::STATUS_PENDING :
-              $CompteRendu->setField($this->post['name'], $this->post['value']);
-              // TODO : Mettre à jour l'auteur
-              $update = true;
-            break;
-            case self::STATUS_PUBLISHED :
-            case self::STATUS_MAILED :
-            default :
-              // Do nothing. On passe au suivant
-            break;
-          }
+        $CompteRendu = array_shift($CompteRendus);
+
+        switch ($CompteRendu->getStatus()) {
+          case self::STATUS_FUTURE :
+            $CompteRendu->setField(self::FIELD_STATUS, self::STATUS_WORKING);
+            $CompteRendu->setField($this->post['name'], $this->post['value']);
+            // TODO : Mettre à jour l'auteur
+            $update = true;
+          break;
+          case self::STATUS_WORKING :
+          case self::STATUS_PENDING :
+            $CompteRendu->setField($this->post['name'], $this->post['value']);
+            // TODO : Mettre à jour l'auteur
+            $update = true;
+          break;
+          case self::STATUS_PUBLISHED :
+          case self::STATUS_MAILED :
+          default :
+            // Do nothing. On passe au suivant
+          break;
         }
 
         if ($update) {
@@ -121,11 +120,41 @@ class CompteRenduActions extends LocalActions
       case self::FIELD_NBMGCPT :
       case self::FIELD_NBMGCPTTVL  :
       case self::FIELD_NBMGTVL :
-        $CompteRendu = $this->CompteRenduServices->getCompteRenduByCrKey($this->post['crKey']);
-        $CompteRendu->setField($this->post['name'], $this->post['value']);
-        $this->CompteRenduServices->updateLocal($CompteRendu);
-        $Bean = $CompteRendu->getBean();
-        $contentStep = '{"renduStep4": '.json_encode($Bean->getStep4());
+        $crKey = $this->initVar(self::FIELD_CRKEY, '');
+        $Divisions = $this->DivisionServices->getDivisionsWithFilters(array(self::FIELD_CRKEY=>$crKey));
+        $this->Division = array_shift($Divisions);
+
+        $update = false;
+        $CompteRendus = $this->CompteRenduServices->getCompteRendusWithFilters(array(self::FIELD_DIVISION_ID=>$this->Division->getId()), self::FIELD_TRIMESTRE);
+        $CompteRendu = array_shift($CompteRendus);
+
+        switch ($CompteRendu->getStatus()) {
+          case self::STATUS_FUTURE :
+            $CompteRendu->setField(self::FIELD_STATUS, self::STATUS_WORKING);
+            $CompteRendu->setField($this->post['name'], $this->post['value']);
+            // TODO : Mettre à jour l'auteur
+            $update = true;
+          break;
+          case self::STATUS_WORKING :
+          case self::STATUS_PENDING :
+            $CompteRendu->setField($this->post['name'], $this->post['value']);
+            // TODO : Mettre à jour l'auteur
+            $update = true;
+          break;
+          case self::STATUS_PUBLISHED :
+          case self::STATUS_MAILED :
+          default :
+            // Do nothing. On passe au suivant
+          break;
+        }
+
+        if ($update) {
+          $this->CompteRenduServices->updateLocal($CompteRendu);
+          $Bean = $CompteRendu->getBean();
+          $contentStep = '{"renduStep4": '.json_encode($Bean->getStep4());
+        } else {
+          $contentStep = '{"renduStep4": '.json_encode('Ne peut plus être édité.');
+        }
       break;
       case self::FIELD_DATEREDACTION  :
       case self::FIELD_AUTEURREDACTION :

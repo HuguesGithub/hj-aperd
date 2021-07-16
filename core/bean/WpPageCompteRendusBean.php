@@ -197,7 +197,7 @@ class WpPageCompteRendusBean extends WpPageBean
       // Contenu de l'étape n°3 - 3
       $this->getContentStep3(),
       // Contenu de l'étape n°4 - 4
-      '',
+      $this->getContentStep4(),
       // Contenu de l'étape n°5 - 5
       '',
       // Contenu de l'étape n°6 - 6
@@ -222,18 +222,6 @@ class WpPageCompteRendusBean extends WpPageBean
       $this->CompteRendu->getNotifications(),
       // Textarea Bilan Prof Principal - 14
       $this->getTextArea(self::FIELD_BILANPROFPRINCIPAL, true, true),
-      // Input Nb Encouragements - 17
-      $this->getInput(self::FIELD_NBENCOURAGEMENTS, true, array(), true),
-      // Input Nb Compliments - 18
-      $this->getInput(self::FIELD_NBCOMPLIMENTS, true, array(), true),
-      // Input Nb Felicitations - 19
-      $this->getInput(self::FIELD_NBFELICITATIONS, true, array(), true),
-      // Input Nb MGC - 20
-      $this->getInput(self::FIELD_NBMGCPT, true, array(), true),
-      // Input Nb MGT - 21
-      $this->getInput(self::FIELD_NBMGTVL, true, array(), true),
-      // Input Nb MGCT - 22
-      $this->getInput(self::FIELD_NBMGCPTTVL, true, array(), true),
       // Input Date Rédaction - 23
       $this->getInput(self::FIELD_DATEREDACTION, true, array(self::ATTR_PLACEHOLDER=>self::FORMAT_DATE_JJMMAAAA), true),
       // Input Auteur Rédaction - 24
@@ -247,6 +235,26 @@ class WpPageCompteRendusBean extends WpPageBean
     return $this->getRender($this->urlTemplate, $args);
   }
 
+  private function getContentStep4()
+  {
+    $urlTemplateStep4 = 'web/pages/public/fragments/panel-compte-rendu-step4.php';
+
+    $args = array(
+      // Input Nb Felicitations - 1
+      $this->getInput(self::FIELD_NBFELICITATIONS, true, array(), true),
+      // Input Nb MGT - 2
+      $this->getInput(self::FIELD_NBMGTVL, true, array(), true),
+      // Input Nb Compliments - 3
+      $this->getInput(self::FIELD_NBCOMPLIMENTS, true, array(), true),
+      // Input Nb MGC - 4
+      $this->getInput(self::FIELD_NBMGCPT, true, array(), true),
+      // Input Nb Encouragements - 5
+      $this->getInput(self::FIELD_NBENCOURAGEMENTS, true, array(), true),
+      // Input Nb MGCT - 6
+      $this->getInput(self::FIELD_NBMGCPTTVL, true, array(), true),
+    );
+    return $this->getRender($urlTemplateStep4, $args);
+  }
   private function getContentStep3()
   {
     $urlTemplateStep3 = 'web/pages/public/fragments/panel-compte-rendu-step3.php';
