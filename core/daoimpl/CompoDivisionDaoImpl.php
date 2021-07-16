@@ -5,8 +5,8 @@ if (!defined('ABSPATH')) {
 /**
  * Classe CompoDivisionDaoImpl
  * @author Hugues
- * @version 1.00.00
- * @since 1.00.00
+ * @version 1.21.07.15
+ * @since 1.21.06.01
  */
 class CompoDivisionDaoImpl extends LocalDaoImpl
 {
@@ -37,4 +37,16 @@ class CompoDivisionDaoImpl extends LocalDaoImpl
    */
   public function select($file, $line, $arrParams)
   { return parent::localSelect($arrParams, new CompoDivision()); }
+
+  /**
+   * @param string $ins
+   * @version 1.21.07.15
+   * @since 1.21.07.15
+   */
+  public function deleteIn($ins)
+  {
+    $request = $this->delete.$this->fromRequest.'WHERE id IN ('.$ins.');';
+    MySQL::wpdbQuery($request);
+  }
+
 }

@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 /**
  * Classe CompoDivisionServices
  * @author Hugues
- * @version 1.21.06.04
+ * @version 1.21.07.15
  * @since 1.21.06.04
  */
 class CompoDivisionServices extends LocalServices
@@ -38,16 +38,13 @@ class CompoDivisionServices extends LocalServices
   /**
    * @param array $arrFilters
    * @return array
-   * @version 1.21.06.04
+   * @version 1.21.07.15
    * @since 1.21.06.04
    */
   private function buildFilters($arrFilters)
   {
     $arrParams = array();
-    array_push($arrParams, $this->getValueToSearch($arrFilters, self::FIELD_ANNEESCOLAIRE_ID));
     array_push($arrParams, $this->getValueToSearch($arrFilters, self::FIELD_DIVISION_ID));
-    array_push($arrParams, $this->getValueToSearch($arrFilters, self::FIELD_MATIERE_ID));
-    array_push($arrParams, $this->getValueToSearch($arrFilters, self::FIELD_ENSEIGNANT_ID));
     return $arrParams;
   }
   /**
@@ -55,10 +52,10 @@ class CompoDivisionServices extends LocalServices
    * @param string $orderby
    * @param string $order
    * @return array
-   * @version 1.21.06.04
+   * @version 1.21.07.15
    * @since 1.21.06.04
    */
-  public function getCompoDivisionsWithFilters($arrFilters=array(), $orderby=self::FIELD_ANNEESCOLAIRE_ID, $order=self::ORDER_ASC)
+  public function getCompoDivisionsWithFilters($arrFilters=array(), $orderby=self::FIELD_DIVISION_ID, $order=self::ORDER_ASC)
   {
     $arrParams = $this->buildOrderAndLimit($orderby, $order);
     $arrParams[SQL_PARAMS_WHERE] = $this->buildFilters($arrFilters);

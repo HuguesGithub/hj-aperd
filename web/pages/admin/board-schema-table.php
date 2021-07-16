@@ -1,22 +1,20 @@
     <div id="schema-base" class="card-columns">
 
       <div id="compte_rendu" class="card bg-light">
-        <div class="card-header"><strong>wp_14_aperd_compte_rendu</strong></div>
+        <div class="card-header"><strong><a href="http://aperd.jhugues.fr/wp-admin/admin.php?page=hj-aperd/admin_manage.php&onglet=compte-rendu">wp_14_aperd_compte_rendu</a></strong></div>
         <div class="card-body">
           <ul class="list-group list-group-condensed">
             <li class="list-group-item list-group-item-action d-flex justify-content-between" data-key="compte_rendu">id <span class="badge badge-info" title="Clef">&nbsp;</span></li>
-            <li class="list-group-item list-group-item-action d-flex justify-content-between" data-foreign-key="#anneeScolaire">anneeScolaireId <span class="badge badge-danger" title="required">&nbsp;</span></li>
+            <li class="list-group-item list-group-item-action d-flex justify-content-between">trimestre <span class="badge badge-danger" title="required">&nbsp;</span></li>
             <li class="list-group-item list-group-item-action d-flex justify-content-between" data-foreign-key="#division">divisionId <span class="badge badge-danger" title="required">&nbsp;</span></li>
+            <li class="list-group-item list-group-item-action d-flex justify-content-between">nbEleves <span class="badge badge-danger" title="required">&nbsp;</span></li>
+            <li class="list-group-item list-group-item-action d-flex justify-content-between text-success">dateConseil <span class="badge badge-danger" title="required">&nbsp;</span></li>
             <li class="list-group-item list-group-item-action d-flex justify-content-between" data-foreign-key="#administration">administrationId <span class="badge badge-danger" title="required">&nbsp;</span></li>
             <li class="list-group-item list-group-item-action d-flex justify-content-between" data-foreign-key="#prof_princ">profPrincId <span class="badge badge-danger" title="required">&nbsp;</span></li>
             <li class="list-group-item list-group-item-action d-flex justify-content-between" data-foreign-key="#eleve">delegueEleve1Id <span class="badge badge-danger" title="required">&nbsp;</span></li>
             <li class="list-group-item list-group-item-action d-flex justify-content-between" data-foreign-key="#eleve">delegueEleve2Id <span class="badge badge-danger" title="required">&nbsp;</span></li>
             <li class="list-group-item list-group-item-action d-flex justify-content-between" data-foreign-key="#parent-delegue">delegueParent1Id <span class="badge badge-danger" title="required">&nbsp;</span></li>
             <li class="list-group-item list-group-item-action d-flex justify-content-between" data-foreign-key="#parent-delegue">delegueParent2Id <span class="badge badge-danger" title="required">&nbsp;</span></li>
-            <li class="list-group-item list-group-item-action d-flex justify-content-between text-success">crKey <span class="badge badge-danger" title="required">&nbsp;</span></li>
-            <li class="list-group-item list-group-item-action d-flex justify-content-between">trimestre <span class="badge badge-danger" title="required">&nbsp;</span></li>
-            <li class="list-group-item list-group-item-action d-flex justify-content-between">nbEleves <span class="badge badge-danger" title="required">&nbsp;</span></li>
-            <li class="list-group-item list-group-item-action d-flex justify-content-between text-success">dateConseil <span class="badge badge-danger" title="required">&nbsp;</span></li>
             <li class="list-group-item list-group-item-action d-flex justify-content-between text-success">bilanProfPrincipal</li>
             <li class="list-group-item list-group-item-action d-flex justify-content-between text-success">bilanEleves</li>
             <li class="list-group-item list-group-item-action d-flex justify-content-between text-success">bilanParents</li>

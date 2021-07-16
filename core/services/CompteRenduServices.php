@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 /**
  * Classe CompteRenduServices
  * @author Hugues
- * @version 1.21.06.04
+ * @version 1.21.07.16
  * @since 1.21.06.04
  */
 class CompteRenduServices extends LocalServices
@@ -38,16 +38,12 @@ class CompteRenduServices extends LocalServices
   /**
    * @param array $arrFilters
    * @return array
-   * @version 1.00.00
-   * @since 1.00.00
-   * @version 1.21.06.04
+   * @version 1.21.07.16
    * @since 1.21.06.04
    */
   private function buildFilters($arrFilters)
   {
     $arrParams = array();
-    array_push($arrParams, $this->getValueToSearch($arrFilters, self::FIELD_CRKEY));
-    array_push($arrParams, $this->getValueToSearch($arrFilters, self::FIELD_ANNEESCOLAIRE_ID));
     array_push($arrParams, $this->getValueToSearch($arrFilters, self::FIELD_TRIMESTRE));
     array_push($arrParams, $this->getValueToSearch($arrFilters, self::FIELD_DIVISION_ID));
     array_push($arrParams, $this->getValueToSearch($arrFilters, self::FIELD_STATUS));

@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 /**
  * AdminPageCompoDivisionsBean
  * @author Hugues
- * @version 1.21.07.08
+ * @version 1.21.07.15
  * @since 1.21.06.01
  */
 class AdminPageCompoDivisionsBean extends AdminPageBean
@@ -85,8 +85,8 @@ class AdminPageCompoDivisionsBean extends AdminPageBean
 
     ///////////////////////////////////////////:
     // On initialise les panneaux latéraux droit
-    //$this->msgConfirmDelete = sprintf(self::MSG_CONFIRM_SUPPR_COMPO_DIVISION, $this->LocalObject->getFullName());
-    //$this->tagConfirmDeleteMultiple = self::MSG_CONFIRM_SUPPR_COMPO_DIVISIONS;
+    $this->msgConfirmDelete = sprintf(self::MSG_CONFIRM_SUPPR_COMPO_DIVISION, $this->LocalObject->getFullName());
+    $this->tagConfirmDeleteMultiple = self::MSG_CONFIRM_SUPPR_COMPO_DIVISIONS;
 
     $DivisionBean = new DivisionBean();
     $EnseignantMatiereBean = new EnseignantMatiereBean();
@@ -154,10 +154,10 @@ class AdminPageCompoDivisionsBean extends AdminPageBean
     $argFilters = array();
     $filterDivisionId = (isset($this->urlParams[self::FIELD_DIVISION_ID]) ? $this->urlParams[self::FIELD_DIVISION_ID] : '');
     $argFilters[self::FIELD_DIVISION_ID] = $filterDivisionId;
-    $filterMatiereId = (isset($this->urlParams[self::FIELD_MATIERE_ID]) ? $this->urlParams[self::FIELD_MATIERE_ID] : '');
-    $argFilters[self::FIELD_MATIERE_ID] = $filterMatiereId;
     $filterEnseignantId = (isset($this->urlParams[self::FIELD_ENSEIGNANT_ID]) ? $this->urlParams[self::FIELD_ENSEIGNANT_ID] : '');
     $argFilters[self::FIELD_ENSEIGNANT_ID] = $filterEnseignantId;
+    $filterMatiereId = (isset($this->urlParams[self::FIELD_MATIERE_ID]) ? $this->urlParams[self::FIELD_MATIERE_ID] : '');
+    $argFilters[self::FIELD_MATIERE_ID] = $filterMatiereId;
     // Fin gestion des filtres
 
     //////////////////////////////////////////////////////////////////
@@ -226,7 +226,7 @@ class AdminPageCompoDivisionsBean extends AdminPageBean
 
     //////////////////////////////////////////////////////////////////
     // Pagination
-    $strPagination = $this->getPagination($queryArg, $post_status, $curPage, $nbPages, $nbElements);
+    $strPagination = $this->getPagination($queryArg, $curPage, $nbPages, $nbElements);
     //////////////////////////////////////////////////////////////////
 
     $attributes = array(

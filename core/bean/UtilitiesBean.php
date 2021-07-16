@@ -5,11 +5,15 @@ if (!defined('ABSPATH')) {
 /**
  * Classe UtilitiesBean
  * @author Hugues
- * @version 1.21.07.07
+ * @version 1.21.07.15
  * @since 1.21.06.01
  */
 class UtilitiesBean implements ConstantsInterface
 {
+  public function __construct()
+  {
+    $this->DivisionServices = new DivisionServices();
+  }
   /**
    * @param string $balise
    * @param string $label
@@ -81,6 +85,13 @@ class UtilitiesBean implements ConstantsInterface
       $attributes[self::ATTR_SELECTED] = self::CST_SELECTED;
     }
     return $this->getBalise(self::TAG_OPTION, $label, $attributes);
+  }
+
+  protected function getDivision()
+  {
+    print_r($this);
+    $Divisions = $this->DivisionServices->getDivisionsWithFilters(array(self::FIELD_CRKEY=>$_SESSION['crKey']));
+    return (empty($Divisions) ? new Division() : array_shift($Divisions));
   }
 
 }

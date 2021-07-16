@@ -48,12 +48,11 @@
             <thead>
               <tr>
                 <td id="cb" class="manage-column column-cb check-column"><input id="cb-select-all-1" type="checkbox"></td>
-                <th scope="col" id="anneeScolaireId" class="manage-column">Année Scolaire</th>
                 <th scope="col" id="trimestre" class="manage-column">Trimestre</th>
                 <th scope="col" id="divisionId" class="manage-column">Division</th>
                 <th scope="col" id="status" class="manage-column">Statut</th>
                 <th scope="col" id="dateConseil" class="manage-column">Date</th>
-                <th scope="col" id="administrationId" class="manage-column">Président</th>
+                <th scope="col" id="administrationId" class="manage-column">Présidence</th>
                 <th scope="col" id="actionCompteRendu" class="manage-column column-actions">Actions</th>
               </tr>
             </thead>
@@ -61,12 +60,11 @@
             <tfoot>
               <tr>
                 <td class="manage-column column-cb check-column"><input id="cb-select-all-2" type="checkbox"></td>
-                <th scope="col" class="manage-column">Année Scolaire</th>
                 <th scope="col" class="manage-column">Trimestre</th>
                 <th scope="col" class="manage-column">Division</th>
                 <th scope="col" class="manage-column">Statut</th>
                 <th scope="col" class="manage-column">Date</th>
-                <th scope="col" class="manage-column">Président</th>
+                <th scope="col" class="manage-column">Présidence</th>
                 <th scope="col" class="manage-column column-actions">Actions</th>
               </tr>
             </tfoot>

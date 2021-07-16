@@ -81,16 +81,16 @@ function aperd_menu()
       $arrUrlSubMenu = array(
         'administration' => 'Administratifs',
         'annee-scolaire' => 'Années Scolaires',
+        'compodivision'  => 'Composition Divisions',
         'division'       => 'Divisions',
         'eleve'          => 'Élèves',
-        'enseignant'    => 'Enseignants',
+        'enseignant'     => 'Enseignants',
         'matiere'        => 'Matières',
         'parent'         => 'Parents',
         'parent-delegue' => 'Parents Délégués',
         '-'              => '-----------------',
 
         'compte-rendu'  => 'Compte-Rendus',
-        'compodivision' => 'Composition Division',
         'questionnaire' => 'Questionnaire',
         'schema-table'  => 'Adm : Schéma Base',
       );

@@ -36,16 +36,16 @@ update="UPDATE wp_14_aperd_division SET labelDivision='%s', crKey='%s' "
 [CompoDivision]
 select="SELECT id, divisionId, enseignantMatiereId "
 from="FROM wp_14_aperd_compo_division "
-where="WHERE divisionId LIKE '%s' AND enseignantMatiereId LIKE '%s' "
+where="WHERE divisionId LIKE '%s' "
 insert="INSERT INTO wp_14_aperd_compo_division (divisionId, enseignantMatiereId) VALUES ('%s', '%s');"
 update="UPDATE wp_14_aperd_compo_division SET divisionId='%s', enseignantMatiereId='%s' "
 
 [CompteRendu]
-select="SELECT id, crKey, anneeScolaireId, trimestre, divisionId, nbEleves, dateConseil, administrationId, enseignantId, parent1, parent2, enfant1, enfant2, bilanProfPrincipal, bilanEleves, bilanParents, nbEncouragements, nbCompliments, nbFelicitations, nbMgComportement, nbMgTravail, nbMgComportementTravail, dateRedaction, auteurRedaction, mailContact, status "
+select="SELECT id, trimestre, divisionId, nbEleves, dateConseil, administrationId, profPrincId, delegueEleve1Id, delegueEleve2Id, delegueParent1Id, delegueParent2Id, bilanProfPrincipal, bilanEleves, bilanParents, nbEncouragements, nbCompliments, nbFelicitations, nbMgComportement, nbMgTravail, nbMgComportementTravail, dateRedaction, auteurRedaction, status "
 from="FROM wp_14_aperd_compte_rendu "
-where="WHERE crKey LIKE '%s' AND anneeScolaireId LIKE '%s' AND trimestre LIKE '%s' AND divisionId LIKE '%s' AND status LIKE '%s' "
-insert="INSERT INTO wp_14_aperd_compte_rendu (crKey, anneeScolaireId, trimestre, divisionId, nbEleves, dateConseil, administrationId, enseignantId, parent1, parent2, enfant1, enfant2, bilanProfPrincipal, bilanEleves, bilanParents, nbEncouragements, nbCompliments, nbFelicitations, nbMgComportement, nbMgTravail, nbMgComportementTravail, dateRedaction, auteurRedaction, mailContact, status) VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s');"
-update="UPDATE wp_14_aperd_compte_rendu SET crKey='%s', anneeScolaireId='%s', trimestre='%s', divisionId='%s', nbEleves='%s', dateConseil='%s', administrationId='%s', enseignantId='%s', parent1='%s', parent2='%s', enfant1='%s', enfant2='%s', bilanProfPrincipal='%s', bilanEleves='%s', bilanParents='%s', nbEncouragements='%s', nbCompliments='%s', nbFelicitations='%s', nbMgComportement='%s', nbMgTravail='%s', nbMgComportementTravail='%s', dateRedaction='%s', auteurRedaction='%s', mailContact='%s', status='%s' "
+where="WHERE trimestre LIKE '%s' AND divisionId LIKE '%s' AND status LIKE '%s' "
+insert="INSERT INTO wp_14_aperd_compte_rendu (trimestre, divisionId, nbEleves, dateConseil, administrationId, profPrincId, delegueEleve1Id, delegueEleve2Id, delegueParent1Id, delegueParent2Id, bilanProfPrincipal, bilanEleves, bilanParents, nbEncouragements, nbCompliments, nbFelicitations, nbMgComportement, nbMgTravail, nbMgComportementTravail, dateRedaction, auteurRedaction, status) VALUES ('%s',    '%s',       '%s',       '%s',       '%s',             '%s',         '%s',           '%s',           '%s',               '%s',             '%s',               '%s',       '%s',         '%s',             '%s',           '%s',           '%s',             '%s',         '%s',                     '%s',           '%s',           '%s');"
+update="UPDATE wp_14_aperd_compte_rendu SET trimestre='%s', divisionId='%s', nbEleves='%s', dateConseil='%s', administrationId='%s', profPrincId='%s', delegueEleve1Id='%s', delegueEleve2Id='%s', delegueParent1Id='%s', delegueParent2Id='%s', bilanProfPrincipal='%s', bilanEleves='%s', bilanParents='%s', nbEncouragements='%s', nbCompliments='%s', nbFelicitations='%s', nbMgComportement='%s', nbMgTravail='%s', nbMgComportementTravail='%s', dateRedaction='%s', auteurRedaction='%s', status='%s' "
 
 [Eleve]
 select="SELECT id, nomEleve, prenomEleve, divisionId, delegue "

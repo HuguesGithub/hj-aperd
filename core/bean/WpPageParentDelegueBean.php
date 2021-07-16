@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 /**
  * Classe WpPageParentDelegueBean
  * @author Hugues
- * @version 1.21.07.08
+ * @version 1.21.07.15
  * @since 1.21.06.29
  */
 class WpPageParentDelegueBean extends WpPageBean
@@ -21,10 +21,12 @@ class WpPageParentDelegueBean extends WpPageBean
   public function __construct($WpPage='')
   {
     parent::__construct($WpPage);
+    $this->CompoDivisionServices = new CompoDivisionServices();
     $this->DivisionServices = new DivisionServices();
     $this->EleveServices = new EleveServices();
     $this->EnseignantServices = new EnseignantServices();
     $this->ParentDelegueServices = new ParentDelegueServices();
+    $this->CompteRenduServices = new CompteRenduServices();
   }
 
   /**
@@ -43,7 +45,7 @@ class WpPageParentDelegueBean extends WpPageBean
 
   /**
    * @return string
-   * @version 1.21.06.29
+   * @version 1.21.07.15
    * @since 1.21.06.29
    */
   private function getDashboardPage()
@@ -54,8 +56,44 @@ class WpPageParentDelegueBean extends WpPageBean
       // Composition de la Division : liste des enseignants, matières et prof principal.
       // Puis, liste des élèves.
       $this->getPanelCompositionDivision(),
+      // Comptes-Rendus des conseils de classe
+      $this->getPanelComptesRendusCdc(),
     );
     return $this->getRender($this->urlTemplate, $args);
+  }
+
+  private function getPanelComptesRendusCdc()
+  {
+    $Division = $this->getDivision();
+
+    $CompteRenduT1 = new CompteRendu();
+    $CompteRenduT2 = new CompteRendu();
+    $CompteRenduT3 = new CompteRendu();
+    $ComptesRendus = $this->CompteRenduServices->getCompteRendusWithFilters(array(self::FIELD_DIVISION_ID=>$Division->getId()), self::FIELD_TRIMESTRE);
+
+    while (!empty($ComptesRendus)) {
+      $CompteRendu = array_shift($ComptesRendus);
+      switch ($CompteRendu->getTrimestre()) {
+        case 1 :
+          $CompteRenduT1 = $CompteRendu;
+        break;
+        case 2 :
+          $CompteRenduT2 = $CompteRendu;
+        break;
+        case 3 :
+          $CompteRenduT3 = $CompteRendu;
+        break;
+        default :
+        break;
+      }
+    }
+
+    $content  = $CompteRenduT1->getBean()->getCard(1);
+    $content .= $CompteRenduT2->getBean()->getCard(2);
+    $content .= $CompteRenduT3->getBean()->getCard(3);
+
+    return '<div id="card-panel-comptes-rendus" class="card-deck">'.$content.'</div>';
+    //return $this->getRender($urlTemplatePanel, $args);
   }
 
   private function getPanelCompositionDivision()
@@ -67,12 +105,13 @@ class WpPageParentDelegueBean extends WpPageBean
     // Récupération de la liste des Enseignants de la classe et construction du tableau correspondant.
     $strEnseignants = '';
     if ($Division->getId()!='') {
-      $Enseignants = $this->EnseignantServices->getEnseignantsWithFilters(array(self::FIELD_DIVISION_ID=>$Division->getId()));
-      while (!empty($Enseignants)) {
-        $Enseignant = array_shift($Enseignants);
-        $strEnseignants .= $Enseignant->getBean()->getRowForPublicPage();
+      $CompoDivisions = $this->CompoDivisionServices->getCompoDivisionsWithFilters(array(self::FIELD_DIVISION_ID=>$Division->getId()));
+      while (!empty($CompoDivisions)) {
+        $CompoDivision = array_shift($CompoDivisions);
+        $Matiere = $CompoDivision->getMatiere();
+        $strEnseignants .= $CompoDivision->getEnseignant()->getBean()->getRowForPublicPage($Division->getId(), $Matiere->getLabelMatiere());
       }
-  }
+    }
     /////////////////////////////////////////////////////////////
 
     /////////////////////////////////////////////////////////////
@@ -94,12 +133,6 @@ class WpPageParentDelegueBean extends WpPageBean
       $strEleves,
     );
     return $this->getRender($urlTemplatePanel, $args);
-  }
-
-  private function getDivision()
-  {
-    $Divisions = $this->DivisionServices->getDivisionsWithFilters(array(self::FIELD_CRKEY=>$_SESSION['crKey']));
-    return (empty($Divisions) ? new Division() : array_shift($Divisions));
   }
 
   /**

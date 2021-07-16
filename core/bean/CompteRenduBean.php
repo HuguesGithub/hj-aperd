@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 /**
  * Classe CompteRenduBean
  * @author Hugues
- * @version 1.21.07.05
+ * @version 1.21.07.16
  * @since 1.21.06.01
  */
 class CompteRenduBean extends LocalBean
@@ -19,13 +19,64 @@ class CompteRenduBean extends LocalBean
    */
   public function __construct($CompteRendu='')
   {
+    parent::__construct();
     $this->BilanMatiereServices = new BilanMatiereServices();
     $this->CompteRenduServices = new CompteRenduServices();
     $this->CompteRendu = ($CompteRendu=='' ? new CompteRendu() : $CompteRendu);
   }
 
   /**
-   * @parma array $args
+   * @return string
+   * @version 1.21.07.16
+   * @since 1.21.07.15
+   */
+  public function getCard($trimestre='')
+  {
+    $urlTemplateCard = 'web/pages/public/fragments/card-compte-rendu.php';
+    $Division = $this->getDivision();
+
+    ///////////////////////////////////////////////////
+    // On récupère le Trimestre
+    $strTrimestre = ($this->CompteRendu->getTrimestre() ? $this->CompteRendu->getTrimestre() : $trimestre);
+    // On récupère le libellé de la Division
+    $strLabelDivision = ($this->CompteRendu->getDivision()->getLabelDivision() ? $this->CompteRendu->getDivision()->getLabelDivision() : $Division->getLabelDivision());
+    // On récupère la Date
+    $strDate = ($this->CompteRendu->getDateConseil()!='' ? $this->CompteRendu->getDateConseil() : 'Non définie');
+    // On récupère le Nom de la Présidence
+    $Administration = $this->CompteRendu->getAdministration();
+    $strPresidence = ($Administration->getId()!='' ? $Administration->getGenre().self::CST_BLANK.$Administration->getNomAdministration() : 'Non définie');
+    // On récupère le statut
+    switch ($this->CompteRendu->getStatus()) {
+      default :
+        $strStatut = 'Non défini';
+      break;
+    }
+    ///////////////////////////////////////////////////
+
+    ///////////////////////////////////////////////////
+    // On défini le Template et on le restitue
+    $args = array(
+      // Numéro du Trimestre - 1
+      $strTrimestre,
+      // Libellé de la Division - 2
+      $strLabelDivision,
+      // Date du conseil - 3
+      $strDate,
+      // Nom du Président - 4
+      $strPresidence,
+      // Statut du conseil de classe - 5
+      $strStatut,
+      // Lien vers le Compte-rendu - 6
+      get_permalink(get_page_by_path(self::PAGE_COMPTE_RENDU)).'?trimestre='.$strTrimestre,
+      // Libellé du lien - 7
+      'A créer',
+    );
+
+    return $this->getRender($urlTemplateCard, $args);
+  }
+
+  /**
+   * @param array $args
    * @return string
    * @version 1.21.07.05
    * @since 1.21.06.01
@@ -51,7 +102,7 @@ class CompteRenduBean extends LocalBean
       // Il faudrait un lien vers le PDF;
       $linkToCr = $status;
     } else {
-      $linkToCr = '<a href="/compte-rendu/?crKey='.$this->CompteRendu->getCrKey().'">'.$status.'</a>';
+      $linkToCr = '<a href="/compte-rendu/?trimestre='.$this->CompteRendu->getTrimestre().'">'.$status.'</a>';
     }
 
     $attributes = array(
@@ -59,21 +110,19 @@ class CompteRenduBean extends LocalBean
       $this->CompteRendu->getId(),
       // Url d'édition du Compte Rendu - 2
       $urlEdition,
-      // Année Scolaire - 3
-      $this->CompteRendu->getAnneeScolaire()->getAnneeScolaire(),
-      // Trimestre - 4
+      // Trimestre - 3
       'T'.$this->CompteRendu->getTrimestre(),
-      // Division - 5
+      // Division - 4
       $this->CompteRendu->getDivision()->getLabelDivision(),
-      // Statut - 6
+      // Statut - 5
       $linkToCr,
-      // Date du conseil de classe - 7
+      // Date du conseil de classe - 6
       $this->CompteRendu->getDateConseil(),
-      // Présidence - 8
+      // Présidence - 7
       $this->CompteRendu->getAdministration()->getNomTitulaire(),
-      // Url de suppression - 9
+      // Url de suppression - 8
       $urlSuppression,
-      // Sélectionnée ou non - 10
+      // Sélectionnée ou non - 9
       $checked ? self::CST_BLANK.self::CST_CHECKED : '',
     );
     return $this->getRender($this->urlTemplateRowAdmin, $attributes);

@@ -2,7 +2,7 @@
 /**
  * Interface Constants
  * @author Hugues
- * @version 1.21.07.06
+ * @version 1.21.07.16
  * @since 1.21.06.04
  */
 interface ConstantsInterface
@@ -128,24 +128,28 @@ interface ConstantsInterface
   const MSG_BULK_EXPORT_IMPOSSIBLE  = 'Export impossible : aucun élément sélectionné.';
   const MSG_BULK_ACTION_INDEFINIE   = 'Action Bulk indéterminée : <strong>%s</strong>.';
   const MSG_BULK_DELETE_SUCCESS     = 'Suppressions réussies.';
-  const MSG_CONFIRM_SUPPR_MATIERES  = 'Voulez-vous vraiment <strong>supprimer</strong> les Matières <strong>%s</strong>.';
-  const MSG_CONFIRM_SUPPR_MATIERE   = 'Voulez-vous vraiment <strong>supprimer</strong> la Matière <strong>%s</strong>.';
-  const MSG_CONFIRM_SUPPR_DIVISIONS = 'Voulez-vous vraiment <strong>supprimer</strong> les Division <strong>%s</strong>.';
-  const MSG_CONFIRM_SUPPR_DIVISION  = 'Voulez-vous vraiment <strong>supprimer</strong> la Division <strong>%s</strong>.';
-  const MSG_CONFIRM_SUPPR_ENSEIGNANTS  = 'Voulez-vous vraiment <strong>supprimer</strong> les Enseignants <strong>%s</strong>.';
-  const MSG_CONFIRM_SUPPR_ENSEIGNANT = 'Voulez-vous vraiment <strong>supprimer</strong> l\'Enseignant <strong>%s</strong>.';
-  const MSG_CONFIRM_SUPPR_QUESTIONNAIRES = 'Voulez-vous vraiment <strong>supprimer</strong> les Clefs <strong>%s</strong>.';
-  const MSG_CONFIRM_SUPPR_QUESTIONNAIRE  = 'Voulez-vous vraiment <strong>supprimer</strong> la Clef <strong>%s</strong>.';
-  const MSG_CONFIRM_SUPPR_ADMINISTRATIONS = 'Voulez-vous vraiment <strong>supprimer</strong> les Administratifs <strong>%s</strong>.';
-  const MSG_CONFIRM_SUPPR_ADMINISTRATION  = 'Voulez-vous vraiment <strong>supprimer</strong> l\'Administratif <strong>%s</strong>.';
-  const MSG_CONFIRM_SUPPR_ANNEESCOLAIRES = 'Voulez-vous vraiment <strong>supprimer</strong> les Années Scolaires <strong>%s</strong>.';
-  const MSG_CONFIRM_SUPPR_ANNEESCOLAIRE  = 'Voulez-vous vraiment <strong>supprimer</strong> l\'Année Scolaire <strong>%s</strong>.';
-  const MSG_CONFIRM_SUPPR_PARENTS    = 'Voulez-vous vraiment <strong>supprimer</strong> les Parents <strong>%s</strong>.';
-  const MSG_CONFIRM_SUPPR_PARENT     = 'Voulez-vous vraiment <strong>supprimer</strong> le Parent <strong>%s</strong>.';
-  const MSG_CONFIRM_SUPPR_PARENT_DELEGUES    = 'Voulez-vous vraiment <strong>supprimer</strong> les Parents Délégués <strong>%s</strong>.';
-  const MSG_CONFIRM_SUPPR_PARENT_DELEGUE     = 'Voulez-vous vraiment <strong>supprimer</strong> le Parent Délégué <strong>%s</strong>.';
-  const MSG_CONFIRM_SUPPR_ELEVES    = 'Voulez-vous vraiment <strong>supprimer</strong> les Elèves <strong>%s</strong>.';
-  const MSG_CONFIRM_SUPPR_ELEVE     = 'Voulez-vous vraiment <strong>supprimer</strong> l\'Elève <strong>%s</strong>.';
+  const MSG_CONFIRM_SUPPR_ADMINISTRATIONS = 'Voulez-vous vraiment <strong>supprimer</strong> les Administratifs <strong>%s</strong> ?';
+  const MSG_CONFIRM_SUPPR_ADMINISTRATION  = 'Voulez-vous vraiment <strong>supprimer</strong> l\'Administratif <strong>%s</strong> ?';
+  const MSG_CONFIRM_SUPPR_ANNEESCOLAIRES = 'Voulez-vous vraiment <strong>supprimer</strong> les Années Scolaires <strong>%s</strong> ?';
+  const MSG_CONFIRM_SUPPR_ANNEESCOLAIRE  = 'Voulez-vous vraiment <strong>supprimer</strong> l\'Année Scolaire <strong>%s</strong> ?';
+  const MSG_CONFIRM_SUPPR_COMPO_DIVISIONS = 'Voulez-vous vraiment <strong>supprimer</strong> les assignations "Enseignant/Division" <strong>%s</strong> ?';
+  const MSG_CONFIRM_SUPPR_COMPO_DIVISION  = 'Voulez-vous vraiment <strong>supprimer</strong> l\'assignation "Enseignant/Division" <strong>%s</strong> ?';
+  const MSG_CONFIRM_SUPPR_COMPTE_RENDU    = 'Voulez-vous vraiment <strong>supprimer</strong> le Compte Rendu <strong>%s</strong> ?';
+  const MSG_CONFIRM_SUPPR_COMPTE_RENDUS   = 'Voulez-vous vraiment <strong>supprimer</strong> les Comptes Rendus <strong>%s</strong> ?';
+  const MSG_CONFIRM_SUPPR_DIVISIONS = 'Voulez-vous vraiment <strong>supprimer</strong> les Division <strong>%s</strong> ?';
+  const MSG_CONFIRM_SUPPR_DIVISION  = 'Voulez-vous vraiment <strong>supprimer</strong> la Division <strong>%s</strong> ?';
+  const MSG_CONFIRM_SUPPR_ELEVES    = 'Voulez-vous vraiment <strong>supprimer</strong> les Elèves <strong>%s</strong> ?';
+  const MSG_CONFIRM_SUPPR_ELEVE     = 'Voulez-vous vraiment <strong>supprimer</strong> l\'Elève <strong>%s</strong> ?';
+  const MSG_CONFIRM_SUPPR_ENSEIGNANTS  = 'Voulez-vous vraiment <strong>supprimer</strong> les Enseignants <strong>%s</strong> ?';
+  const MSG_CONFIRM_SUPPR_ENSEIGNANT = 'Voulez-vous vraiment <strong>supprimer</strong> l\'Enseignant <strong>%s</strong> ?';
+  const MSG_CONFIRM_SUPPR_MATIERES  = 'Voulez-vous vraiment <strong>supprimer</strong> les Matières <strong>%s</strong> ?';
+  const MSG_CONFIRM_SUPPR_MATIERE   = 'Voulez-vous vraiment <strong>supprimer</strong> la Matière <strong>%s</strong> ?';
+  const MSG_CONFIRM_SUPPR_PARENTS    = 'Voulez-vous vraiment <strong>supprimer</strong> les Parents <strong>%s</strong> ?';
+  const MSG_CONFIRM_SUPPR_PARENT     = 'Voulez-vous vraiment <strong>supprimer</strong> le Parent <strong>%s</strong> ?';
+  const MSG_CONFIRM_SUPPR_PARENT_DELEGUES    = 'Voulez-vous vraiment <strong>supprimer</strong> les Parents Délégués <strong>%s</strong> ?';
+  const MSG_CONFIRM_SUPPR_PARENT_DELEGUE     = 'Voulez-vous vraiment <strong>supprimer</strong> le Parent Délégué <strong>%s</strong> ?';
+  const MSG_CONFIRM_SUPPR_QUESTIONNAIRES = 'Voulez-vous vraiment <strong>supprimer</strong> les Clefs <strong>%s</strong> ?';
+  const MSG_CONFIRM_SUPPR_QUESTIONNAIRE  = 'Voulez-vous vraiment <strong>supprimer</strong> la Clef <strong>%s</strong> ?';
   const MSG_ERREUR_CONTROL_ENTETE    = 'La première ligne ne correspond pas aux champs attendus : <strong>%s</strong>.';
   const MSG_ERREUR_CONTROL_EXISTENCE = 'Champ obligatoire non saisi. ';
   const MSG_ERREUR_CONTROL_EXISTENCE_NORMEE = 'Champ obligatoire [<strong>%s</strong>] non saisi. ';

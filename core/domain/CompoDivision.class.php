@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 /**
  * Classe CompoDivision
  * @author Hugues
- * @version 1.21.06.04
+ * @version 1.21.07.15
  * @since 1.21.06.04
  */
 class CompoDivision extends LocalDomain
@@ -74,7 +74,9 @@ class CompoDivision extends LocalDomain
     parent::__construct($attributes);
     $this->Services = new CompoDivisionServices();
     $this->DivisionServices = new DivisionServices();
+    $this->EnseignantServices = new EnseignantServices();
     $this->EnseignantMatiereServices = new EnseignantMatiereServices();
+    $this->MatiereServices = new MatiereServices();
   }
   /**
    * @return array
@@ -150,7 +152,7 @@ class CompoDivision extends LocalDomain
   /**
    * @param string $sep
    * @return string
-   * @version 1.21.07.07
+   * @version 1.21.07.15
    * @since 1.21.06.08
    */
   public function getCsvEntete($sep=';')
@@ -158,7 +160,7 @@ class CompoDivision extends LocalDomain
   /**
    * @param string $sep
    * @return string
-   * @version 1.21.07.07
+   * @version 1.21.07.15
    * @since 1.21.06.04
    */
   public function toCsv($sep=';')
@@ -169,6 +171,67 @@ class CompoDivision extends LocalDomain
     $arrValues[] = $this->getEnseignant()->getNomEnseignant();
     $arrValues[] = $this->getMatiere()->getLabelMatiere();
     return implode($sep, $arrValues);
+  }
+  /**
+   * @param string $rowContent
+   * @param string $sep
+   * @param string &$notif
+   * @param string &$msg
+   * @return boolean
+   * @version 1.21.07.15
+   * @since 1.21.07.15
+   */
+  public function controleImportRow($rowContent, $sep, &$notif, &$msg)
+  {
+    $returned = false;
+    list($id, $labelDivision, $nomEnseignant, $labelMatiere) = explode($sep, $rowContent);
+    $this->setId($id);
+
+    // On doit vérifier que labelDivision correspond à quelque chose.
+    $Divisions = $this->DivisionServices->getDivisionsWithFilters(array(self::FIELD_LABELDIVISION=>$labelDivision));
+    if (empty($Divisions)) {
+      $notif = self::NOTIF_DANGER;
+      $msg   = self::MSG_ERREUR_CONTROL_INEXISTENCE;
+      $returned = true;
+    }
+    $Division = array_shift($Divisions);
+    $this->setDivisionId(trim($Division->getId()));
+
+    // On doit vérifier que nomEnseignant correspond à quelque chose
+    if (!$returned) {
+      $Enseignants = $this->EnseignantServices->getEnseignantsWithFilters(array(self::FIELD_NOMENSEIGNANT=>$nomEnseignant));
+      if (empty($Enseignants)) {
+        $notif = self::NOTIF_DANGER;
+        $msg   = self::MSG_ERREUR_CONTROL_INEXISTENCE;
+        $returned = true;
+      }
+      $Enseignant = array_shift($Enseignants);
+    }
+
+    // On doit vérifier que labelMatiere correspond à quelque chose
+    if (!$returned) {
+      $Matieres = $this->MatiereServices->getMatieresWithFilters(array(self::FIELD_LABELMATIERE=>$labelMatiere));
+      if (empty($Matieres)) {
+        $notif = self::NOTIF_DANGER;
+        $msg   = self::MSG_ERREUR_CONTROL_INEXISTENCE;
+        $returned = true;
+      }
+      $Matiere = array_shift($Matieres);
+    }
+
+    // On doit vérifier que le couple (Enseignant/Matière) existe en base.
+    if (!$returned) {
+      $EnseignantMatieres = $this->EnseignantMatiereServices->getEnseignantMatieresWithFilters(array(self::FIELD_ENSEIGNANT_ID=>$Enseignant->getId(), self::FIELD_MATIERE_ID=>$Matiere->getId()));
+      if (empty($EnseignantMatieres)) {
+        $notif = self::NOTIF_DANGER;
+        $msg   = self::MSG_ERREUR_CONTROL_INEXISTENCE;
+        $returned = true;
+      }
+      $EnseignantMatiere = array_shift($EnseignantMatieres);
+      $this->setEnseignantMatiereId(trim($EnseignantMatiere->getId()));
+    }
+
+    return ($returned ? $returned : $this->controleDonneesAndAct($this, $notif, $msg));
   }
 
   /**
@@ -194,4 +257,11 @@ class CompoDivision extends LocalDomain
     return $returned;
   }
 
+  /**
+   * @return string
+   * @version 1.21.07.15
+   * @since 1.21.07.15
+   */
+  public function getFullName()
+  { return $this->getDivision()->getFullName().self::CST_BLANK.$this->getEnseignant()->getFullName(); }
 }

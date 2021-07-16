@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 /**
  * ImportActions
  * @author Hugues
- * @version 1.21.06.21
+ * @version 1.21.07.15
  * @since 1.21.06.01
  */
 class ImportActions extends LocalActions
@@ -30,7 +30,7 @@ class ImportActions extends LocalActions
    * @param string $importType
    * @param string &$notif
    * @param string &$msg
-   * @version 1.21.06.21
+   * @version 1.21.07.15
    * @since 1.21.06.01
    */
   public static function dealWithStaticImport($importType, &$notif, &$msg)
@@ -43,6 +43,11 @@ class ImportActions extends LocalActions
       break;
       case self::PAGE_ANNEE_SCOLAIRE :
         $theList = AnneeScolaireActions::dealWithStatic(self::CST_IMPORT, $params);
+        $notif = $params['notif'];
+        $msg   = $params['msg'];
+      break;
+      case self::PAGE_COMPO_DIVISION :
+        $theList = CompoDivisionActions::dealWithStatic(self::CST_IMPORT, $params);
         $notif = $params['notif'];
         $msg   = $params['msg'];
       break;

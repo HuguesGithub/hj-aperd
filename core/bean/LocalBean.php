@@ -10,6 +10,7 @@ if (!defined('ABSPATH')) {
  */
 class LocalBean extends UtilitiesBean implements ConstantsInterface
 {
+
   /**
    * @param array $addArg
    * @param array $remArg

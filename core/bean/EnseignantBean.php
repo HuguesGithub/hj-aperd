@@ -25,19 +25,21 @@ class EnseignantBean extends LocalBean
     $this->EnseignantMatiereServices = new EnseignantMatiereServices();
   }
   /**
+   * @param int $divisionId
+   * @param string $labelMatiere
    * @return string
    * @version 1.21.07.05
    * @since 1.21.07.05
    */
-  public function getRowForPublicPage($divisionId=-1)
+  public function getRowForPublicPage($divisionId=-1, $labelMatiere='')
   {
-	$ProfPrincipal  = $this->getProfPrincipal();
+    $ProfPrincipal  = $this->getProfPrincipal();
 
-	$content  = '<tr>';
-	$content .= $this->getTdStandard($this->Enseignant->getFullName());
-	$content .= $this->getTdStandard('WIP');
-	$content .= $this->getTdStandard(($ProfPrincipal->getDivisionId()==$divisionId ? '<span class="badge badge-success">Oui</span>' : ''));
-	return $content.'</tr>';
+    $content  = '<tr>';
+    $content .= $this->getTdStandard($this->Enseignant->getFullName());
+    $content .= $this->getTdStandard($labelMatiere);
+    $content .= $this->getTdStandard(($ProfPrincipal->getDivisionId()==$divisionId ? '<span class="badge badge-success">Oui</span>' : ''));
+    return $content.'</tr>';
   }
   /**
    */

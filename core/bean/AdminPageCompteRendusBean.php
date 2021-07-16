@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 /**
  * AdminPageCompteRendusBean
  * @author Hugues
- * @version 1.21.07.05
+ * @version 1.21.07.16
  * @since 1.21.06.01
  */
 class AdminPageCompteRendusBean extends AdminPageBean
@@ -58,10 +58,58 @@ class AdminPageCompteRendusBean extends AdminPageBean
     $Bean = new AdminPageCompteRendusBean($urlParams);
     return $Bean->getContentPage();
   }
+
+  /**
+   * @version 1.21.07.16
+   * @since 1.21.07.16
+   */
+  private function dealWithSpecificMode(&$notif, &$msg)
+  {
+    // Pas de contrôle car déjà fait à la soumission.
+    // On a un Trimestre, ou tous (-1), on a une division, ou toutes (-1) et pour l'ensemble des couples trimestre/division, on va créer un CR.
+    $CompteRendu = new CompteRendu();
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Récupération du Trimestre
+    $trimestre = $this->urlParams[self::FIELD_TRIMESTRE];
+    // Si aucun trimestre n'a été sélectionné, on créé un conseil de classe pour les 3 trimestres.
+    $arrTrimestre = (($trimestre=='') ? array(1, 2, 3) : array($trimestre));
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Récupération de la Division
+    $divisionId = $this->urlParams[self::FIELD_DIVISION_ID];
+    // Si aucune Division n'a été sélectionnée, on créé un conseil de classe pour l'ensemble des Divisions.
+    if ($divisionId =='') {
+      $Divisions = $this->DivisionServices->getDivisionsWithFilters();
+    } else {
+      $Division = $this->DivisionServices->selectLocal($divisionId);
+      $Divisions = array($Division);
+    }
+    //////////////////////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // On parcourt les 2 tableaux et on créé un conseil de classe pour chaque couple.
+    foreach ($arrTrimestre as $trimestre) {
+      foreach ($Divisions as $Division) {
+        // On vérifie que le conseil de classe n'a pas déjà été créé pour ce couple.
+        $CpteRdus = $this->CompteRenduServices->getCompteRendusWithFilters(array(self::FIELD_TRIMESTRE=>$trimestre, self::FIELD_DIVISION_ID=>$Division->getId()));
+        if (empty($CpteRdus)) {
+          // Si ce n'est pas le cas, on le créé
+          $CompteRendu->setField(self::FIELD_TRIMESTRE, $trimestre);
+          $CompteRendu->setField(self::FIELD_DIVISION_ID, $Division->getId());
+          $CompteRendu->setField(self::FIELD_STATUS, self::STATUS_FUTURE);
+          $this->CompteRenduServices->insertLocal($CompteRendu);
+        } else {
+          // Sinon, on remonte une alerte, mais on ne stoppe pas le traitement.
+          $notif = self::NOTIF_DANGER;
+          $msg = 'Au moins un compte-rendu existant pour un couple (trimestre, division) a été rencontré. Création partielle ou nulle.';
+        }
+      }
+    }
+  }
   /**
    * @param array $urlParams
    * @return string
-   * @version 1.21.07.05
+   * @version 1.21.07.16
    * @since 1.21.07.05
    */
   public function getContentPage()
@@ -74,44 +122,11 @@ class AdminPageCompteRendusBean extends AdminPageBean
     ///////////////////////////////////////////
     // Analyse de l'action éventuelle.
     if (!isset($this->urlParams['filter_action']) && isset($this->urlParams[self::CST_POSTACTION])) {
-        if ($this->urlParams[self::CST_POSTACTION]==self::CST_BULK && $this->urlParams[self::CST_ACTION]==self::CST_CREATION) {
-// Pas de contrôle car déjà fait à la soumission.
-// On a une Année Scolaire. On a un Trimestre, ou tous (-1), on a une division, ou toutes (-1) et pour l'ensemble des couples trimestre/division, on va créer un CR.
-          $CompteRendu = new CompteRendu();
-          $anneeScolaireId = $this->urlParams[self::FIELD_ANNEESCOLAIRE_ID];
-          $CompteRendu->setField(self::FIELD_ANNEESCOLAIRE_ID, $anneeScolaireId);
-
-          $trimestre = $this->urlParams[self::FIELD_TRIMESTRE];
-          if ($trimestre=='') {
-            $arrTrimestre = array(1, 2, 3);
-          } else {
-            $arrTrimestre = array($trimestre);
-          }
-
-          $divisionId = $this->urlParams[self::FIELD_DIVISION_ID];
-          if ($divisionId =='') {
-            $Divisions = $this->DivisionServices->getDivisionsWithFilters();
-          } else {
-            $Division = $this->DivisionServices->selectLocal($divisionId);
-            $Divisions = array($Division);
-          }
-
-    foreach ($arrTrimestre as $trimestre) {
-              foreach ($Divisions as $Division) {
-                  $CpteRdus = $this->CompteRenduServices->getCompteRendusWithFilters(array(self::FIELD_ANNEESCOLAIRE_ID=>$anneeScolaireId, self::FIELD_TRIMESTRE=>$trimestre, self::FIELD_DIVISION_ID=>$Division->getId()));
-                  if (empty($CpteRdus)) {
-                      $CompteRendu->setField(self::FIELD_TRIMESTRE, $trimestre);
-                      $CompteRendu->setField(self::FIELD_DIVISION_ID, $Division->getId());
-                      $this->CompteRenduServices->insertLocal($CompteRendu);
-                  } else {
-                      $notif = self::NOTIF_DANGER;
-                      $msg = 'Au moins un compte-rendu existant pour un triplet (année scolaire, trimestre, division) a été rencontré. Création partielle ou nulle.';
-                  }
-              }
-          }
-        } else {
-            $this->parseUrlParams($initPanel, $notif, $msg);
-        }
+      if ($this->urlParams[self::CST_POSTACTION]==self::CST_BULK && $this->urlParams[self::CST_ACTION]==self::CST_CREATION) {
+        $this->dealWithSpecificMode($notif, $msg);
+      } else {
+        $this->parseUrlParams($initPanel, $notif, $msg);
+      }
     }
 
     ///////////////////////////////////////////
@@ -120,7 +135,8 @@ class AdminPageCompteRendusBean extends AdminPageBean
       $this->createNotification($notif, $msg);
     }
 
-    $AnneeScolaireBean = new AnneeScolaireBean();
+    ///////////////////////////////////////////:
+    // On défini les listes déroulantes du panneau de création.
     $DivisionBean = new DivisionBean();
     $attributes = array(
       self::ATTR_CLASS => self::CST_MD_SELECT,
@@ -134,29 +150,27 @@ class AdminPageCompteRendusBean extends AdminPageBean
 
     ///////////////////////////////////////////:
     // On initialise les panneaux latéraux droit
-    $this->msgConfirmDelete = ''; // TODO
-    $this->tagConfirmDeleteMultiple = ''; //TODO
+    $this->msgConfirmDelete = sprintf(self::MSG_CONFIRM_SUPPR_COMPTE_RENDU, $this->LocalObject->getFullName());
+    $this->tagConfirmDeleteMultiple = sprintf(self::MSG_CONFIRM_SUPPR_COMPTE_RENDUS, 'TODO');
     $this->urlTemplateForm = 'web/pages/admin/fragments/card-compterendu-create.php';
     $this->attributesFormEdit  = array('','','','','','','','','','','','','','',);
 
-    switch ($initPanel) {
-      case self::CST_CREATE :
-        $this->crudType = self::CST_CREATE;
-        // Définition des attributs de la Card CRUD
-        $this->attributesCardCRUD = array(
-        // Select sur les Années Scolaires - 1
-          $AnneeScolaireBean->getSelect(array('tag'=>self::FIELD_ANNEESCOLAIRE_ID, 'required'=>'')),
-        // Select sur les Trimestres - 2
-          $strSelectTrimestre,
-        // Select sur les Divisions - 3
-          $DivisionBean->getSelect(array('tag'=>self::FIELD_DIVISION_ID, 'label'=>'Toutes')),
-  // Url d'annulation de l'opération - 4
-          $this->getQueryArg(array(self::CST_ONGLET=>$this->subMenuValue)),
-        );
-      break;
-      default :
-  $this->initPanels($initPanel);
-      break;
+    ///////////////////////////////////////////
+    // Pour des raisons d'optimisation de code, on passe sur un ifelse.
+    // Si les cas se multiplient, repasser sur un switch
+    if ($initPanel==self::CST_CREATE) {
+      $this->crudType = self::CST_CREATE;
+      // Définition des attributs de la Card CRUD
+      $this->attributesCardCRUD = array(
+        // Select sur les Trimestres - 1
+        $strSelectTrimestre,
+        // Select sur les Divisions - 2
+        $DivisionBean->getSelect(array('tag'=>self::FIELD_DIVISION_ID, 'label'=>'Toutes')),
+        // Url d'annulation de l'opération - 3
+        $this->getQueryArg(array(self::CST_ONGLET=>$this->subMenuValue)),
+      );
+    } else {
+      $this->initPanels($initPanel);
     }
     ///////////////////////////////////////////:
     // On retourne le listing et les panneaux latéraux droit

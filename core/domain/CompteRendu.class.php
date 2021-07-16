@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 /**
  * Classe CompteRendu
  * @author Hugues
- * @version 1.21.06.04
+ * @version 1.21.07.16
  * @since 1.21.06.04
  */
 class CompteRendu extends LocalDomain
@@ -18,18 +18,16 @@ class CompteRendu extends LocalDomain
    * @var int $id
    */
   protected $id;
-  protected $crKey;
-  protected $anneeScolaireId;
   protected $trimestre;
   protected $divisionId;
   protected $nbEleves;
   protected $dateConseil;
   protected $administrationId;
-  protected $enseignantId;
-  protected $parent1;
-  protected $parent2;
-  protected $enfant1;
-  protected $enfant2;
+  protected $profPrincId;
+  protected $delegueEleve1Id;
+  protected $delegueEleve2Id;
+  protected $delegueParent1Id;
+  protected $delegueParent2Id;
   protected $bilanProfPrincipal;
   protected $bilanEleves;
   protected $bilanParents;
@@ -41,16 +39,11 @@ class CompteRendu extends LocalDomain
   protected $nbMgComportementTravail;
   protected $dateRedaction;
   protected $auteurRedaction;
-  protected $mailContact;
   protected $status;
 
   //////////////////////////////////////////////////
   // GETTERS & SETTERS
   //////////////////////////////////////////////////
-  public function getCrKey()
-  { return $this->crKey; }
-  public function getAnneeScolaireId()
-  { return $this->anneeScolaireId; }
   public function getDivisionId()
   { return $this->divisionId; }
   public function getTrimestre()
@@ -62,8 +55,6 @@ class CompteRendu extends LocalDomain
   public function getAdministrationId()
   { return $this->administrationId; }
 
-  public function setCrKey($crKey)
-  { $this->crKey=$crKey; }
   public function setStatus($status)
   { $this->status = $status; }
   public function setDateConseil($dateConseil)
@@ -76,7 +67,7 @@ class CompteRendu extends LocalDomain
   //////////////////////////////////////////////////
   /**
    * @param array $attributes
-   * @version 1.21.06.04
+   * @version 1.21.07.15
    * @since 1.21.06.04
    */
   public function __construct($attributes=array())
@@ -86,27 +77,6 @@ class CompteRendu extends LocalDomain
     $this->AnneeScolaireServices = new AnneeScolaireServices();
     $this->DivisionServices = new DivisionServices();
     $this->EnseignantServices = new EnseignantServices();
-
-    $this->mandatoryFields = array(
-      self::FIELD_ANNEESCOLAIRE_ID,
-      self::FIELD_TRIMESTRE,
-      self::FIELD_DIVISION_ID,
-      self::FIELD_ADMINISTRATION_ID,
-      self::FIELD_ENSEIGNANT_ID,
-      self::FIELD_PARENT1,
-      self::FIELD_ENFANT1,
-      self::FIELD_BILANELEVES,
-      self::FIELD_BILANPARENTS,
-      self::FIELD_BILANPROFPRINCIPAL,
-      self::FIELD_NBCOMPLIMENTS,
-      self::FIELD_NBENCOURAGEMENTS,
-      self::FIELD_NBFELICITATIONS,
-      self::FIELD_NBMGCPT,
-      self::FIELD_NBMGTVL,
-      self::FIELD_NBMGCPTTVL,
-      self::FIELD_DATEREDACTION,
-      self::FIELD_AUTEURREDACTION,
-    );
   }
   /**
    * @return array
@@ -137,18 +107,6 @@ class CompteRendu extends LocalDomain
   // GETTERS OBJETS LIES
   //////////////////////////////////////////////////
   /**
-   * @return AnneeScolaire
-   * @version 1.21.06.04
-   * @since 1.21.06.04
-   */
-  public function getAnneeScolaire()
-  {
-    if ($this->AnneeScolaire==null) {
-      $this->AnneeScolaire = $this->AnneeScolaireServices->selectLocal($this->anneeScolaireId);
-    }
-    return $this->AnneeScolaire;
-  }
-  /**
    * @return ClasseScolaire
    * @version 1.21.06.04
    * @since 1.21.06.04
@@ -172,44 +130,10 @@ class CompteRendu extends LocalDomain
     }
     return $this->Administration;
   }
-  /**
-   * @return Enseignant
-   * @version 1.21.06.04
-   * @since 1.21.06.04
-   */
-  public function getEnseignant()
-  {
-    if ($this->Enseignant==null) {
-      $this->Enseignant = $this->EnseignantServices->selectLocal($this->enseignantId);
-    }
-    return $this->Enseignant;
-  }
 
   //////////////////////////////////////////////////
   // METHODS
   //////////////////////////////////////////////////
-
-
-
-
-
-
-  /**
-   * @return boolean
-   * @version 1.21.06.04
-   * @since 1.21.06.04
-   */
-  public function checkMandatory(&$strErrors='')
-  {
-    while (!empty($this->mandatoryFields)) {
-      $field = array_shift($this->mandatoryFields);
-      if ($this->{$field}=='' || $this->{$field}==self::CST_DEFAULT_SELECT) {
-        $strErrors = $field;
-        return false;
-      }
-    }
-    return true;
-  }
   /**
    * @param string $field
    * @return mixed
@@ -218,9 +142,27 @@ class CompteRendu extends LocalDomain
    */
   public function getValue($field)
   { return $this->{$field}; }
-
+  /**
+   * @param string $field
+   * @param mixed $value
+   * @version 1.21.07.15
+   * @since 1.21.06.04
+   */
   public function setValue($field, $value)
   { $this->{$field} = $value; }
+
+  /**
+   * @return string
+   * @version 1.21.07.16
+   * @since 1.21.07.16
+   */
+  public function getFullName()
+  { return $this->getDivision()->getLabelDivision().' T'.$this->getTrimestre(); }
+
+
+
+
+
   /**
    * @param array $post
    * @version 1.21.06.04
