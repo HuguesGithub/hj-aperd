@@ -42,6 +42,9 @@ class WpPageCompteRendusBean extends WpPageBean
     if (empty($Divisions)) {
       return false;
     }
+
+    $initDone = false;
+
     // Sinon, on récupère la Division concernée.
     $this->Division = array_shift($Divisions);
     // On récupère ensuite les Comptes Rendus associés à cette Division
@@ -54,23 +57,29 @@ class WpPageCompteRendusBean extends WpPageBean
       $this->trimestre = 1;
       $this->CompteRendu->setField(self::FIELD_STATUS, self::STATUS_FUTURE);
       $this->CompteRenduServices->insertLocal($this->CompteRendu);
-      return true;
+      $initDone = true;
     }
 
-    // On récupère la variable Trimestre si elle est définie.
-    $trimestre = $this->initVar(self::FIELD_TRIMESTRE, -1);
-    // On parcourt les Comptes Rendus existants pour cette Division
-    while (!empty($CompteRendus)) {
-      $CompteRendu = array_shift($CompteRendus);
-      if (in_array($CompteRendu->getStatus(), array(self::STATUS_FUTURE, self::STATUS_WORKING, self::STATUS_PENDING)) || $CompteRendu->getTrimestre()==$trimestre) {
-        $this->CompteRendu = $CompteRendu;
-        $this->trimestre   = $CompteRendu->getTrimestre();
-        return true;
+    if (!$initDone) {
+      // On récupère la variable Trimestre si elle est définie.
+      $trimestre = $this->initVar(self::FIELD_TRIMESTRE, -1);
+      // On parcourt les Comptes Rendus existants pour cette Division
+      while (!empty($CompteRendus)) {
+        $CompteRendu = array_shift($CompteRendus);
+        if (in_array($CompteRendu->getStatus(), array(self::STATUS_FUTURE, self::STATUS_WORKING, self::STATUS_PENDING)) || $CompteRendu->getTrimestre()==$trimestre) {
+          $this->CompteRendu = $CompteRendu;
+          $this->trimestre   = $CompteRendu->getTrimestre();
+          $initDone = true;
+        }
       }
     }
-    $this->CompteRendu = $CompteRendu;
-    $this->trimestre   = $CompteRendu->getTrimestre();
-    return true;
+
+    if (!$initDone) {
+      $this->CompteRendu = $CompteRendu;
+      $this->trimestre   = $CompteRendu->getTrimestre();
+      $initDone = true;
+    }
+    return $initDone;
   }
   /**
    * @return string
@@ -186,7 +195,7 @@ class WpPageCompteRendusBean extends WpPageBean
       // Contenu de l'étape n°2 - 2
       '',
       // Contenu de l'étape n°3 - 3
-      '',
+      $this->getContentStep3(),
       // Contenu de l'étape n°4 - 4
       '',
       // Contenu de l'étape n°5 - 5
@@ -211,24 +220,8 @@ class WpPageCompteRendusBean extends WpPageBean
       $this->getInput(self::FIELD_TRIMESTRE, true, array(self::ATTR_READONLY=>'')),
       // Notifications éventuelles - 7
       $this->CompteRendu->getNotifications(),
-      // Input NbEleves - 8
-      $this->getInput(self::FIELD_NBELEVES, true, array(), true),
-      // Input DateConseil - 9
-      $this->getInput(self::FIELD_DATECONSEIL, true, array(self::ATTR_PLACEHOLDER=>self::FORMAT_DATE_JJMMAAAA), true),
-      // Input Premier Parent - 10
-      $this->getInput(self::FIELD_PARENT1, true, array(), true),
-      // Input Deuxième Parent - 11
-      $this->getInput(self::FIELD_PARENT2, false, array(), true),
-      // Input Premier Elève - 12
-      $this->getInput(self::FIELD_ENFANT1, true, array(), true),
-      // Input Deuxième Elève - 13
-      $this->getInput(self::FIELD_ENFANT2, false, array(), true),
       // Textarea Bilan Prof Principal - 14
       $this->getTextArea(self::FIELD_BILANPROFPRINCIPAL, true, true),
-      // Textarea Bilan Délégués Elèves - 15
-      $this->getTextArea(self::FIELD_BILANELEVES, true, true),
-      // Textarea Bilan Délégués Parents - 16
-      $this->getTextArea(self::FIELD_BILANPARENTS, true, true),
       // Input Nb Encouragements - 17
       $this->getInput(self::FIELD_NBENCOURAGEMENTS, true, array(), true),
       // Input Nb Compliments - 18
@@ -254,9 +247,22 @@ class WpPageCompteRendusBean extends WpPageBean
     return $this->getRender($this->urlTemplate, $args);
   }
 
+  private function getContentStep3()
+  {
+    $urlTemplateStep3 = 'web/pages/public/fragments/panel-compte-rendu-step3.php';
+
+    $args = array(
+      // Bilan des élèves - 1
+      $this->getTextArea(self::FIELD_BILANELEVES, true, true),
+      // Bilan des parents - 2
+      $this->getTextArea(self::FIELD_BILANPARENTS, true, true),
+    );
+    return $this->getRender($urlTemplateStep3, $args);
+  }
+
   private function getContentStep1()
   {
-    $urlTemplate = 'web/pages/public/fragments/panel-compte-rendu-step1.php';
+    $urlTemplateStep1 = 'web/pages/public/fragments/panel-compte-rendu-step1.php';
 
     //////////////////////////////////////////////////////////////////
     // On peut faire des contrôles de valeurs pour les initialiser si nécessaire
@@ -287,7 +293,6 @@ class WpPageCompteRendusBean extends WpPageBean
       }
     }
     //////////////////////////////////////////////////////////////////
-
 
     ////////////////////////////////////////////////////////////////////////
     // Gestion du Menu déroulant de l'Année Scolaire
@@ -396,7 +401,7 @@ class WpPageCompteRendusBean extends WpPageBean
      // Menu déroulant Premier Elève - 11
       $strSelectE2,
     );
-    return $this->getRender($urlTemplate, $args);
+    return $this->getRender($urlTemplateStep1, $args);
   }
 
   /**

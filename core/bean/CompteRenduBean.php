@@ -234,19 +234,25 @@ class CompteRenduBean extends LocalBean
 
   public function getStep3()
   {
-    $content  = $this->getCloseButton();
-    $content .= '<div class="pdfParagrapheTitre">Intervention des délégués élèves</div>';
-    $content .= '<div>';
+    $urlTemplateStep1 = 'web/pages/public/fragments/apercu-compte-rendu-step3.php';
+    /////////////////////////////////////////////////////////////////////////
+    // Formattage du Bilan Elèves
     $valeur = str_replace(array("\r\n", "\r", "\n"), array("<br>", "<br>", "<br>"), $this->CompteRendu->getValue(self::FIELD_BILANELEVES));
-    $content .= (empty($valeur) ? '<strong>Données manquantes : [Bilan Délégués Elèves]</strong>' : $valeur);
-    $content .= '</div>';
-    $content .= '<div class="pdfParagrapheTitre">Intervention des délégués parents</div>';
-    $content .= '<div>';
+    $frmtBilanEleves  = (empty($valeur) ? '<strong>Données manquantes : [Bilan Délégués Elèves]</strong>' : $valeur);
+    // Formattage du Bilan Parents
     $valeur = str_replace(array("\r\n", "\r", "\n"), array("<br>", "<br>", "<br>"), $this->CompteRendu->getValue(self::FIELD_BILANPARENTS));
-    $content .= (empty($valeur) ? '<strong>Données manquantes : [Bilan Délégués Parents]</strong>' : $valeur);
-    $content .= '</div>';
-    $content .= '</div>';
-    return $content;
+    $frmtBilanParents = (empty($valeur) ? '<strong>Données manquantes : [Bilan Délégués Parents]</strong>' : $valeur);
+    /////////////////////////////////////////////////////////////////////////
+
+    /////////////////////////////////////////////////////////////////////////
+    // On enrichi le Template puis on le retourne.
+    $args = array(
+      // Bilan Elèves - 1
+      $frmtBilanEleves,
+      // Bilan Parents - 2
+      $frmtBilanParents,
+    );
+    return $this->getRender($urlTemplateStep1, $args);
   }
 
   public function getStep2BilanProf()
@@ -308,39 +314,54 @@ class CompteRenduBean extends LocalBean
 
   public function getStep1()
   {
-    $content  = $this->getCloseButton();
-    // Année Scolaire
-    $content .= '<div class="pdfParagrapheTitre" style="text-align: center;">'.'ANNÉE SCOLAIRE 2021-2022</div>';
-    // Trimestre / Classe / Effectifs
-    $content .= '<div style="text-align: center;">';
+    $urlTemplateStep1 = 'web/pages/public/fragments/apercu-compte-rendu-step1.php';
+
+    /////////////////////////////////////////////////////////////////////////
+    // Formattage du Trimestre
     $trim = $this->CompteRendu->getValue(self::FIELD_TRIMESTRE);
     $frmtTrimestre = $trim.($trim==1 ? 'er' : 'ème');
-    $content .= 'Compte-rendu du conseil de classe du '.$frmtTrimestre.' trimestre<br>';
+    // Formattage Effectif
     $valeur = $this->CompteRendu->getValue(self::FIELD_NBELEVES);
-    $texte  = ($valeur==0 ? '<strong>Données manquantes : [Nombre d\'élèves]</strong>' : $valeur);
-    $content .= 'Classe de : '.str_replace('0', 'è', $this->CompteRendu->getDivision()->getLabelDivision()).'. Effectif de la classe : '.$texte.' élèves';
-    $content .= '</div>';
-    $content .= '<br>';
-    // Texte Introduction
-    $content .= '<div>';
+    $frmtEffectif  = ($valeur==0 ? '<strong>Données manquantes : [Nombre d\'élèves]</strong>' : $valeur);
+    // Formattage Date
     $valeur = $this->CompteRendu->getValue(self::FIELD_DATECONSEIL);
-    $texte  = (empty($valeur) ? '<strong>Données manquantes : [Date du Conseil]</strong>' : $valeur);
-    $content .= "Le conseil de classe s'est tenu le ".$texte;
+    $frmtDate      = (empty($valeur) ? '<strong>Données manquantes : [Date du Conseil]</strong>' : $valeur);
+    // Formattage Présidence
     $valeur = $this->CompteRendu->getAdministrationId();
-    $texte  = ($valeur==0 ? '<strong>Données manquantes : [Présidence]</strong>' : $this->CompteRendu->getAdministration()->getFullName());
-    $content .= " sous la présidence de ".$texte;
+    $frmtPresidence = ($valeur==0 ? '<strong>Données manquantes : [Présidence]</strong>' : $this->CompteRendu->getAdministration()->getFullName());
+    // Formattage Prof Principal
     $valeur = $this->CompteRendu->getValue(self::FIELD_PROFPRINCIPAL_ID);
-    $texte  = ($valeur==0 ? '<strong>Données manquantes : [Professeur Principal]</strong>' : $this->CompteRendu->getProfPrincipal()->getProfPrincipal());
-    $content .= ", en présence de ".$texte.", des autres professeurs de la classe, ";
+    $texte = ($valeur==0 ? '<strong>Données manquantes : [Professeur Principal]</strong>' : $this->CompteRendu->getProfPrincipal()->getProfPrincipal());
+    $frmtProfPrinc = $texte;
+    // Formattage Parents Délégués
     $valeur = $this->CompteRendu->getValue(self::FIELD_PARENT1);
-    $texte  = (empty($valeur) ? '<strong>Données manquantes : [Parents Délégués]</strong>' : $this->CompteRendu->getStrParentsDelegues());
-    $content .= $texte;
+    $frmtParentDeleg = (empty($valeur) ? '<strong>Données manquantes : [Parents Délégués]</strong>' : $this->CompteRendu->getStrParentsDelegues());
+    // Formattage Elèves Délégués
     $valeur = $this->CompteRendu->getValue(self::FIELD_ENFANT1);
-    $texte  = (empty($valeur) ? '<strong>Données manquantes : [Elèves Délégués]</strong>' : $this->CompteRendu->getStrElevesDelegues());
-    $content .= $texte;
-    $content .= '</div>';
-    $content .= '</div>';
-    return $content;
+    $frmtEleveDeleg  = (empty($valeur) ? '<strong>Données manquantes : [Elèves Délégués]</strong>' : $this->CompteRendu->getStrElevesDelegues());
+    /////////////////////////////////////////////////////////////////////////
+
+    /////////////////////////////////////////////////////////////////////////
+    // On enrichi le Template puis on le retourne.
+    $args = array(
+      // Numéro du trimestre - 1
+      $frmtTrimestre,
+      // Libellé de la Division - 2
+      str_replace('0', 'è', $this->CompteRendu->getDivision()->getLabelDivision()),
+      // Effectif de la Division - 3
+      $frmtEffectif,
+      // Date du Conseil - 4
+      $frmtDate,
+      // Présidence - 5
+      $frmtPresidence,
+      // Prof Principal - 6
+      $frmtProfPrinc,
+      // Parents Délégués - 7
+      $frmtParentDeleg,
+      // Elèves Délégués - 8
+      $frmtEleveDeleg,
+    );
+    return $this->getRender($urlTemplateStep1, $args);
   }
 
 
