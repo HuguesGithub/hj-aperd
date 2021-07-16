@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 /**
  * Classe AdministrationBean
  * @author Hugues
- * @version 1.21.06.29
+ * @version 1.21.07.16
  * @since 1.21.06.10
  */
 class AdministrationBean extends LocalBean
@@ -82,9 +82,12 @@ class AdministrationBean extends LocalBean
   /**
    * @param mixed $selectedId
    * @return string;
-   * @version 1.00.00
-   * @since 1.00.00
+   * @version 1.21.07.16
+   * @since 1.21.06.01
    */
   public function getOption($selectedId=-1)
-  { return $this->getLocalOption($this->Administration->getNomTitulaire(), $this->Administration->getId(), $selectedId); }
+  {
+    $genre = $this->Administration->getGenre();
+    $label = ($genre=='' ? '' : $genre.self::CST_BLANK).$this->Administration->getNomTitulaire();
+    return $this->getLocalOption($label, $this->Administration->getId(), $selectedId); }
 }

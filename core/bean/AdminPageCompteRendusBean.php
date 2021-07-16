@@ -11,6 +11,8 @@ if (!defined('ABSPATH')) {
 class AdminPageCompteRendusBean extends AdminPageBean
 {
   protected $urlTemplatePageCompteRenduAdmin = 'web/pages/admin/board-comptes-rendus.php';
+  protected $urlTemplateForm = 'web/pages/admin/fragments/form-compte-rendu.php';
+
   /**
    * Class Constructor
    */
@@ -63,7 +65,7 @@ class AdminPageCompteRendusBean extends AdminPageBean
    * @version 1.21.07.16
    * @since 1.21.07.16
    */
-  private function dealWithSpecificMode(&$notif, &$msg)
+  private function dealWithSpecificCreationMode(&$notif, &$msg)
   {
     // Pas de contrôle car déjà fait à la soumission.
     // On a un Trimestre, ou tous (-1), on a une division, ou toutes (-1) et pour l'ensemble des couples trimestre/division, on va créer un CR.
@@ -123,7 +125,7 @@ class AdminPageCompteRendusBean extends AdminPageBean
     // Analyse de l'action éventuelle.
     if (!isset($this->urlParams['filter_action']) && isset($this->urlParams[self::CST_POSTACTION])) {
       if ($this->urlParams[self::CST_POSTACTION]==self::CST_BULK && $this->urlParams[self::CST_ACTION]==self::CST_CREATION) {
-        $this->dealWithSpecificMode($notif, $msg);
+        $this->dealWithSpecificCreationMode($notif, $msg);
       } else {
         $this->parseUrlParams($initPanel, $notif, $msg);
       }
@@ -135,30 +137,52 @@ class AdminPageCompteRendusBean extends AdminPageBean
       $this->createNotification($notif, $msg);
     }
 
-    ///////////////////////////////////////////:
-    // On défini les listes déroulantes du panneau de création.
-    $DivisionBean = new DivisionBean();
-    $attributes = array(
-      self::ATTR_CLASS => self::CST_MD_SELECT,
-      self::ATTR_NAME  => self::FIELD_TRIMESTRE,
-    );
-    $strOptions  = $this->getDefaultOption(-1, 'Tous');
-    $strOptions .= $this->getLocalOption('T1', '1', -1);
-    $strOptions .= $this->getLocalOption('T2', '2', -1);
-    $strOptions .= $this->getLocalOption('T3', '3', -1);
-    $strSelectTrimestre = $this->getBalise(self::TAG_SELECT, $strOptions, $attributes);
-
-    ///////////////////////////////////////////:
+    ///////////////////////////////////////////
     // On initialise les panneaux latéraux droit
     $this->msgConfirmDelete = sprintf(self::MSG_CONFIRM_SUPPR_COMPTE_RENDU, $this->LocalObject->getFullName());
     $this->tagConfirmDeleteMultiple = sprintf(self::MSG_CONFIRM_SUPPR_COMPTE_RENDUS, 'TODO');
-    $this->urlTemplateForm = 'web/pages/admin/fragments/card-compterendu-create.php';
-    $this->attributesFormEdit  = array('','','','','','','','','','','','','','',);
+    // On défini la liste déroulante pour le statut à éditer
+    $attributes = array(
+      self::ATTR_CLASS => self::CST_MD_SELECT,
+      self::ATTR_NAME  => self::FIELD_STATUS,
+    );
+    $filterStatus = $this->LocalObject->getField(self::FIELD_STATUS);
+    $strOptions  = $this->getLocalOption($this->getLibelleForStatus(self::STATUS_FUTURE), self::STATUS_FUTURE, $filterStatus);
+    $strOptions .= $this->getLocalOption($this->getLibelleForStatus(self::STATUS_WORKING), self::STATUS_WORKING, $filterStatus);
+    $strOptions .= $this->getLocalOption($this->getLibelleForStatus(self::STATUS_PENDING), self::STATUS_PENDING, $filterStatus);
+    $strOptions .= $this->getLocalOption($this->getLibelleForStatus(self::STATUS_PUBLISHED), self::STATUS_PUBLISHED, $filterStatus);
+    $strOptions .= $this->getLocalOption($this->getLibelleForStatus(self::STATUS_MAILED), self::STATUS_MAILED, $filterStatus);
+    $strSelectStatut = $this->getBalise(self::TAG_SELECT, $strOptions, $attributes);
+    $this->attributesFormEdit  = array(
+      // Trimestre - 1
+      $this->LocalObject->getTrimestre(),
+      // Libellé de la Division - 2
+      $this->LocalObject->getDivision()->getLabelDivision(),
+      // Liste déroulante pour le Statut
+      $strSelectStatut,
+      // Identifiant de la Division - 4
+      $this->LocalObject->getDivisionId(),
+    );
 
     ///////////////////////////////////////////
     // Pour des raisons d'optimisation de code, on passe sur un ifelse.
     // Si les cas se multiplient, repasser sur un switch
     if ($initPanel==self::CST_CREATE) {
+      $this->urlTemplateForm = 'web/pages/admin/fragments/card-compterendu-create.php';
+      ///////////////////////////////////////////
+      // On défini les listes déroulantes du panneau de création.
+      $DivisionBean = new DivisionBean();
+      $attributes = array(
+        self::ATTR_CLASS => self::CST_MD_SELECT,
+        self::ATTR_NAME  => self::FIELD_TRIMESTRE,
+      );
+      $strOptions  = $this->getDefaultOption(-1, 'Tous');
+      $strOptions .= $this->getLocalOption('T1', '1', -1);
+      $strOptions .= $this->getLocalOption('T2', '2', -1);
+      $strOptions .= $this->getLocalOption('T3', '3', -1);
+      $strSelectTrimestre = $this->getBalise(self::TAG_SELECT, $strOptions, $attributes);
+
+      ///////////////////////////////////////////
       $this->crudType = self::CST_CREATE;
       // Définition des attributs de la Card CRUD
       $this->attributesCardCRUD = array(
@@ -179,12 +203,13 @@ class AdminPageCompteRendusBean extends AdminPageBean
   }
 
   /**
-   * @version 1.21.07.05
+   * @version 1.21.07.16
    * @since 1.21.07.05
    */
   public function setLocalObject()
   {
     // On met à jour les attributs de l'objet
+    $this->LocalObject->setField(self::FIELD_STATUS, $this->urlParams[self::FIELD_STATUS]);
   }
   /**
    * @version 1.21.07.05
@@ -247,13 +272,17 @@ class AdminPageCompteRendusBean extends AdminPageBean
       self::ATTR_NAME  => self::FIELD_STATUS,
     );
     $strOptions  = $this->getDefaultOption(-1, 'Choisir...');
-    $strOptions .= $this->getLocalOption('Futur', 'future', $filterStatus);
-    $strOptions .= $this->getLocalOption('Publié', 'published', $filterStatus);
-    $strOptions .= $this->getLocalOption('Archivé', 'archived', $filterStatus);
+    $strOptions .= $this->getLocalOption($this->getLibelleForStatus(self::STATUS_FUTURE), self::STATUS_FUTURE, $filterStatus);
+    $strOptions .= $this->getLocalOption($this->getLibelleForStatus(self::STATUS_WORKING), self::STATUS_WORKING, $filterStatus);
+    $strOptions .= $this->getLocalOption($this->getLibelleForStatus(self::STATUS_PENDING), self::STATUS_PENDING, $filterStatus);
+    $strOptions .= $this->getLocalOption($this->getLibelleForStatus(self::STATUS_PUBLISHED), self::STATUS_PUBLISHED, $filterStatus);
+    $strOptions .= $this->getLocalOption($this->getLibelleForStatus(self::STATUS_MAILED), self::STATUS_MAILED, $filterStatus);
     $strFiltres .= $this->getBalise(self::TAG_SELECT, $strOptions, $attributes);
     $strFiltres .= '<label for="statut">Statuts</label>';
     // Fin construction des filtres utilisés
     /////////////////////////////////////////////////////////////////////////////
+    $statutValue = $this->LocalObject->getField(self::FIELD_STATUS);
+    $strSelectStatut = $this->getBalise(self::TAG_SELECT, $strOptions, $attributes);
 
     //////////////////////////////////////////////////////////////////
     // On récupère tous les Comptes Rendus et on construit la base de la pagination et on restreint l'affichage

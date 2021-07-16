@@ -45,14 +45,37 @@ class CompteRenduBean extends LocalBean
     // On récupère le Nom de la Présidence
     $Administration = $this->CompteRendu->getAdministration();
     $strPresidence = ($Administration->getId()!='' ? $Administration->getGenre().self::CST_BLANK.$Administration->getNomAdministration() : 'Non définie');
+    // On défini le lien vers la page de saisie des Comptes Rendus
+    $strUrlCard = get_permalink(get_page_by_path(self::PAGE_COMPTE_RENDU)).'?trimestre='.$strTrimestre;
+
     // On récupère le statut
-    switch ($this->CompteRendu->getStatus()) {
+    $status = $this->CompteRendu->getStatus();
+    $strStatut = $this->getLibelleForStatus($status);
+    switch ($status) {
       case self::STATUS_FUTURE :
-        $strStatut = 'A rédiger';
         $libelleAction = 'Aller le rédiger';
       break;
+      case self::STATUS_WORKING :
+        $libelleAction = 'Poursuivre la rédaction';
+      break;
+      case self::STATUS_PENDING :
+        $strStatut = 'A valider par P2';
+        // Si P2 :
+        $libelleAction = 'Aller le valider';
+        // Sinon
+        // Poursuivre la rédaction
+      break;
+      case self::STATUS_PUBLISHED:
+        $libelleAction = 'Aller le consulter';
+        // Dès lors qu'il est Validé ou Envoyé, le lien doit pointer vers le PDF
+        $strUrlCard = '#';
+      break;
+      case self::STATUS_MAILED:
+        $libelleAction = 'Aller le consulter';
+        // Dès lors qu'il est Validé ou Envoyé, le lien doit pointer vers le PDF
+        $strUrlCard = '#';
+      break;
       default :
-        $strStatut = 'A créer';
         $libelleAction = 'Aller le créer';
       break;
     }
@@ -72,7 +95,7 @@ class CompteRenduBean extends LocalBean
       // Statut du conseil de classe - 5
       $strStatut,
       // Lien vers le Compte-rendu - 6
-      get_permalink(get_page_by_path(self::PAGE_COMPTE_RENDU)).'?trimestre='.$strTrimestre,
+      $strUrlCard,
       // Libellé du lien - 7
       $libelleAction,
     );
@@ -83,7 +106,7 @@ class CompteRenduBean extends LocalBean
   /**
    * @param array $args
    * @return string
-   * @version 1.21.07.05
+   * @version 1.21.07.16
    * @since 1.21.06.01
    */
   public function getRowForAdminPage($checked=false, $args=array())
@@ -103,11 +126,19 @@ class CompteRenduBean extends LocalBean
     $urlSuppression = $this->getQueryArg($queryArgs);
 
     $status = $this->CompteRendu->getStatus();
-    if ($status=='archived') {
-      // Il faudrait un lien vers le PDF;
-      $linkToCr = $status;
-    } else {
-      $linkToCr = '<a href="/compte-rendu/?trimestre='.$this->CompteRendu->getTrimestre().'">'.$status.'</a>';
+    switch ($status) {
+      case self::STATUS_FUTURE :
+      case self::STATUS_WORKING :
+      case self::STATUS_PENDING :
+        $linkedUrl = '/compte-rendu/?trimestre='.$this->CompteRendu->getTrimestre();
+      break;
+      case self::STATUS_PUBLISHED :
+      case self::STATUS_MAILED :
+        $linkedUrl = '#'; // TODO vers PDF;
+      break;
+      default :
+        $linkedUrl = '#';
+      break;
     }
 
     $attributes = array(
@@ -120,7 +151,7 @@ class CompteRenduBean extends LocalBean
       // Division - 4
       $this->CompteRendu->getDivision()->getLabelDivision(),
       // Statut - 5
-      $linkToCr,
+      '<a href="'.$linkedUrl.'">'.$this->getLibelleForStatus($status).'</a>',
       // Date du conseil de classe - 6
       $this->CompteRendu->getDateConseil(),
       // Présidence - 7
@@ -279,7 +310,7 @@ class CompteRenduBean extends LocalBean
   {
     $content  = $this->getCloseButton();
     // Année Scolaire
-    $content .= '<div class="pdfParagrapheTitre" style="text-align: center;">'.'ANNÉE SCOLAIRE '.$this->CompteRendu->getAnneeScolaire()->getAnneeScolaire().'</div>';
+    $content .= '<div class="pdfParagrapheTitre" style="text-align: center;">'.'ANNÉE SCOLAIRE 2021-2022</div>';
     // Trimestre / Classe / Effectifs
     $content .= '<div style="text-align: center;">';
     $trim = $this->CompteRendu->getValue(self::FIELD_TRIMESTRE);
@@ -296,10 +327,10 @@ class CompteRenduBean extends LocalBean
     $texte  = (empty($valeur) ? '<strong>Données manquantes : [Date du Conseil]</strong>' : $valeur);
     $content .= "Le conseil de classe s'est tenu le ".$texte;
     $valeur = $this->CompteRendu->getAdministrationId();
-    $texte  = ($valeur==0 ? '<strong>Données manquantes : [Présidence]</strong>' : $this->CompteRendu->getAdministration()->getFullInfo());
+    $texte  = ($valeur==0 ? '<strong>Données manquantes : [Présidence]</strong>' : $this->CompteRendu->getAdministration()->getFullName());
     $content .= " sous la présidence de ".$texte;
-    $valeur = $this->CompteRendu->getValue(self::FIELD_ENSEIGNANT_ID);
-    $texte  = ($valeur==0 ? '<strong>Données manquantes : [Professeur Principal]</strong>' : $this->CompteRendu->getEnseignant()->getProfPrincipal());
+    $valeur = $this->CompteRendu->getValue(self::FIELD_PROFPRINCIPAL_ID);
+    $texte  = ($valeur==0 ? '<strong>Données manquantes : [Professeur Principal]</strong>' : $this->CompteRendu->getProfPrincipal()->getProfPrincipal());
     $content .= ", en présence de ".$texte.", des autres professeurs de la classe, ";
     $valeur = $this->CompteRendu->getValue(self::FIELD_PARENT1);
     $texte  = (empty($valeur) ? '<strong>Données manquantes : [Parents Délégués]</strong>' : $this->CompteRendu->getStrParentsDelegues());

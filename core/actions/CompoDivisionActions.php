@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 /**
  * CompoDivisionActions
  * @author Hugues
- * @version 1.21.07.15
+ * @version 1.21.07.16
  * @since 1.21.07.15
  */
 class CompoDivisionActions extends LocalActions
@@ -43,24 +43,22 @@ class CompoDivisionActions extends LocalActions
   /**
    * @param array $arrIds
    * @return string
-   * @version 1.21.07.15
+   * @version 1.21.07.16
    * @since 1.21.07.15
    */
   public function exportCompoDivision($arrIds)
   {
     $arrToExport = array();
-    /* TODO
-    $Division = new Division();
+    $CompoDivision = new CompoDivision();
     // On récupère l'entête
-    $arrToExport[] = $Division->getCsvEntete();
+    $arrToExport[] = $CompoDivision->getCsvEntete();
     // On récupère les données de tous les objets sélectionnés
     foreach ($arrIds as $id) {
-      $Division = $this->DivisionServices->selectLocal($id);
-      $arrToExport[] = $Division->toCsv();
+      $CompoDivision = $this->CompoDivisionServices->selectLocal($id);
+      $arrToExport[] = $CompoDivision->toCsv();
     }
     // On retourne le message de réussite.
-    return $this->exportFile($arrToExport, ucfirst(self::PAGE_DIVISION));
-    */
+    return $this->exportFile($arrToExport, ucfirst(self::PAGE_COMPO_DIVISION));
   }
   /**
    * @param array $params

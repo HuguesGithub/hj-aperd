@@ -121,6 +121,9 @@ class MainPageBean extends UtilitiesBean implements ConstantsInterface
     if (isset($_GET[$id])) {
       return $_GET[$id];
     }
+    if (isset($_SESSION[$id])) {
+      return $_SESSION[$id];
+    }
     return $default;
   }
 

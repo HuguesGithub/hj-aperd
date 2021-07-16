@@ -74,9 +74,12 @@ class CompteRendu extends LocalDomain
   {
     parent::__construct($attributes);
     $this->AdministrationServices = new AdministrationServices();
+    $this->AdulteServices         = new AdulteServices();
     $this->AnneeScolaireServices = new AnneeScolaireServices();
     $this->DivisionServices = new DivisionServices();
+    $this->EleveServices          = new EleveServices();
     $this->EnseignantServices = new EnseignantServices();
+    $this->ParentDelegueServices = new ParentDelegueServices();
     $this->Services = new CompteRenduServices();
   }
   /**
@@ -131,6 +134,18 @@ class CompteRendu extends LocalDomain
     }
     return $this->Administration;
   }
+  /**
+   * @return Enseignant
+   * @version 1.21.07.16
+   * @since 1.21.07.16
+   */
+  public function getProfPrincipal()
+  {
+    if ($this->ProfPrincipal==null) {
+      $this->ProfPrincipal = $this->EnseignantServices->selectLocal($this->profPrincId);
+    }
+    return $this->ProfPrincipal;
+  }
 
   //////////////////////////////////////////////////
   // METHODS
@@ -184,36 +199,42 @@ class CompteRendu extends LocalDomain
 
   /**
    * @return string
-   * @version 1.21.06.04
+   * @version 1.21.07.16
    * @since 1.21.06.04
    */
   public function getStrParentsDelegues()
   {
-    if ($this->parent1=='') {
+    $ParentDelegue1 = $this->ParentDelegueServices->selectLocal($this->delegueParent1Id);
+    $Adulte1 = $this->AdulteServices->selectLocal($ParentDelegue1->getParentId());
+    $ParentDelegue2 = $this->ParentDelegueServices->selectLocal($this->delegueParent2Id);
+    $Adulte2 = $this->AdulteServices->selectLocal($ParentDelegue2->getParentId());
+    if ($this->delegueParent1Id=='') {
       $str = '';
-    } elseif ($this->parent2=='') {
-      $str = "du parent délégué ".$this->parent1;
+    } elseif ($this->delegueParent2Id=='') {
+      $str = "du parent délégué ".$Adulte1->getFullName();
     } else {
-      $str = "des parents délégués ".$this->parent1." et ".$this->parent2;
+      $str = "des parents délégués ".$Adulte1->getFullName()." et ".$Adulte2->getFullName();
     }
     return $str;
   }
 
   /**
    * @return string
-   * @version 1.21.06.04
+   * @version 1.21.07.16
    * @since 1.21.06.04
    */
   public function getStrElevesDelegues()
   {
-    if ($this->enfant2=='') {
-      if ($this->enfant1=='') {
+    $Eleve1 = $this->EleveServices->selectLocal($this->delegueEleve1Id);
+    $Eleve2 = $this->EleveServices->selectLocal($this->delegueEleve2Id);
+    if ($Eleve2->getId()=='') {
+      if ($Eleve1->getId()=='') {
         $str = " et d'aucun élève délégué.";
       } else {
-        $str = " et de l'élève délégué ".$this->enfant1.".";
+        $str = " et de l'élève délégué ".$Eleve1->getFullName().".";
       }
     } else {
-      $str = " et des élèves délégués ".$this->enfant1." et ".$this->enfant2.".";
+      $str = " et des élèves délégués ".$Eleve1->getFullName()." et ".$Eleve2->getFullName().".";
     }
     return $str;
   }
@@ -236,17 +257,11 @@ class CompteRendu extends LocalDomain
   /**
    * @param string &$notif
    * @param string &$msg
-   * @version 1.21.07.05
+   * @version 1.21.07.16
    * @since 1.21.07.05
    */
   public function controleDonnees(&$notif, &$msg)
   {
-    // L'Année Scolaire doit être renseigné
-    if (empty($this->anneeScolaireId) || $this->anneeScolaireId==-1) {
-      $notif = self::NOTIF_DANGER;
-      $msg   = self::MSG_ERREUR_CONTROL_EXISTENCE;
-      return false;
-    }
     return true;
   }
 }

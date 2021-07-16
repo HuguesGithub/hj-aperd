@@ -45,14 +45,14 @@ class WpPageParentDelegueBean extends WpPageBean
 
   /**
    * @return string
-   * @version 1.21.07.15
+   * @version 1.21.07.16
    * @since 1.21.06.29
    */
   private function getDashboardPage()
   {
     $args = array(
-      // Panneau d'accueil - 1
-      '',
+      // Libellé de la Division - 1
+      $this->getDivision()->getLabelDivision(),
       // Composition de la Division : liste des enseignants, matières et prof principal.
       // Puis, liste des élèves.
       $this->getPanelCompositionDivision(),

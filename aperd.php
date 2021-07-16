@@ -135,7 +135,7 @@ function exception_handler($Exception) {
   $arrTraces = $Exception->getTrace();
   foreach ($arrTraces as $trace) {
     echo '<li class="list-group-item">Fichier <strong>'.$trace['file'].'</strong> ligne <em>'.$trace['line'].'</em> :<br>';
-    // Envisager un traitement spécifique si $trace['args'][x] est un array ?
+    // Envisager un traitement spécifique si trace['args'][x] est un array ?
     echo $trace['class'].$trace['type'].$trace['function'].'('.implode(', ', $trace['args']).')</li>';
   }
 

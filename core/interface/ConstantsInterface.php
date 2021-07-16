@@ -83,8 +83,8 @@ interface ConstantsInterface
   const FIELD_DATEREDACTION       = 'dateRedaction';
   const FIELD_DELEGUE             = 'delegue';
   const FIELD_DIVISION_ID         = 'divisionId';
-  const FIELD_ENFANT1             = 'enfant1';
-  const FIELD_ENFANT2             = 'enfant2';
+  const FIELD_ENFANT1             = 'delegueEleve1Id';
+  const FIELD_ENFANT2             = 'delegueEleve2Id';
   const FIELD_ENSEIGNANT_ID       = 'enseignantId';
   const FIELD_ENSEIGNANT_MATIERE_ID = 'enseignantMatiereId';
   const FIELD_GENRE               = 'genre';
@@ -107,13 +107,13 @@ interface ConstantsInterface
   const FIELD_NOMPARENT           = 'nomParent';
   const FIELD_NOMTITULAIRE        = 'nomTitulaire';
   const FIELD_OBSERVATIONS        = 'observations';
-  const FIELD_PARENT1             = 'parent1';
-  const FIELD_PARENT2             = 'parent2';
+  const FIELD_PARENT1             = 'delegueParent1Id';
+  const FIELD_PARENT2             = 'delegueParent2Id';
   const FIELD_PARENT_ID           = 'parentId';
   const FIELD_PRENOMELEVE         = 'prenomEleve';
   const FIELD_PRENOMENSEIGNANT    = 'prenomEnseignant';
   const FIELD_PRENOMPARENT        = 'prenomParent';
-  const FIELD_PROFPRINCIPAL_ID    = 'profPrincipalId';
+  const FIELD_PROFPRINCIPAL_ID    = 'profPrincId';
   const FIELD_STATUS              = 'status';
   const FIELD_TRIMESTRE           = 'trimestre';
 
@@ -190,12 +190,12 @@ interface ConstantsInterface
 
   /////////////////////////////////////////////////
   // Statuts :
-  const STATUS_ARCHIVED        = 'archived';
-  const STATUS_FUTURE          = 'future';
-  const STATUS_PUBLISHED       = 'published';
+  const STATUS_ARCHIVED      = 'archived';
+  const STATUS_FUTURE        = 'future';
+  const STATUS_PUBLISHED     = 'published';
   const STATUS_PENDING       = 'pending';
   const STATUS_WORKING       = 'working';
-  const STATUS_MAILED       = 'mailed';
+  const STATUS_MAILED        = 'mailed';
 
   /////////////////////////////////////////////////
   // Tags

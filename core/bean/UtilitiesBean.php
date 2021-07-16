@@ -89,9 +89,38 @@ class UtilitiesBean implements ConstantsInterface
 
   protected function getDivision()
   {
-    print_r($this);
     $Divisions = $this->DivisionServices->getDivisionsWithFilters(array(self::FIELD_CRKEY=>$_SESSION['crKey']));
     return (empty($Divisions) ? new Division() : array_shift($Divisions));
   }
 
+  /**
+   * @param string $status
+   * @return string
+   * @version 1.21.07.16
+   * @since 1.21.07.16
+   */
+  protected function getLibelleForStatus($status='')
+  {
+    switch ($status) {
+      case self::STATUS_FUTURE :
+      $libelle = 'A renseigner';
+      break;
+      case self::STATUS_WORKING :
+      $libelle = 'En cours';
+      break;
+      case self::STATUS_PENDING :
+      $libelle = 'A valider';
+      break;
+      case self::STATUS_PUBLISHED :
+      $libelle = 'Publié';
+      break;
+      case self::STATUS_MAILED :
+      $libelle = 'Envoyé';
+      break;
+      default :
+        $libelle = 'Statut non défini';
+      break;
+    }
+    return $libelle;
+  }
 }

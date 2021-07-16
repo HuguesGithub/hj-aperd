@@ -5,8 +5,8 @@ if (!defined('ABSPATH')) {
 /**
  * LocalActions
  * @author Hugues
- * @since 1.00.00
- * @version 1.00.00
+ * @since 1.21.07.16
+ * @version 1.21.07.16
  */
 class LocalActions extends GlobalActions implements ConstantsInterface
 {
@@ -46,5 +46,25 @@ class LocalActions extends GlobalActions implements ConstantsInterface
     fclose($dst);
     $file_name = '/wp-content/plugins/hj-aperd/web/rsc/csv-files/'.$file_name;
     return sprintf(self::MSG_SUCCESS_EXPORT, $file_name);
+  }
+  /**
+   * @param string $id
+   * @param string $default
+   * @return mixed
+   * @version 1.21.07.16
+   * @since 1.21.07.16
+   */
+  public function initVar($id, $default='')
+  {
+    if (isset($_POST[$id])) {
+      return $_POST[$id];
+    }
+    if (isset($_GET[$id])) {
+      return $_GET[$id];
+    }
+    if (isset($_SESSION[$id])) {
+      return $_SESSION[$id];
+    }
+    return $default;
   }
 }
