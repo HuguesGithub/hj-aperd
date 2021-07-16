@@ -73,49 +73,53 @@ class AdminPageBean extends MainPageBean
   public function getContentPage()
   {
     if (self::isAdmin() || current_user_can('editor')) {
-      switch ($this->urlParams[self::CST_ONGLET]) {
-        case self::PAGE_ADMINISTRATION :
-          $returned = AdminPageAdministrationsBean::getStaticContentPage($this->urlParams);
-        break;
-        case self::PAGE_ANNEE_SCOLAIRE :
-          $returned = AdminPageAnneeScolairesBean::getStaticContentPage($this->urlParams);
-        break;
-        case self::PAGE_COMPO_DIVISION :
-          $returned = AdminPageCompoDivisionsBean::getStaticContentPage($this->urlParams);
-        break;
-        case self::PAGE_COMPTE_RENDU :
-          $returned = AdminPageCompteRendusBean::getStaticContentPage($this->urlParams);
-        break;
-        case self::PAGE_CONFIGURATION :
-          $returned = AdminPageConfigurationsBean::getStaticContentPage($this->urlParams);
-        break;
-        case self::PAGE_DIVISION   :
-          $returned = AdminPageDivisionsBean::getStaticContentPage($this->urlParams);
-        break;
-        case self::PAGE_ELEVE   :
-          $returned = AdminPageElevesBean::getStaticContentPage($this->urlParams);
-        break;
-        case self::PAGE_ENSEIGNANT   :
-          $returned = AdminPageEnseignantsBean::getStaticContentPage($this->urlParams);
-        break;
-        case self::PAGE_MATIERE      :
-          $returned = AdminPageMatieresBean::getStaticContentPage($this->urlParams);
-        break;
-        case self::PAGE_PARENT :
-          $returned = AdminPageParentsBean::getStaticContentPage($this->urlParams);
-        break;
-        case self::PAGE_PARENT_DELEGUE :
-          $returned = AdminPageParentDeleguesBean::getStaticContentPage($this->urlParams);
-        break;
-        case self::PAGE_QUESTIONNAIRE :
-          $returned = AdminPageQuestionnairesBean::getStaticContentPage($this->urlParams);
-        break;
-        case 'schema-table' :
-          $returned = $this->getSchemaTable();
-        break;
-        default       :
-          $returned = $this->getBoard();
-        break;
+      try {
+        switch ($this->urlParams[self::CST_ONGLET]) {
+          case self::PAGE_ADMINISTRATION :
+            $returned = AdminPageAdministrationsBean::getStaticContentPage($this->urlParams);
+          break;
+          case self::PAGE_ANNEE_SCOLAIRE :
+            $returned = AdminPageAnneeScolairesBean::getStaticContentPage($this->urlParams);
+          break;
+          case self::PAGE_COMPO_DIVISION :
+            $returned = AdminPageCompoDivisionsBean::getStaticContentPage($this->urlParams);
+          break;
+          case self::PAGE_COMPTE_RENDU :
+            $returned = AdminPageCompteRendusBean::getStaticContentPage($this->urlParams);
+          break;
+          case self::PAGE_CONFIGURATION :
+            $returned = AdminPageConfigurationsBean::getStaticContentPage($this->urlParams);
+          break;
+          case self::PAGE_DIVISION   :
+            $returned = AdminPageDivisionsBean::getStaticContentPage($this->urlParams);
+          break;
+          case self::PAGE_ELEVE   :
+            $returned = AdminPageElevesBean::getStaticContentPage($this->urlParams);
+          break;
+          case self::PAGE_ENSEIGNANT   :
+            $returned = AdminPageEnseignantsBean::getStaticContentPage($this->urlParams);
+          break;
+          case self::PAGE_MATIERE      :
+            $returned = AdminPageMatieresBean::getStaticContentPage($this->urlParams);
+          break;
+          case self::PAGE_PARENT :
+            $returned = AdminPageParentsBean::getStaticContentPage($this->urlParams);
+          break;
+          case self::PAGE_PARENT_DELEGUE :
+            $returned = AdminPageParentDeleguesBean::getStaticContentPage($this->urlParams);
+          break;
+          case self::PAGE_QUESTIONNAIRE :
+            $returned = AdminPageQuestionnairesBean::getStaticContentPage($this->urlParams);
+          break;
+          case 'schema-table' :
+            $returned = $this->getSchemaTable();
+          break;
+          default       :
+            $returned = $this->getBoard();
+          break;
+        }
+      } catch (\Exception $Exception) {
+        $returned = 'Error';
       }
     }
     return $returned;

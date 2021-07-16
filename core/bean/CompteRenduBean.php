@@ -47,8 +47,13 @@ class CompteRenduBean extends LocalBean
     $strPresidence = ($Administration->getId()!='' ? $Administration->getGenre().self::CST_BLANK.$Administration->getNomAdministration() : 'Non définie');
     // On récupère le statut
     switch ($this->CompteRendu->getStatus()) {
+      case self::STATUS_FUTURE :
+        $strStatut = 'A rédiger';
+        $libelleAction = 'Aller le rédiger';
+      break;
       default :
-        $strStatut = 'Non défini';
+        $strStatut = 'A créer';
+        $libelleAction = 'Aller le créer';
       break;
     }
     ///////////////////////////////////////////////////
@@ -69,7 +74,7 @@ class CompteRenduBean extends LocalBean
       // Lien vers le Compte-rendu - 6
       get_permalink(get_page_by_path(self::PAGE_COMPTE_RENDU)).'?trimestre='.$strTrimestre,
       // Libellé du lien - 7
-      'A créer',
+      $libelleAction,
     );
 
     return $this->getRender($urlTemplateCard, $args);

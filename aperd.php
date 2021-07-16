@@ -115,3 +115,34 @@ function dealWithAjax_callback()
   echo AjaxActions::dealWithAjax();
   die();
 }
+
+
+/**
+#######################################################################################
+### Gestion des Exceptions
+### Description: Met en forme les exceptions
+#######################################################################################
+*/
+function exception_handler($Exception) {
+  echo
+    '<div class="card border-danger" style="max-width: 100%;margin-right: 15px;">'.
+    '  <div class="card-header bg-danger text-white"><strong>'.$Exception->getMessage().'</strong></div>'.
+    '  <div class="card-body text-danger">'.
+    '    <p>Une erreur est survenue dans le fichier <strong>'.$Exception->getFile().
+    '</strong> à la ligne <strong>'.$Exception->getLine().'</strong>.</p>'.
+    '    <ul class="list-group">';
+
+  $arrTraces = $Exception->getTrace();
+  foreach ($arrTraces as $trace) {
+    echo '<li class="list-group-item">Fichier <strong>'.$trace['file'].'</strong> ligne <em>'.$trace['line'].'</em> :<br>';
+    // Envisager un traitement spécifique si $trace['args'][x] est un array ?
+    echo $trace['class'].$trace['type'].$trace['function'].'('.implode(', ', $trace['args']).')</li>';
+  }
+
+  echo
+    '    </ul>'.
+    '  </div>'.
+    '  <div class="card-footer"></div>'.
+    '</div>';
+}
+set_exception_handler('exception_handler');

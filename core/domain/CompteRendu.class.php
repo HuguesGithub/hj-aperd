@@ -67,7 +67,7 @@ class CompteRendu extends LocalDomain
   //////////////////////////////////////////////////
   /**
    * @param array $attributes
-   * @version 1.21.07.15
+   * @version 1.21.07.16
    * @since 1.21.06.04
    */
   public function __construct($attributes=array())
@@ -77,6 +77,7 @@ class CompteRendu extends LocalDomain
     $this->AnneeScolaireServices = new AnneeScolaireServices();
     $this->DivisionServices = new DivisionServices();
     $this->EnseignantServices = new EnseignantServices();
+    $this->Services = new CompteRenduServices();
   }
   /**
    * @return array

@@ -31,11 +31,11 @@ class AdminPageCompteRendusBean extends AdminPageBean
   /**
    * Retourne le Compte Rendu
    * @return CompteRendu
-   * @version 1.21.07.05
+   * @version 1.21.07.16
    * @since 1.21.07.05
    */
   public function getObject()
-  { return $this->CompteRendu; }
+  { return $this->LocalObject; }
   /**
    * Retourne le Service
    * @return CompteRenduService
@@ -43,7 +43,7 @@ class AdminPageCompteRendusBean extends AdminPageBean
    * @since 1.21.07.05
    */
   public function getServices()
-  { return $this->CompteRenduService; }
+  { return $this->Services; }
 
   /**
    * @param array $urlParams
@@ -195,15 +195,14 @@ class AdminPageCompteRendusBean extends AdminPageBean
 
   /**
    * @return string
+   * @version 1.21.07.16
+   * @since 1.21.06.01
    */
   public function getListingPage()
   {
     /////////////////////////////////////////////////////////////////////////////
     // On récupère les données éventuelles des filtres.
     $argFilters = array();
-    // Les Années Scolaires
-    $filterAnneeScolaireId = (isset($this->urlParams[self::FIELD_ANNEESCOLAIRE_ID]) ? $this->urlParams[self::FIELD_ANNEESCOLAIRE_ID] : '');
-    $argFilters[self::FIELD_ANNEESCOLAIRE_ID] = $filterAnneeScolaireId ;
     // Les Trimestres
     $filterTrimestre = (isset($this->urlParams[self::FIELD_TRIMESTRE]) ? $this->urlParams[self::FIELD_TRIMESTRE] : '');
     $argFilters[self::FIELD_TRIMESTRE] = $filterTrimestre;
@@ -219,17 +218,7 @@ class AdminPageCompteRendusBean extends AdminPageBean
     //////////////////////////////////////////////////////////////////
     // Construction des filtres utilisés
     $strFiltres = '';
-    // L'Année Scolaire
-    $AnneeScolaireBean = new AnneeScolaireBean();
-    $argAsSelect = array(
-      'tag'        => self::FIELD_ANNEESCOLAIRE_ID,
-      'selectedId' => $filterAnneeScolaireId,
-    );
-    $strFiltres .= $AnneeScolaireBean->getSelect($argAsSelect);
-    $strFiltres .= '<label for="anneeScolaireId">Années Scolaires</label>';
-    $strFiltres .= '</div></div><div class="col-md"><div class="form-floating">';
-    /////////////////////////////////////////////////////////////////////////////
-  // Les Trimestres
+    // Les Trimestres
     $attributes = array(
       self::ATTR_CLASS => self::CST_MD_SELECT,
       self::ATTR_NAME  => self::FIELD_TRIMESTRE,
@@ -323,22 +312,22 @@ class AdminPageCompteRendusBean extends AdminPageBean
   }
 
   /**
-   * Ajout de l'interface CRUD
-   * @param string $importType
+   * Ajout de l'interface CRUD avec une spécificité
+   * @param string $crudType
+   * @param array $attributes
    * @return string
-   * @version 1.21.06.06
+   * @version 1.21.07.16
    * @since 1.21.06.06
    */
   public function getCardCRUD($crudType, $attributes=array())
   {
-    switch ($crudType) {
-      case self::CST_CREATE :
+    // Pour des raisons d'optimisation du code, on est passé sur un ifelse.
+    // Si les cas spécifiques venaient à se multiplier, repasser sur un switch
+    if ($crudType==self::CST_CREATE) {
       // Vérifier le nombre d'éléments (3) dans $attributes pour matcher le Template ?
-        $urlTemplateCard = 'web/pages/admin/fragments/card-compterendu-create.php';
-      break;
-      default :
-        return parent::getCardCRUD($crudType, $attributes);
-      break;
+      $urlTemplateCard = 'web/pages/admin/fragments/card-compterendu-create.php';
+    } else {
+      return parent::getCardCRUD($crudType, $attributes);
     }
     return $this->getRender($urlTemplateCard, $attributes);
   }

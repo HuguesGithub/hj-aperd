@@ -25,11 +25,7 @@ class MainPageBean extends UtilitiesBean implements ConstantsInterface
    * @var $shellClass
    */
   protected $shellClass;
-  /**
-   * Class Constructor
-   */
-  public function __construct()
-  { parent::__construct(); }
+
   /**
    * @return string
    * @version 1.00.00
