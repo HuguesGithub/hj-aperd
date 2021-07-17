@@ -89,5 +89,6 @@ class AdministrationBean extends LocalBean
   {
     $genre = $this->Administration->getGenre();
     $label = ($genre=='' ? '' : $genre.self::CST_BLANK).$this->Administration->getNomTitulaire();
-    return $this->getLocalOption($label, $this->Administration->getId(), $selectedId); }
+    return $this->getLocalOption($label, $this->Administration->getId(), $selectedId);
+  }
 }

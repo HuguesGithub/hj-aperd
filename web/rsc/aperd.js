@@ -193,6 +193,12 @@ function addAjaxUploadEvent() {
           $hj('button.close').on('click', function(){
             $hj(this).parent().remove();
           });
+          if (obj['dateRedaction'] != '' && obj['dateRedaction'] != undefined) {
+            $hj('#dateRedaction').replaceWith(obj['dateRedaction']);
+          }
+          if (obj['auteurRedaction'] != '' && obj['auteurRedaction'] != undefined) {
+            $hj('#auteurRedaction').replaceWith(obj['auteurRedaction']);
+          }
           if (obj['renduStep6'] != '' && obj['renduStep6'] != undefined) {
             $hj('#renduStep6').html(obj['renduStep6']);
             /*

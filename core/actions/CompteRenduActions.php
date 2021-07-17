@@ -5,8 +5,8 @@ if (!defined('ABSPATH')) {
 /**
  * CompteRenduActions
  * @author Hugues
- * @version 1.00.00
- * @since 1.00.00
+ * @version 1.21.07.17
+ * @since 1.21.06.01
  */
 class CompteRenduActions extends LocalActions
 {
@@ -52,8 +52,37 @@ class CompteRenduActions extends LocalActions
     return $returned;
   }
 
+  private function storeUploadedData()
+  {
+    $crKey = $this->initVar(self::FIELD_CRKEY, '');
+    $Divisions = $this->DivisionServices->getDivisionsWithFilters(array(self::FIELD_CRKEY=>$crKey));
+    $this->Division = array_shift($Divisions);
+
+    $update = false;
+    $CompteRendus = $this->CompteRenduServices->getCompteRendusWithFilters(array(self::FIELD_DIVISION_ID=>$this->Division->getId()), self::FIELD_TRIMESTRE);
+    do {
+      $CompteRendu = array_shift($CompteRendus);
+    } while (in_array($CompteRendu->getStatus(), array(self::STATUS_PUBLISHED, self::STATUS_MAILED)) && !empty($CompteRendus));
+
+    if (!in_array($CompteRendu->getStatus(), array(self::STATUS_PUBLISHED, self::STATUS_MAILED))) {
+      $CompteRendu->setField(self::FIELD_STATUS, self::STATUS_WORKING);
+      $CompteRendu->setField(self::FIELD_DATEREDACTION, date('d/m/Y'));
+      $Adulte = $CompteRendu->getAdulteByLogin($_SESSION['userLogin']);
+      $CompteRendu->setField(self::FIELD_AUTEURREDACTION, $Adulte->getId());
+      $CompteRendu->setField($this->post['name'], $this->post['value']);
+      $update = $CompteRendu;
+    }
+    return $update;
+  }
+
+  /**
+   * @return string
+   * @version 1.21.07.17
+   * @since 1.21.06.01
+   */
   public function dealWithAjaxUpload()
   {
+    $contentApercu = 'Ne peut plus être édité.';
     switch ($this->post['name']) {
       case self::FIELD_DATECONSEIL :
       case self::FIELD_NBELEVES :
@@ -63,40 +92,11 @@ class CompteRenduActions extends LocalActions
       case self::FIELD_ENFANT2 :
       case self::FIELD_ADMINISTRATION_ID :
       case self::FIELD_ENSEIGNANT_ID :
-        $crKey = $this->initVar(self::FIELD_CRKEY, '');
-        $Divisions = $this->DivisionServices->getDivisionsWithFilters(array(self::FIELD_CRKEY=>$crKey));
-        $this->Division = array_shift($Divisions);
-
-        $update = false;
-        $CompteRendus = $this->CompteRenduServices->getCompteRendusWithFilters(array(self::FIELD_DIVISION_ID=>$this->Division->getId()), self::FIELD_TRIMESTRE);
-        $CompteRendu = array_shift($CompteRendus);
-
-        switch ($CompteRendu->getStatus()) {
-          case self::STATUS_FUTURE :
-            $CompteRendu->setField(self::FIELD_STATUS, self::STATUS_WORKING);
-            $CompteRendu->setField($this->post['name'], $this->post['value']);
-            // TODO : Mettre à jour l'auteur
-            $update = true;
-          break;
-          case self::STATUS_WORKING :
-          case self::STATUS_PENDING :
-            $CompteRendu->setField($this->post['name'], $this->post['value']);
-            // TODO : Mettre à jour l'auteur
-            $update = true;
-          break;
-          case self::STATUS_PUBLISHED :
-          case self::STATUS_MAILED :
-          default :
-            // Do nothing. On passe au suivant
-          break;
-        }
-
-        if ($update) {
+        $step = 1;
+        $CompteRendu = $this->storeUploadedData();
+        if ($CompteRendu!==false) {
           $this->CompteRenduServices->updateLocal($CompteRendu);
-          $Bean = $CompteRendu->getBean();
-          $contentStep = '{"renduStep1": '.json_encode($Bean->getStep1());
-        } else {
-          $contentStep = '{"renduStep1": '.json_encode('Ne peut plus être édité.');
+          $contentApercu = $CompteRendu->getBean()->getStep1();
         }
       break;
       case self::FIELD_BILANPROFPRINCIPAL  :
@@ -108,11 +108,12 @@ class CompteRenduActions extends LocalActions
       break;
       case self::FIELD_BILANELEVES  :
       case self::FIELD_BILANPARENTS :
-        $CompteRendu = $this->CompteRenduServices->getCompteRenduByCrKey($this->post['crKey']);
-        $CompteRendu->setField($this->post['name'], $this->post['value']);
-        $this->CompteRenduServices->updateLocal($CompteRendu);
-        $Bean = $CompteRendu->getBean();
-        $contentStep = '{"renduStep3": '.json_encode($Bean->getStep3());
+        $step = 3;
+        $CompteRendu = $this->storeUploadedData();
+        if ($CompteRendu!==false) {
+          $this->CompteRenduServices->updateLocal($CompteRendu);
+          $contentApercu = $CompteRendu->getBean()->getStep3();
+        }
       break;
       case self::FIELD_NBCOMPLIMENTS  :
       case self::FIELD_NBENCOURAGEMENTS :
@@ -120,40 +121,11 @@ class CompteRenduActions extends LocalActions
       case self::FIELD_NBMGCPT :
       case self::FIELD_NBMGCPTTVL  :
       case self::FIELD_NBMGTVL :
-        $crKey = $this->initVar(self::FIELD_CRKEY, '');
-        $Divisions = $this->DivisionServices->getDivisionsWithFilters(array(self::FIELD_CRKEY=>$crKey));
-        $this->Division = array_shift($Divisions);
-
-        $update = false;
-        $CompteRendus = $this->CompteRenduServices->getCompteRendusWithFilters(array(self::FIELD_DIVISION_ID=>$this->Division->getId()), self::FIELD_TRIMESTRE);
-        $CompteRendu = array_shift($CompteRendus);
-
-        switch ($CompteRendu->getStatus()) {
-          case self::STATUS_FUTURE :
-            $CompteRendu->setField(self::FIELD_STATUS, self::STATUS_WORKING);
-            $CompteRendu->setField($this->post['name'], $this->post['value']);
-            // TODO : Mettre à jour l'auteur
-            $update = true;
-          break;
-          case self::STATUS_WORKING :
-          case self::STATUS_PENDING :
-            $CompteRendu->setField($this->post['name'], $this->post['value']);
-            // TODO : Mettre à jour l'auteur
-            $update = true;
-          break;
-          case self::STATUS_PUBLISHED :
-          case self::STATUS_MAILED :
-          default :
-            // Do nothing. On passe au suivant
-          break;
-        }
-
-        if ($update) {
+        $step = 4;
+        $CompteRendu = $this->storeUploadedData();
+        if ($CompteRendu!==false) {
           $this->CompteRenduServices->updateLocal($CompteRendu);
-          $Bean = $CompteRendu->getBean();
-          $contentStep = '{"renduStep4": '.json_encode($Bean->getStep4());
-        } else {
-          $contentStep = '{"renduStep4": '.json_encode('Ne peut plus être édité.');
+          $contentApercu = $CompteRendu->getBean()->getStep4();
         }
       break;
       case self::FIELD_DATEREDACTION  :
@@ -173,7 +145,15 @@ class CompteRenduActions extends LocalActions
         return '';
       break;
     }
-    return $contentStep.',"renduStep6": '.json_encode($Bean->getStep6()).'}';
+    if ($CompteRendu!==false) {
+      $WpPageCompteRendusBean = new WpPageCompteRendusBean();
+      $WpPageCompteRendusBean->initCompteRendu();
+      $divDateRedaction = $WpPageCompteRendusBean->getInput(self::FIELD_DATEREDACTION, false, array(self::ATTR_PLACEHOLDER=>self::FORMAT_DATE_JJMMAAAA, self::ATTR_READONLY=>''));
+      $divAuteurRedaction = $WpPageCompteRendusBean->getInput(self::FIELD_AUTEURREDACTION, false, array(self::ATTR_READONLY=>''));
+      return '{"auteurRedaction": '.json_encode($divAuteurRedaction).',"dateRedaction": '.json_encode($divDateRedaction).',"renduStep'.$step.'": '.json_encode($contentApercu).',"renduStep6": '.json_encode($CompteRendu->getBean()->getStep6()).'}';
+    } else {
+      return '{"renduStep'.$step.'": '.json_encode($contentApercu).'}';
+    }
   }
 
   public function dealWithBilanMatiere()

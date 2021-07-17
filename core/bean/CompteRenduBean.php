@@ -66,10 +66,6 @@ class CompteRenduBean extends LocalBean
         // Poursuivre la rédaction
       break;
       case self::STATUS_PUBLISHED:
-        $libelleAction = 'Aller le consulter';
-        // Dès lors qu'il est Validé ou Envoyé, le lien doit pointer vers le PDF
-        $strUrlCard = '#';
-      break;
       case self::STATUS_MAILED:
         $libelleAction = 'Aller le consulter';
         // Dès lors qu'il est Validé ou Envoyé, le lien doit pointer vers le PDF
@@ -210,7 +206,7 @@ class CompteRenduBean extends LocalBean
   public function getStep4()
   {
     $urlTemplateStep4 = 'web/pages/public/fragments/apercu-compte-rendu-step4.php';
-    $strNonRenseigne  = '<strong>Non renseigné</strong>';
+    $strNomRenseigne  = '<strong>Non renseigné</strong>';
     /////////////////////////////////////////////////////////////////////////
     // Formattage nbFelicitations
     $valeur = $this->CompteRendu->getValue(self::FIELD_NBFELICITATIONS);

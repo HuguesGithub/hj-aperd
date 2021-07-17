@@ -184,13 +184,6 @@ class Eleve extends LocalDomain
   }
   /**
    * @return string
-   * @version 1.21.06.04
-   * @since 1.21.06.04
-   */
-  public function getNomComplet()
-  { return $this->nomEleve.' '.$this->prenomEleve; }
-  /**
-   * @return string
    * @version 1.21.07.16
    * @since 1.21.07.16
    */

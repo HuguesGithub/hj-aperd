@@ -29,11 +29,11 @@ class EleveBean extends LocalBean
    */
   public function getRowForPublicPage()
   {
-	$content  = '<tr>';
-	$content .= $this->getTdStandard($this->Eleve->getNomEleve());
-	$content .= $this->getTdStandard($this->Eleve->getPrenomEleve());
-	$content .= $this->getTdStandard(($this->Eleve->isDelegue() ? '<span class="badge badge-success">Oui</span>' : ''));
-	return $content.'</tr>';
+  $content  = '<tr>';
+  $content .= $this->getTdStandard($this->Eleve->getNomEleve());
+  $content .= $this->getTdStandard($this->Eleve->getPrenomEleve());
+  $content .= $this->getTdStandard(($this->Eleve->isDelegue() ? '<span class="badge badge-success">Oui</span>' : ''));
+  return $content.'</tr>';
   }
   /**
    */
@@ -93,5 +93,5 @@ class EleveBean extends LocalBean
    * @since 1.00.00
    */
   public function getOption($selectedId=-1)
-  { return $this->getLocalOption($this->Eleve->getNomComplet(), $this->Eleve->getId(), $selectedId); }
+  { return $this->getLocalOption($this->Eleve->getFullName(), $this->Eleve->getId(), $selectedId); }
 }

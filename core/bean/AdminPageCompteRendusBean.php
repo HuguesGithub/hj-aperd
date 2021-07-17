@@ -281,8 +281,6 @@ class AdminPageCompteRendusBean extends AdminPageBean
     $strFiltres .= '<label for="statut">Statuts</label>';
     // Fin construction des filtres utilisés
     /////////////////////////////////////////////////////////////////////////////
-    $statutValue = $this->LocalObject->getField(self::FIELD_STATUS);
-    $strSelectStatut = $this->getBalise(self::TAG_SELECT, $strOptions, $attributes);
 
     //////////////////////////////////////////////////////////////////
     // On récupère tous les Comptes Rendus et on construit la base de la pagination et on restreint l'affichage

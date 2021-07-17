@@ -87,7 +87,7 @@ class AdminPageElevesBean extends AdminPageBean
     }
     ///////////////////////////////////////////:
     // On initialise les panneaux latéraux droit
-    $this->msgConfirmDelete = sprintf(self::MSG_CONFIRM_SUPPR_ELEVE, $this->LocalObject->getNomComplet());
+    $this->msgConfirmDelete = sprintf(self::MSG_CONFIRM_SUPPR_ELEVE, $this->LocalObject->getFullName());
     $this->tagConfirmDeleteMultiple = self::MSG_CONFIRM_SUPPR_ELEVES;
 
     $DivisionBean = new DivisionBean();

@@ -30,7 +30,7 @@ class WpPageCompteRendusBean extends WpPageBean
     $this->ProfPrincipalServices = new ProfPrincipalServices();
     $this->ParentDelegueServices = new ParentDelegueServices();
   }
-  private function initCompteRendu()
+  public function initCompteRendu()
   {
     ////////////////////////////////////////////////////
     // On va initialiser le Compte-Rendu comme il faut.
@@ -88,7 +88,6 @@ class WpPageCompteRendusBean extends WpPageBean
    */
   public function getContentPage()
   {
-
     $this->initCompteRendu();
 
 
@@ -199,7 +198,7 @@ class WpPageCompteRendusBean extends WpPageBean
       // Contenu de l'étape n°4 - 4
       $this->getContentStep4(),
       // Contenu de l'étape n°5 - 5
-      '',
+      $this->getContentStep5(),
       // Contenu de l'étape n°6 - 6
       '',
       // Les notifications éventuelles - 7
@@ -233,6 +232,19 @@ class WpPageCompteRendusBean extends WpPageBean
       * */
     );
     return $this->getRender($this->urlTemplate, $args);
+  }
+
+  private function getContentStep5()
+  {
+    $urlTemplateStep5 = 'web/pages/public/fragments/panel-compte-rendu-step5.php';
+
+    $args = array(
+      // Input Date Rédaction - 1
+      $this->getInput(self::FIELD_DATEREDACTION, false, array(self::ATTR_PLACEHOLDER=>self::FORMAT_DATE_JJMMAAAA, self::ATTR_READONLY=>'')),
+      // Input Dernier Auteur Rédaction - 2
+      $this->getInput(self::FIELD_AUTEURREDACTION, false, array(self::ATTR_READONLY=>'')),
+    );
+    return $this->getRender($urlTemplateStep5, $args);
   }
 
   private function getContentStep4()
@@ -448,11 +460,16 @@ class WpPageCompteRendusBean extends WpPageBean
   public function getInput($field, $isMandatory=false, $extraArgs=array(), $isAjaxUpload=false)
   {
     $id = $this->CompteRendu->getId();
-    // On passe sur un ifelse, à repasser en switch si le nombre de cas évolue...
-    if ($field == self::FIELD_DIVISION_ID) {
-      $value = $this->CompteRendu->getDivision()->getLabelDivision();
-    } else {
-      $value = $this->CompteRendu->getValue($field);
+    switch ($field) {
+      case self::FIELD_DIVISION_ID :
+        $value = $this->CompteRendu->getDivision()->getLabelDivision();
+      break;
+      case self::FIELD_AUTEURREDACTION :
+        $value = $this->CompteRendu->getAuteurRedaction()->getFullName();
+      break;
+      default :
+        $value = $this->CompteRendu->getValue($field);
+      break;
     }
 
     $classe = self::CST_FORMCONTROL.($isMandatory && $value=='' && $id!='' ? ' '.self::NOTIF_IS_INVALID : '');

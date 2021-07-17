@@ -93,7 +93,6 @@ class WpPageParentDelegueBean extends WpPageBean
     $content .= $CompteRenduT3->getBean()->getCard(3);
 
     return '<div id="card-panel-comptes-rendus" class="card-deck">'.$content.'</div>';
-    //return $this->getRender($urlTemplatePanel, $args);
   }
 
   private function getPanelCompositionDivision()

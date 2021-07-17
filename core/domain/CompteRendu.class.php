@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 /**
  * Classe CompteRendu
  * @author Hugues
- * @version 1.21.07.16
+ * @version 1.21.07.17
  * @since 1.21.06.04
  */
 class CompteRendu extends LocalDomain
@@ -146,6 +146,18 @@ class CompteRendu extends LocalDomain
     }
     return $this->ProfPrincipal;
   }
+  /**
+   * @return Adulte
+   * @version 1.21.07.17
+   * @since 1.21.07.17
+   */
+  public function getAuteurRedaction()
+  {
+    if ($this->AuteurRedaction==null) {
+      $this->AuteurRedaction = $this->AdulteServices->selectLocal($this->auteurRedaction);
+    }
+    return $this->AuteurRedaction;
+  }
 
   //////////////////////////////////////////////////
   // METHODS
@@ -196,7 +208,22 @@ class CompteRendu extends LocalDomain
       }
     }
   }
-
+  /**
+   * @return Adulte
+   * @version 1.21.07.17
+   * @since 1.21.07.17
+   */
+  public function getAdulteByLogin($login)
+  {
+    $ParentDelegues = $this->ParentDelegueServices->getParentDeleguesWithFilters(array(self::FIELD_DIVISION_ID=>$this->getDivision()->getId()));
+    while (!empty($ParentDelegues)) {
+      $ParentDelegue = array_shift($ParentDelegues);
+      if (strtolower($ParentDelegue->getAdulte()->getLogin())==strtolower($login)) {
+        return $ParentDelegue->getAdulte();
+      }
+    }
+    return new Adulte();
+  }
   /**
    * @return string
    * @version 1.21.07.16

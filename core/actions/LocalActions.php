@@ -56,15 +56,14 @@ class LocalActions extends GlobalActions implements ConstantsInterface
    */
   public function initVar($id, $default='')
   {
+    $returned = $default;
     if (isset($_POST[$id])) {
-      return $_POST[$id];
+      $returned =  $_POST[$id];
+    } elseif (isset($_GET[$id])) {
+      $returned = $_GET[$id];
+    } elseif (isset($_SESSION[$id])) {
+      $returned = $_SESSION[$id];
     }
-    if (isset($_GET[$id])) {
-      return $_GET[$id];
-    }
-    if (isset($_SESSION[$id])) {
-      return $_SESSION[$id];
-    }
-    return $default;
+    return $returned;
   }
 }
