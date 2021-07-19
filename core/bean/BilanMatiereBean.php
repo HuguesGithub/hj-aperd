@@ -118,14 +118,6 @@ class BilanMatiereBean extends LocalBean
     $strContentPanel .= '<input type="hidden" name="'.self::FIELD_MATIERE_ID.'s[]" value="'.$matiereId.'"/>';
 
     /////////////////////////////////////////////////////////////////////////
-    // On construit le menu déroulant des Enseignants.
-    $strContentPanel .= '<div class="form-group col-md-8">';
-    $strContentPanel .= '<label for="enseignantId-'.$matiereId.'">Enseignant</label>';
-    $EnseignantBean = new EnseignantBean();
-    $strContentPanel .= $EnseignantBean->getSelect(array('tag'=>self::FIELD_ENSEIGNANT_ID.'s[]', 'selectedId'=>$enseignantId, self::AJAX_UPLOAD=>''));
-    $strContentPanel .= '</div>';
-
-    /////////////////////////////////////////////////////////////////////////
     // On construit le menu déroulant du statut.
     $optionsSelectStatus  = $this->getDefaultOption();
     $optionsSelectStatus .= $this->getLocalOption('Présent&bull;e', 'P', $status);
@@ -151,9 +143,7 @@ class BilanMatiereBean extends LocalBean
     );
     $strContentPanel .= $this->getBalise(self::TAG_TEXTAREA, $observations, $attributes);
     $strContentPanel .= '<label class="'.($observations!=''?'active':'').'" for="observation-'.$matiereId.'">Observations</label>';
-    $strContentPanel .= '</div>';
-
-    $strContentPanel .= '</div></div>';
+    $strContentPanel .= '</div></div></div>';
 
     $strPanelMatieres  .= $strContentPanel;
     // Fin du Panel

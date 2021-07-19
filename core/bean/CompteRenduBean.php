@@ -174,8 +174,7 @@ class CompteRenduBean extends LocalBean
     $content .= $this->getStep3();
     $content .= $this->getStep4();
     $content .= $this->getStep5();
-    $content .= '</div>';
-    $content .= '</div>';
+    $content .= '</div></div>';
     return $content;
   }
 
@@ -306,13 +305,14 @@ class CompteRenduBean extends LocalBean
       if ($BilanMatiere->getStrStatut()=='') {
         $content .= $this->getCellNonSaisie();
       } else {
-        $content .= '<td>'.$BilanMatiere->getStrStatut().'</td>';
+        $content .= $this->getBalise(self::TAG_TD, $BilanMatiere->getStrStatut());
       }
       if ($BilanMatiere->getObservations()=='') {
         $content .= $this->getCellNonSaisie();
       } else {
-        $content .= '<td>'.$BilanMatiere->getObservations().'</td>';
+        $content .= $this->getBalise(self::TAG_TD, $BilanMatiere->getObservations());
       }
+      $content .= '</tr>';
     }
 
     $args = array(
