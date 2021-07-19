@@ -20,11 +20,11 @@ insert="INSERT INTO wp_14_aperd_annee_scolaire (anneeScolaire) VALUES ('%s');"
 update="UPDATE wp_14_aperd_annee_scolaire SET anneeScolaire='%s' "
 
 [BilanMatiere]
-select="SELECT id, compteRenduId, matiereId, enseignantId, status, observations "
+select="SELECT id, compteRenduId, matiereId, status, moyenneDivision, observations "
 from="FROM wp_14_aperd_bilan_matiere "
 where="WHERE compteRenduId LIKE '%s' AND matiereId LIKE '%s' "
-insert="INSERT INTO wp_14_aperd_bilan_matiere (compteRenduId, matiereId, enseignantId, status, observations) VALUES ('%s', '%s', '%s', '%s', '%s');"
-update="UPDATE wp_14_aperd_bilan_matiere SET compteRenduId='%s', matiereId='%s', enseignantId='%s', status='%s', observations='%s' "
+insert="INSERT INTO wp_14_aperd_bilan_matiere (compteRenduId, matiereId, status, moyenneDivision, observations) VALUES ('%s', '%s', '%s', '%s', '%s');"
+update="UPDATE wp_14_aperd_bilan_matiere SET compteRenduId='%s', matiereId='%s', status='%s', moyenneDivision='%s', observations='%s' "
 
 [Division]
 select="SELECT id, labelDivision, crKey "

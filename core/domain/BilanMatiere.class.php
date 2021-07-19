@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 /**
  * Classe BilanMatiere
  * @author Hugues
- * @version 1.21.06.04
+ * @version 1.21.07.17
  * @since 1.21.06.04
  */
 class BilanMatiere extends LocalDomain
@@ -29,15 +29,15 @@ class BilanMatiere extends LocalDomain
    */
   protected $matiereId;
   /**
-   * Id technique de l'Enseignant
-   * @var int $enseignantId
-   */
-  protected $enseignantId;
-  /**
    * Statut de l'Enseignant
    * @var string $status
    */
   protected $status;
+  /**
+   * Moyenne de la divison
+   * @var float $moyenneDivision
+   */
+  protected $moyenneDivision;
   /**
    * Observations de l'Enseignant
    * @var string $observations
@@ -62,19 +62,19 @@ class BilanMatiere extends LocalDomain
   public function getMatiereId()
   { return $this->matiereId; }
   /**
-   * @return int
-   * @version 1.21.06.04
-   * @since 1.21.06.04
-   */
-  public function getEnseignantId()
-  { return $this->enseignantId; }
-  /**
    * @return string
    * @version 1.21.06.04
    * @since 1.21.06.04
    */
   public function getStatus()
   { return $this->status; }
+  /**
+   * @return float
+   * @version 1.21.07.17
+   * @since 1.21.07.17
+   */
+  public function getMoyenneDivision()
+  { return $this->moyenneDivision; }
   /**
    * @return string
    * @version 1.21.06.04
@@ -97,19 +97,19 @@ class BilanMatiere extends LocalDomain
   public function setMatiereId($matiereId)
   { $this->matiereId = $matiereId; }
   /**
-   * @param int $enseignantId
-   * @version 1.21.06.04
-   * @since 1.21.06.04
-   */
-  public function setEnseignantId($enseignantId)
-  { $this->enseignantId = $enseignantId; }
-  /**
    * @param string $status
    * @version 1.21.06.04
    * @since 1.21.06.04
    */
   public function setStatus($status)
   { $this->status = $status; }
+  /**
+   * @param float $moyenneDivision
+   * @version 1.21.07.17
+   * @since 1.21.07.17
+   */
+  public function setMoyenneDivision($moyenneDivision)
+  { $this->moyenneDivision = $moyenneDivision; }
   /**
    * @param string $observations
    * @version 1.21.06.04
@@ -123,20 +123,13 @@ class BilanMatiere extends LocalDomain
   //////////////////////////////////////////////////
   /**
    * @param array $attributes
-   * @version 1.21.06.04
-   * @since 1.21.06.04
+   * @version 1.21.07.17
+   * @since 1.21.07.17
    */
   public function __construct($attributes=array())
   {
     parent::__construct($attributes);
-    $this->EnseignantServices = new EnseignantServices();
     $this->MatiereServices = new MatiereServices();
-
-    $this->mandatoryFields = array(
-      self::FIELD_COMPTERENDU_ID,
-      self::FIELD_ENSEIGNANT_ID,
-      self::FIELD_MATIERE_ID,
-    );
   }
   /**
    * @return array
@@ -166,18 +159,6 @@ class BilanMatiere extends LocalDomain
   //////////////////////////////////////////////////
   // GETTERS OBJETS LIES
   //////////////////////////////////////////////////
-  /**
-   * @return Enseignant
-   * @version 1.21.06.04
-   * @since 1.21.06.04
-   */
-  public function getEnseignant()
-  {
-    if ($this->Enseignant==null) {
-      $this->Enseignant = $this->EnseignantServices->selectLocal($this->enseignantId);
-    }
-    return $this->Enseignant;
-  }
   /**
    * @return Matiere
    * @version 1.21.06.04

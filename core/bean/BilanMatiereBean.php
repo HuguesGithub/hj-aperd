@@ -76,9 +76,9 @@ class BilanMatiereBean extends LocalBean
     /////////////////////////////////////////////////////////////////////////
     // Initialisation des variables
     $bilanMatiereId = $this->BilanMatiere->getId();
-    $matiereId      = $this->BilanMatiere->getMatiereId();
     $status         = $this->BilanMatiere->getStatus();
-    $enseignantId   = $this->BilanMatiere->getEnseignantId();
+    $matiereId      = $this->BilanMatiere->getMatiereId();
+    //$enseignantId   = $this->BilanMatiere->getEnseignantId();
     $observations   = $this->BilanMatiere->getObservations();
     if ($status=='' || $enseignantId=='') {
       $badgeStatus = 'danger';

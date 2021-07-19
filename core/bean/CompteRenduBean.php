@@ -189,11 +189,11 @@ class CompteRenduBean extends LocalBean
     $content .= "Réunions mensuelles : L'association des Parents d'Élèves se réunit un mercredi par mois (hors vacances scolaires). Vous pouvez également découvrir la vie du collège et les actions de l'association sur son site internet.<br>";
 
     $valeur = $this->CompteRendu->getValue(self::FIELD_DATEREDACTION);
-    $texte  = (empty($valeur) ? '<strong>Données manquantes : [Date de rédaction]</strong>' : $valeur);
+    $texte  = (empty($valeur) ? $this->getStringDonneesManquantes('Date de rédaction') : $valeur);
     $content .= 'Compte rendu fait le '.$texte;
 
     $valeur = $this->CompteRendu->getValue(self::FIELD_AUTEURREDACTION);
-    $texte  = (empty($valeur) ? '<strong>Données manquantes : [Auteur du Compte-Rendu]</strong>' : $valeur);
+    $texte  = (empty($valeur) ? $this->getStringDonneesManquantes('Auteur du Compte-Rendu') : $valeur);
     $content .= ' par '.$texte;
     if (!empty($valeur)) {
       $content .= ', sous '.(strpos($texte, ' et ')!==false ? 'leur' : 'sa')." responsabilité.";
@@ -253,10 +253,10 @@ class CompteRenduBean extends LocalBean
     /////////////////////////////////////////////////////////////////////////
     // Formattage du Bilan Elèves
     $valeur = str_replace(array("\r\n", "\r", "\n"), array("<br>", "<br>", "<br>"), $this->CompteRendu->getValue(self::FIELD_BILANELEVES));
-    $frmtBilanEleves  = (empty($valeur) ? '<strong>Données manquantes : [Bilan Délégués Elèves]</strong>' : $valeur);
+    $frmtBilanEleves  = (empty($valeur) ? $this->getStringDonneesManquantes('Bilan Délégués Elèves') : $valeur);
     // Formattage du Bilan Parents
     $valeur = str_replace(array("\r\n", "\r", "\n"), array("<br>", "<br>", "<br>"), $this->CompteRendu->getValue(self::FIELD_BILANPARENTS));
-    $frmtBilanParents = (empty($valeur) ? '<strong>Données manquantes : [Bilan Délégués Parents]</strong>' : $valeur);
+    $frmtBilanParents = (empty($valeur) ? $this->getStringDonneesManquantes('Bilan Délégués Parents') : $valeur);
     /////////////////////////////////////////////////////////////////////////
 
     /////////////////////////////////////////////////////////////////////////
@@ -276,7 +276,7 @@ class CompteRenduBean extends LocalBean
     $content .= '<div class="pdfParagrapheTitre">Bilan du Professeur Principal</div>';
     $content .= '<div>';
     $valeur = $this->CompteRendu->getValue(self::FIELD_BILANPROFPRINCIPAL);
-    $content .= (empty($valeur) ? '<strong>Données manquantes : [Bilan Professeur Principal]</strong>' : $valeur);
+    $content .= (empty($valeur) ? $this->getStringDonneesManquantes('Bilan Professeur Principal') : $valeur);
     $content .= '</div>';
     $content .= '</div>';
     return $content;
@@ -337,23 +337,23 @@ class CompteRenduBean extends LocalBean
     $frmtTrimestre = $trim.($trim==1 ? 'er' : 'ème');
     // Formattage Effectif
     $valeur = $this->CompteRendu->getValue(self::FIELD_NBELEVES);
-    $frmtEffectif  = ($valeur==0 ? '<strong>Données manquantes : [Nombre d\'élèves]</strong>' : $valeur);
+    $frmtEffectif  = ($valeur==0 ? $this->getStringDonneesManquantes('Nombre d\'élèves') : $valeur);
     // Formattage Date
     $valeur = $this->CompteRendu->getValue(self::FIELD_DATECONSEIL);
-    $frmtDate      = (empty($valeur) ? '<strong>Données manquantes : [Date du Conseil]</strong>' : $valeur);
+    $frmtDate      = (empty($valeur) ? $this->getStringDonneesManquantes('Date du Conseil') : $valeur);
     // Formattage Présidence
     $valeur = $this->CompteRendu->getAdministrationId();
-    $frmtPresidence = ($valeur==0 ? '<strong>Données manquantes : [Présidence]</strong>' : $this->CompteRendu->getAdministration()->getFullName());
+    $frmtPresidence = ($valeur==0 ? $this->getStringDonneesManquantes('Présidence') : $this->CompteRendu->getAdministration()->getFullName());
     // Formattage Prof Principal
     $valeur = $this->CompteRendu->getValue(self::FIELD_PROFPRINCIPAL_ID);
-    $texte = ($valeur==0 ? '<strong>Données manquantes : [Professeur Principal]</strong>' : $this->CompteRendu->getProfPrincipal()->getProfPrincipal());
+    $texte = ($valeur==0 ? $this->getStringDonneesManquantes('Professeur Principal') : $this->CompteRendu->getProfPrincipal()->getProfPrincipal());
     $frmtProfPrinc = $texte;
     // Formattage Parents Délégués
     $valeur = $this->CompteRendu->getValue(self::FIELD_PARENT1);
-    $frmtParentDeleg = (empty($valeur) ? '<strong>Données manquantes : [Parents Délégués]</strong>' : $this->CompteRendu->getStrParentsDelegues());
+    $frmtParentDeleg = (empty($valeur) ? $this->getStringDonneesManquantes('Parents Délégués') : $this->CompteRendu->getStrParentsDelegues());
     // Formattage Elèves Délégués
     $valeur = $this->CompteRendu->getValue(self::FIELD_ENFANT1);
-    $frmtEleveDeleg  = (empty($valeur) ? '<strong>Données manquantes : [Elèves Délégués]</strong>' : $this->CompteRendu->getStrElevesDelegues());
+    $frmtEleveDeleg  = (empty($valeur) ? $this->getStringDonneesManquantes('Elèves Délégués') : $this->CompteRendu->getStrElevesDelegues());
     /////////////////////////////////////////////////////////////////////////
 
     /////////////////////////////////////////////////////////////////////////
@@ -379,5 +379,7 @@ class CompteRenduBean extends LocalBean
     return $this->getRender($urlTemplateStep1, $args);
   }
 
+  private function getStringDonneesManquantes($label)
+  { return '<strong>Données manquantes : ['.$label.']</strong>'; }
 
 }

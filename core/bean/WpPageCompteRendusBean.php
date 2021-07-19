@@ -29,6 +29,7 @@ class WpPageCompteRendusBean extends WpPageBean
     $this->EleveServices         = new EleveServices();
     $this->ProfPrincipalServices = new ProfPrincipalServices();
     $this->ParentDelegueServices = new ParentDelegueServices();
+    $this->EnseignantMatiereServices = new EnseignantMatiereServices();
   }
   public function initCompteRendu()
   {
@@ -128,71 +129,13 @@ class WpPageCompteRendusBean extends WpPageBean
    */
   public function getContent()
   {
-    $update = false;
-    /*
-    //////////////////////////////////////////////////////////////////
-    // On peut faire des contrôles de valeurs pour les initialiser si nécessaire
-    //////////////////////////////////////////////////////////////////
-    //////////////////////////////////////////////////////////////////
-    // Récupération des Bilans par Matières existants et restitution
-    $strNewObservationsByMatieres = '';
-
-    $strButtonMatieres = '';
-    $strPanelMatieres  = '';
-    $isFirstButton = true;
-
-    $strObservationsByMatieres = '';
-    if ($this->CompteRendu->getId()!='') {
-      $attributes = array(self::FIELD_COMPTERENDU_ID=>$this->CompteRendu->getId());
-      $BilanMatieres = $this->BilanMatiereServices->getBilanMatieresWithFilters($attributes);
-      if (!empty($BilanMatieres)) {
-        while (!empty($BilanMatieres)) {
-          $BilanMatiere = array_shift($BilanMatieres);
-          $strObservationsByMatieres .= $BilanMatiere->getBean()->getFragmentObservationMatiere();
-          $BilanMatiere->getBean()->getBilanMatiere($strButtonMatieres, $strPanelMatieres, $isFirstButton);
-        }
-      } else {
-        $args = array(
-          self::FIELD_ANNEESCOLAIRE_ID => $this->CompteRendu->getAnneeScolaireId(),
-          self::FIELD_DIVISION_ID      => $this->CompteRendu->getDivisionId(),
-        );
-        $CompoClasses = $this->CompoDivisionServices->getCompoDivisionsWithFilters($args);
-        while (!empty($CompoClasses)) {
-          $CompoClasse = array_shift($CompoClasses);
-          $BilanMatiere = new BilanMatiere();
-          $BilanMatiere->setCompteRenduId($this->CompteRendu->getId());
-          $BilanMatiere->setMatiereId($CompoClasse->getMatiereId());
-          $BilanMatiere->setEnseignantId($CompoClasse->getEnseignantId());
-          $strObservationsByMatieres .= $BilanMatiere->getBean()->getFragmentObservationMatiere();
-          $BilanMatiere->getBean()->getBilanMatiere($strButtonMatieres, $strPanelMatieres, $isFirstButton);
-        }
-      }
-    }
-    $BilanMatiereBean = new BilanMatiereBean();
-    $strObservationsByMatieres .= $BilanMatiereBean->getFragmentObservationMatiere();
-
-    $strNewObservationsByMatieres .= '<div class="form-row" style="width:100%;">';
-    $strNewObservationsByMatieres .= '<div class="form-group col-md-3 btn-group-vertical btn-group-sm">'.$strButtonMatieres.'</div>';
-    $strNewObservationsByMatieres .= '<div class="form-group col-md-9"><div class="tab-content" id="v-pills-tabContent">'.$strPanelMatieres.'</div></div></div>';
-
-    //////////////////////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////
-    // Initialisation des Beans pour construire les listes déroulantes.
-    $AnneeScolaireBean = new AnneeScolaireBean();
-    $DivisionBean = new DivisionBean();
-    $AdministrationBean = new AdministrationBean();
-    $EnseignantBean = new EnseignantBean();
-
-    */
-
     //////////////////////////////////////////////////////////////////
     // On enrichi le template puis on le restitue.
     $args = array(
       // Contenu de l'étape n°1 - 1
       $this->getContentStep1(),
       // Contenu de l'étape n°2 - 2
-      '',
+      $this->getContentStep2(),
       // Contenu de l'étape n°3 - 3
       $this->getContentStep3(),
       // Contenu de l'étape n°4 - 4
@@ -200,38 +143,22 @@ class WpPageCompteRendusBean extends WpPageBean
       // Contenu de l'étape n°5 - 5
       $this->getContentStep5(),
       // Contenu de l'étape n°6 - 6
-      '',
+      $this->getContentStep6(),
       // Les notifications éventuelles - 7
-      '',
-      /*
-      // Menu déroulant Année Scolaire - 1
-      $AnneeScolaireBean->getSelect(array('tag'=>self::FIELD_ANNEESCOLAIRE_ID, 'selectedId'=>$this->CompteRendu->getAnneeScolaireId(), 'readonly'=>'', self::AJAX_UPLOAD=>'')),
-      // Menu déroulant Classe Scolaire - 2
-      $DivisionBean->getSelect(array('tag'=>self::FIELD_DIVISION_ID, 'selectedId'=>$this->CompteRendu->getDivisionId(), 'readonly'=>'', self::AJAX_UPLOAD=>'')),
-      // Menu déroulant Présidence - 3
-      $AdministrationBean->getSelect(array('tag'=>self::FIELD_ADMINISTRATION_ID, 'selectedId'=>$this->CompteRendu->getValue(self::FIELD_ADMINISTRATION_ID), 'required'=>'', self::AJAX_UPLOAD=>'')),
-      // Menu déroulant Prof Principal - 4
-      $EnseignantBean->getSelect(array('tag'=>self::FIELD_ENSEIGNANT_ID, 'selectedId'=>$profPrincId, 'required'=>'', self::AJAX_UPLOAD=>'')),
-      // Premier bloc d'observations par matière - 5
-      (self::isAdmin() ? $strNewObservationsByMatieres : $strObservationsByMatieres),
-      // Menu déroulant pour le trimestre - 6
-      //$this->getSelectTrimestre(true),
-      $this->getInput(self::FIELD_TRIMESTRE, true, array(self::ATTR_READONLY=>'')),
-      // Notifications éventuelles - 7
       $this->CompteRendu->getNotifications(),
-      // Textarea Bilan Prof Principal - 14
-      $this->getTextArea(self::FIELD_BILANPROFPRINCIPAL, true, true),
-      // Input Date Rédaction - 23
-      $this->getInput(self::FIELD_DATEREDACTION, true, array(self::ATTR_PLACEHOLDER=>self::FORMAT_DATE_JJMMAAAA), true),
-      // Input Auteur Rédaction - 24
-      $this->getInput(self::FIELD_AUTEURREDACTION, true, array(), true),
-      // Input Mail de Contact - 25
-      $this->getInput(self::FIELD_MAILCONTACT, false),
-      // CrKey - 26
-      $this->CompteRendu->getCrKey(),
-      * */
     );
     return $this->getRender($this->urlTemplate, $args);
+  }
+
+  private function getContentStep6()
+  {
+    $urlTemplateStep6 = 'web/pages/public/fragments/panel-compte-rendu-step6.php';
+
+    $args = array(
+      // CrKey - 1
+      $this->Division->getCrKey(),
+    );
+    return $this->getRender($urlTemplateStep6, $args);
   }
 
   private function getContentStep5()
@@ -267,6 +194,7 @@ class WpPageCompteRendusBean extends WpPageBean
     );
     return $this->getRender($urlTemplateStep4, $args);
   }
+
   private function getContentStep3()
   {
     $urlTemplateStep3 = 'web/pages/public/fragments/panel-compte-rendu-step3.php';
@@ -278,6 +206,89 @@ class WpPageCompteRendusBean extends WpPageBean
       $this->getTextArea(self::FIELD_BILANPARENTS, true, true),
     );
     return $this->getRender($urlTemplateStep3, $args);
+  }
+
+  private function getContentStep2()
+  {
+    $urlTemplateStep2 = 'web/pages/public/fragments/panel-compte-rendu-step2.php';
+
+    //////////////////////////////////////////////////////////////////
+    // Récupération des Bilans par Matières existants et restitution
+    $strButtonMatieres = '';
+    $strPanelMatieres  = '';
+    $isFirstButton = true;
+
+    //////////////////////////////////////////////////////////////////
+    $Division = $this->CompteRendu->getDivision();
+    // On récupère la liste des couples (Enseignant/Matiere) associés à la Division
+    $CompoDivisions = $this->CompoDivisionServices->getCompoDivisionsWithFilters(array(self::FIELD_DIVISION_ID=>$Division->getId()));
+    while (!empty($CompoDivisions)) {
+      $CompoDivision = array_shift($CompoDivisions);
+      $EnseignantMatiere = $CompoDivision->getEnseignantMatiere();
+      // On récupère le Bilan Matière associé au couple (Compte Rendu/Matiere)
+      $argsBM = array(
+        self::FIELD_COMPTERENDU_ID => $this->CompteRendu->getId(),
+        self::FIELD_MATIERE_ID     => $EnseignantMatiere->getMatiereId(),
+      );
+      $BilanMatieres = $this->BilanMatiereServices->getBilanMatieresWithFilters($argsBM);
+      if (empty($BilanMatieres)) {
+        // S'il n'existe pas, on le créé.
+        $BilanMatiere = new BilanMatiere();
+        $BilanMatiere->setCompteRenduId($this->CompteRendu->getId());
+        $BilanMatiere->setMatiereId($EnseignantMatiere->getMatiereId());
+        $this->BilanMatiereServices->insertLocal($BilanMatiere);
+      } else {
+        // S'il existe, on le récupère.
+        $BilanMatiere = array_shift($BilanMatieres);
+      }
+
+      $BilanMatiere->getBean()->getBilanMatiere($strButtonMatieres, $strPanelMatieres, $isFirstButton);
+    }
+
+
+
+    // On récupère la liste des EnseignantMatières associés à la Classe.
+
+    // On récupère la liste des Bilans Matières existants pour chaque EnseignantMatières
+
+
+
+    /*
+    if ($this->CompteRendu->getId()!='') {
+      $attributes = array(self::FIELD_COMPTERENDU_ID=>$this->CompteRendu->getId());
+      $BilanMatieres = $this->BilanMatiereServices->getBilanMatieresWithFilters($attributes);
+      if (!empty($BilanMatieres)) {
+        while (!empty($BilanMatieres)) {
+          $BilanMatiere = array_shift($BilanMatieres);
+          $BilanMatiere->getBean()->getBilanMatiere($strButtonMatieres, $strPanelMatieres, $isFirstButton);
+        }
+      } else {
+        $args = array(
+          self::FIELD_DIVISION_ID      => $this->CompteRendu->getDivisionId(),
+        );
+        $CompoClasses = $this->CompoDivisionServices->getCompoDivisionsWithFilters($args);
+        while (!empty($CompoClasses)) {
+          $CompoClasse = array_shift($CompoClasses);
+          $BilanMatiere = new BilanMatiere();
+          $BilanMatiere->setCompteRenduId($this->CompteRendu->getId());
+          $EnseignantMatiere = $this->EnseignantMatiereServices->selectLocal($CompoClasse->getEnseignantMatiereId());
+          $BilanMatiere->setMatiereId($EnseignantMatiere->getMatiereId());
+          $BilanMatiere->getBean()->getBilanMatiere($strButtonMatieres, $strPanelMatieres, $isFirstButton);
+        }
+      }
+    }
+    */
+    //////////////////////////////////////////////////////////////////
+
+    $args = array(
+      // Bilan du Prof Principal - 1
+      $this->getTextArea(self::FIELD_BILANPROFPRINCIPAL, true, true),
+      // Liste des boutons des Matières - 2
+      $strButtonMatieres,
+      // Liste des saisies des Matières - 3
+      $strPanelMatieres,
+    );
+    return $this->getRender($urlTemplateStep2, $args);
   }
 
   private function getContentStep1()
@@ -487,28 +498,5 @@ class WpPageCompteRendusBean extends WpPageBean
       $args = array_merge($args, $extraArgs);
     }
     return $this->getBalise(self::TAG_INPUT, '', $args);
-  }
-
-  /**
-   * @param boolean $isMandatory
-   * @return string
-   * @version 1.00.00
-   * @since 1.00.00
-   */
-  public function getSelectTrimestre($isMandatory=false)
-  {
-    $selectedId = $this->CompteRendu->getValue(self::FIELD_TRIMESTRE);
-    $strOptions  = $this->getDefaultOption($selectedId);
-    $strOptions .= $this->getLocalOption(1, 1, $selectedId);
-    $strOptions .= $this->getLocalOption(2, 2, $selectedId);
-    $strOptions .= $this->getLocalOption(3, 3, $selectedId);
-    $bFlag = $isMandatory && ($selectedId==-1||$selectedId==self::CST_DEFAULT_SELECT);
-    $attributes = array(
-      self::ATTR_ID       => self::FIELD_TRIMESTRE,
-      self::ATTR_CLASS    => self::CST_MD_SELECT.($bFlag ? ' '.self::NOTIF_IS_INVALID : ''),
-      self::ATTR_NAME     => self::FIELD_TRIMESTRE,
-      self::ATTR_REQUIRED => '',
-    );
-    return $this->getBalise(self::TAG_SELECT, $strOptions, $attributes);
   }
 }

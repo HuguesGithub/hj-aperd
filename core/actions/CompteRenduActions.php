@@ -100,11 +100,12 @@ class CompteRenduActions extends LocalActions
         }
       break;
       case self::FIELD_BILANPROFPRINCIPAL  :
-        $CompteRendu = $this->CompteRenduServices->getCompteRenduByCrKey($this->post['crKey']);
-        $CompteRendu->setField($this->post['name'], $this->post['value']);
-        $this->CompteRenduServices->updateLocal($CompteRendu);
-        $Bean = $CompteRendu->getBean();
-        $contentStep = '{"renduStep2": '.json_encode($Bean->getStep2());
+        $step = 2;
+        $CompteRendu = $this->storeUploadedData();
+        if ($CompteRendu!==false) {
+          $this->CompteRenduServices->updateLocal($CompteRendu);
+          $contentApercu = $CompteRendu->getBean()->getStep2();
+        }
       break;
       case self::FIELD_BILANELEVES  :
       case self::FIELD_BILANPARENTS :
@@ -130,11 +131,12 @@ class CompteRenduActions extends LocalActions
       break;
       case self::FIELD_DATEREDACTION  :
       case self::FIELD_AUTEURREDACTION :
-        $CompteRendu = $this->CompteRenduServices->getCompteRenduByCrKey($this->post['crKey']);
-        $CompteRendu->setField($this->post['name'], $this->post['value']);
-        $this->CompteRenduServices->updateLocal($CompteRendu);
-        $Bean = $CompteRendu->getBean();
-        $contentStep = '{"renduStep5": '.json_encode($Bean->getStep5());
+        $step = 5;
+        $CompteRendu = $this->storeUploadedData();
+        if ($CompteRendu!==false) {
+          $this->CompteRenduServices->updateLocal($CompteRendu);
+          $contentApercu = $CompteRendu->getBean()->getStep5();
+        }
       break;
       case 'status[]' :
       case 'observations[]' :
