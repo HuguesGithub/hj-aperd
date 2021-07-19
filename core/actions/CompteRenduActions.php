@@ -152,10 +152,11 @@ class CompteRenduActions extends LocalActions
       $WpPageCompteRendusBean->initCompteRendu();
       $divDateRedaction = $WpPageCompteRendusBean->getInput(self::FIELD_DATEREDACTION, false, array(self::ATTR_PLACEHOLDER=>self::FORMAT_DATE_JJMMAAAA, self::ATTR_READONLY=>''));
       $divAuteurRedaction = $WpPageCompteRendusBean->getInput(self::FIELD_AUTEURREDACTION, false, array(self::ATTR_READONLY=>''));
-      return '{"auteurRedaction": '.json_encode($divAuteurRedaction).',"dateRedaction": '.json_encode($divDateRedaction).',"renduStep'.$step.'": '.json_encode($contentApercu).',"renduStep6": '.json_encode($CompteRendu->getBean()->getStep6()).'}';
+      $returned = '{"auteurRedaction": '.json_encode($divAuteurRedaction).',"dateRedaction": '.json_encode($divDateRedaction).',"renduStep'.$step.'": '.json_encode($contentApercu).',"renduStep6": '.json_encode($CompteRendu->getBean()->getStep6()).'}';
     } else {
-      return '{"renduStep'.$step.'": '.json_encode($contentApercu).'}';
+      $returned = '{"renduStep'.$step.'": '.json_encode($contentApercu).'}';
     }
+    return $returned;
   }
 
   public function dealWithBilanMatiere()

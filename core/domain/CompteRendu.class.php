@@ -291,4 +291,7 @@ class CompteRendu extends LocalDomain
   {
     return true;
   }
+
+  public function getUrlPdf()
+  { return '2021-2022-T'.$this->getTrimestre().'-'.$this->getDivision->getLabelDivision().'.pdf'; }
 }

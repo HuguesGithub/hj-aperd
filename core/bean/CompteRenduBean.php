@@ -130,7 +130,7 @@ class CompteRenduBean extends LocalBean
       break;
       case self::STATUS_PUBLISHED :
       case self::STATUS_MAILED :
-        $linkedUrl = '#'; // TODO vers PDF;
+        $linkedUrl = 'http://storage.jhugues.fr/Storage/Aperd/'.$this->CompteRendu->getUrlPdf();
       break;
       default :
         $linkedUrl = '#';
@@ -179,28 +179,26 @@ class CompteRenduBean extends LocalBean
     return $content;
   }
 
-  private function getCloseButton()
-  { return '<div class="alert alert-info"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>'; }
-
   public function getStep5()
   {
-    $content  = $this->getCloseButton();
-    $content .= '<div class="pdfParagrapheTitre">Informations générales</div>';
-    $content .= "Réunions mensuelles : L'association des Parents d'Élèves se réunit un mercredi par mois (hors vacances scolaires). Vous pouvez également découvrir la vie du collège et les actions de l'association sur son site internet.<br>";
+    $urlTemplateStep = 'web/pages/public/fragments/apercu-compte-rendu-step5.php';
 
     $valeur = $this->CompteRendu->getValue(self::FIELD_DATEREDACTION);
-    $texte  = (empty($valeur) ? $this->getStringDonneesManquantes('Date de rédaction') : $valeur);
-    $content .= 'Compte rendu fait le '.$texte;
+    $strDateRedaction = (empty($valeur) ? $this->getStringDonneesManquantes('Date de rédaction') : $valeur);
 
     $valeur = $this->CompteRendu->getValue(self::FIELD_AUTEURREDACTION);
-    $texte  = (empty($valeur) ? $this->getStringDonneesManquantes('Auteur du Compte-Rendu') : $valeur);
-    $content .= ' par '.$texte;
-    if (!empty($valeur)) {
-      $content .= ', sous '.(strpos($texte, ' et ')!==false ? 'leur' : 'sa')." responsabilité.";
-    }
+    $strAuteurRedaction = (empty($valeur) ? $this->getStringDonneesManquantes('Auteur du Compte-Rendu') : $valeur);
 
-    $content .= '</div>';
-    return $content;
+    $args = array(
+      // Date Compte Rendu - 1
+      $strDateRedaction,
+      // Auteur(s) Compte Rendu - 2
+      $strAuteurRedaction,
+      // Accord auteur(s) - 3
+      (strpos($strAuteurRedaction, ' et ')!==false ? 'leur' : 'sa')
+    );
+
+    return $this->getRender($urlTemplateStep, $args);
   }
 
   public function getStep4()
@@ -249,7 +247,7 @@ class CompteRenduBean extends LocalBean
 
   public function getStep3()
   {
-    $urlTemplateStep1 = 'web/pages/public/fragments/apercu-compte-rendu-step3.php';
+    $urlTemplateStep3 = 'web/pages/public/fragments/apercu-compte-rendu-step3.php';
     /////////////////////////////////////////////////////////////////////////
     // Formattage du Bilan Elèves
     $valeur = str_replace(array("\r\n", "\r", "\n"), array("<br>", "<br>", "<br>"), $this->CompteRendu->getValue(self::FIELD_BILANELEVES));
@@ -272,14 +270,16 @@ class CompteRenduBean extends LocalBean
 
   public function getStep2BilanProf()
   {
-    $content  = $this->getCloseButton();
-    $content .= '<div class="pdfParagrapheTitre">Bilan du Professeur Principal</div>';
-    $content .= '<div>';
+    $urlTemplateStep = 'web/pages/public/fragments/apercu-compte-rendu-step2-bilan-profs.php';
+
     $valeur = $this->CompteRendu->getValue(self::FIELD_BILANPROFPRINCIPAL);
-    $content .= (empty($valeur) ? $this->getStringDonneesManquantes('Bilan Professeur Principal') : $valeur);
-    $content .= '</div>';
-    $content .= '</div>';
-    return $content;
+    $content = (empty($valeur) ? $this->getStringDonneesManquantes('Bilan Professeur Principal') : $valeur);
+
+    $args = array(
+      // Contenu du tbody : liste des Bilans - 1
+      $content,
+    );
+    return $this->getRender($urlTemplateStep, $args);
   }
 
   private function getCellNonSaisie()
@@ -287,14 +287,14 @@ class CompteRenduBean extends LocalBean
 
   public function getStep2BilanMatieres()
   {
-    $content  = $this->getCloseButton();
-    $content .= '<table class="table table-sm table-striped">';
-    $content .= '<tr><th style="width:18%;">Matière (Nom)</th><th style="width:9%;">Statut</th><th>Observations</th></tr>';
+    $urlTemplateStep = 'web/pages/public/fragments/apercu-compte-rendu-step2-bilan-matieres.php';
 
     $args = array(
       self::FIELD_COMPTERENDU_ID => $this->CompteRendu->getId(),
     );
     $BilanMatieres = $this->BilanMatiereServices->getBilanMatieresWithFilters($args);
+
+    $content = '';
     foreach ($BilanMatieres as $BilanMatiere) {
       $content .= '<tr><td>'.$BilanMatiere->getMatiere()->getLabelMatiere();
       if ($BilanMatiere->getEnseignantId()=='') {
@@ -315,9 +315,11 @@ class CompteRenduBean extends LocalBean
       }
     }
 
-    $content .= '</table>';
-    $content .= '</div>';
-    return $content;
+    $args = array(
+      // Contenu du tbody : liste des Bilans - 1
+      $content,
+    );
+    return $this->getRender($urlTemplateStep, $args);
   }
 
   public function getStep2()
