@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 /**
  * Classe EnseignantServices
  * @author Hugues
- * @version 1.21.07.06
+ * @version 1.21.07.20
  * @since 1.21.06.04
  */
 class EnseignantServices extends LocalServices
@@ -84,5 +84,20 @@ class EnseignantServices extends LocalServices
    */
   public function deleteIn($ins)
   { $this->Dao->deleteIn($ins); }
+
+  /**
+   * @param int $matiereId
+   * @param int $divisionId
+   * @return Eneignant
+   * @version 1.21.07.20
+   * @since 1.21.07.20
+   */
+  public function getEnseignantByMatiereAndDivision($matiereId, $divisionId)
+  {
+    $arrParams[SQL_PARAMS_WHERE] = array();
+    array_push($arrParams[SQL_PARAMS_WHERE], $matiereId);
+    array_push($arrParams[SQL_PARAMS_WHERE], $divisionId);
+    return $this->Dao->getEnseignantByMatiereAndDivision($arrParams);
+  }
 
 }

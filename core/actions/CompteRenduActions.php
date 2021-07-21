@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 /**
  * CompteRenduActions
  * @author Hugues
- * @version 1.21.07.17
+ * @version 1.21.07.20
  * @since 1.21.06.01
  */
 class CompteRenduActions extends LocalActions
@@ -69,7 +69,7 @@ class CompteRenduActions extends LocalActions
       $CompteRendu->setField(self::FIELD_DATEREDACTION, date('d/m/Y'));
       $Adulte = $CompteRendu->getAdulteByLogin($_SESSION['userLogin']);
       $CompteRendu->setField(self::FIELD_AUTEURREDACTION, $Adulte->getId());
-      $CompteRendu->setField($this->post['name'], $this->post['value']);
+      $CompteRendu->setField($this->post['name'], stripslashes($this->post['value']));
       $update = $CompteRendu;
     }
     return $update;
@@ -141,6 +141,7 @@ class CompteRenduActions extends LocalActions
       case 'status[]' :
       case 'observations[]' :
       case 'enseignantIds[]' :
+      case 'moyennes[]' :
         return $this->dealWithBilanMatiere();
       break;
       default :
@@ -159,19 +160,28 @@ class CompteRenduActions extends LocalActions
     return $returned;
   }
 
+  /**
+   * @return string
+   * @version 1.21.07.20
+   * @since 1.21.06.041
+   */
   public function dealWithBilanMatiere()
   {
     $CompteRendu = $this->CompteRenduServices->getCompteRenduByCrKey($this->post['crKey']);
     $BilanMatiere = $this->BilanMatiereServices->selectLocal($this->post['bilanMatiereId']);
+    $value = stripslashes($this->post['value']);
     switch ($this->post['name']) {
       case 'observations[]' :
-        $BilanMatiere->setObservations($this->post['value']);
+        $BilanMatiere->setObservations($value);
       break;
       case 'status[]' :
-        $BilanMatiere->setStatus($this->post['value']);
+        $BilanMatiere->setStatus($value);
       break;
       case 'enseignantIds[]' :
-        $BilanMatiere->setEnseignantId($this->post['value']);
+        $BilanMatiere->setEnseignantId($value);
+      break;
+      case 'moyennes[]' :
+        $BilanMatiere->setMoyenneDivision(str_replace(',', '.', $value));
       break;
       default :
         return '';

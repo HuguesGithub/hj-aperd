@@ -129,7 +129,8 @@ class BilanMatiere extends LocalDomain
   public function __construct($attributes=array())
   {
     parent::__construct($attributes);
-    $this->MatiereServices = new MatiereServices();
+    $this->MatiereServices     = new MatiereServices();
+    $this->CompteRenduServices = new CompteRenduServices();
   }
   /**
    * @return array
@@ -171,6 +172,18 @@ class BilanMatiere extends LocalDomain
     }
     return $this->Matiere;
   }
+  /**
+   * @return CompteRendu
+   * @version 1.21.07.20
+   * @since 1.21.07.20
+   */
+  public function getCompteRendu()
+  {
+    if ($this->CompteRendu==null) {
+      $this->CompteRendu = $this->CompteRenduServices->selectLocal($this->compteRenduId);
+    }
+    return $this->CompteRendu;
+  }
 
   //////////////////////////////////////////////////
   // METHODS
@@ -196,9 +209,11 @@ class BilanMatiere extends LocalDomain
         $strStatus = '';
       break;
     }
+    /*
     if ($strStatus!='' && $this->getEnseignant()->getGenre()=='Mme') {
       $strStatus .= 'e';
     }
+    */
     return $strStatus;
   }
 

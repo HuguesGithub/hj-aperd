@@ -5,8 +5,8 @@ if (!defined('ABSPATH')) {
 /**
  * Classe EnseignantDaoImpl
  * @author Hugues
- * @version 1.00.00
- * @since 1.00.00
+ * @version 1.21.07.20
+ * @since 1.21.06.01
  */
 class EnseignantDaoImpl extends LocalDaoImpl
 {
@@ -50,6 +50,21 @@ class EnseignantDaoImpl extends LocalDaoImpl
     $requete .= "FROM wp_14_aperd_enseignant ae ";
     $requete .= 'LEFT JOIN wp_14_aperd_enseignant_matiere aem ON ae.id=aem.enseignantId ';
     $requete .= $this->whereFilters."AND (matiereId LIKE '%s' OR matiereId IS NULL) ".$this->orderBy.$this->limit;
+    return $this->convertToArray($this->selectEntriesAndLogQuery(__FILE__, __LINE__, $requete, $filters));
+  }
+
+  /**
+   * @param array $filters
+   * @version 1.21.07.20
+   * @since 1.21.07.20
+   */
+  public function getEnseignantByMatiereAndDivision($filters)
+  {
+    $requete  = 'SELECT ae.id AS id, genre, nomEnseignant, prenomEnseignant ';
+    $requete .= 'FROM wp_14_aperd_enseignant ae ';
+    $requete .= 'INNER JOIN wp_14_aperd_enseignant_matiere aem ON ae.id=aem.enseignantId ';
+    $requete .= 'INNER JOIN wp_14_aperd_compo_division acd ON aem.id=acd.enseignantMatiereId ';
+    $requete .= "WHERE matiereId LIKE '%s' AND divisionId LIKE '%s';";
     return $this->convertToArray($this->selectEntriesAndLogQuery(__FILE__, __LINE__, $requete, $filters));
   }
 }

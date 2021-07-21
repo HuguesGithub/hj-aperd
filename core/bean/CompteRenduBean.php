@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 /**
  * Classe CompteRenduBean
  * @author Hugues
- * @version 1.21.07.16
+ * @version 1.21.07.20
  * @since 1.21.06.01
  */
 class CompteRenduBean extends LocalBean
@@ -21,7 +21,8 @@ class CompteRenduBean extends LocalBean
   {
     parent::__construct();
     $this->BilanMatiereServices = new BilanMatiereServices();
-    $this->CompteRenduServices = new CompteRenduServices();
+    $this->CompteRenduServices  = new CompteRenduServices();
+    $this->EnseignantServices   = new EnseignantServices();
     $this->CompteRendu = ($CompteRendu=='' ? new CompteRendu() : $CompteRendu);
   }
 
@@ -126,7 +127,7 @@ class CompteRenduBean extends LocalBean
       case self::STATUS_FUTURE :
       case self::STATUS_WORKING :
       case self::STATUS_PENDING :
-        $linkedUrl = '/compte-rendu/?trimestre='.$this->CompteRendu->getTrimestre();
+        $linkedUrl = '/compte-rendu/?crKey='.$this->CompteRendu->getDivision()->getCrKey().'&amp;trimestre='.$this->CompteRendu->getTrimestre();
       break;
       case self::STATUS_PUBLISHED :
       case self::STATUS_MAILED :
@@ -244,15 +245,18 @@ class CompteRenduBean extends LocalBean
     return $this->getRender($urlTemplateStep4, $args);
   }
 
+  private function formatTextareaToHtml($value)
+  { return str_replace(array("\r\n", "\r", "\n"), array("<br>", "<br>", "<br>"), $value); }
+
   public function getStep3()
   {
     $urlTemplateStep3 = 'web/pages/public/fragments/apercu-compte-rendu-step3.php';
     /////////////////////////////////////////////////////////////////////////
     // Formattage du Bilan Elèves
-    $valeur = str_replace(array("\r\n", "\r", "\n"), array("<br>", "<br>", "<br>"), $this->CompteRendu->getValue(self::FIELD_BILANELEVES));
+    $valeur = $this->formatTextareaToHtml($this->CompteRendu->getValue(self::FIELD_BILANELEVES));
     $frmtBilanEleves  = (empty($valeur) ? $this->getStringDonneesManquantes('Bilan Délégués Elèves') : $valeur);
     // Formattage du Bilan Parents
-    $valeur = str_replace(array("\r\n", "\r", "\n"), array("<br>", "<br>", "<br>"), $this->CompteRendu->getValue(self::FIELD_BILANPARENTS));
+    $valeur = $this->formatTextareaToHtml($this->CompteRendu->getValue(self::FIELD_BILANPARENTS));
     $frmtBilanParents = (empty($valeur) ? $this->getStringDonneesManquantes('Bilan Délégués Parents') : $valeur);
     /////////////////////////////////////////////////////////////////////////
 
@@ -267,11 +271,16 @@ class CompteRenduBean extends LocalBean
     return $this->getRender($urlTemplateStep3, $args);
   }
 
+  /**
+   * @return string
+   * @version 1.21.07.20
+   * @since 1.21.06.01
+   */
   public function getStep2BilanProf()
   {
     $urlTemplateStep = 'web/pages/public/fragments/apercu-compte-rendu-step2-bilan-profs.php';
 
-    $valeur = $this->CompteRendu->getValue(self::FIELD_BILANPROFPRINCIPAL);
+    $valeur = $this->formatTextareaToHtml($this->CompteRendu->getValue(self::FIELD_BILANPROFPRINCIPAL));
     $content = (empty($valeur) ? $this->getStringDonneesManquantes('Bilan Professeur Principal') : $valeur);
 
     $args = array(
@@ -281,8 +290,8 @@ class CompteRenduBean extends LocalBean
     return $this->getRender($urlTemplateStep, $args);
   }
 
-  private function getCellNonSaisie()
-  { return '<td class="bg-danger">Non saisi</td>'; }
+  private function getCellNonSaisie($notif=self::NOTIF_DANGER)
+  { return '<td class="bg-'.$notif.'">Non saisie</td>'; }
 
   public function getStep2BilanMatieres()
   {
@@ -296,21 +305,28 @@ class CompteRenduBean extends LocalBean
     $content = '';
     foreach ($BilanMatieres as $BilanMatiere) {
       $content .= '<tr><td>'.$BilanMatiere->getMatiere()->getLabelMatiere();
-      if ($BilanMatiere->getEnseignantId()=='') {
-        $content .= $this->getCellNonSaisie();
-      } else {
-        $nomEnseignant = $BilanMatiere->getEnseignant()->getGenre().' '.$BilanMatiere->getEnseignant()->getNomEnseignant();
-        $content .= '<br>'.$nomEnseignant.'</td>';
-      }
+
+      $CompteRendu = $BilanMatiere->getCompteRendu();
+      $Division    = $CompteRendu->getDivision();
+      $matiereId   = $BilanMatiere->getMatiereId();
+      $Enseignants = $this->EnseignantServices->getEnseignantByMatiereAndDivision($matiereId, $Division->getId());
+      $Enseignant  = array_shift($Enseignants);
+      $content    .= '<br>'.$Enseignant->getFullName().'</td>';
+
       if ($BilanMatiere->getStrStatut()=='') {
         $content .= $this->getCellNonSaisie();
       } else {
         $content .= $this->getBalise(self::TAG_TD, $BilanMatiere->getStrStatut());
       }
-      if ($BilanMatiere->getObservations()=='') {
-        $content .= $this->getCellNonSaisie();
+      if ($BilanMatiere->getMoyenneDivision()=='' || $BilanMatiere->getMoyenneDivision()==0) {
+        $content .= $this->getCellNonSaisie(self::NOTIF_WARNING);
       } else {
-        $content .= $this->getBalise(self::TAG_TD, $BilanMatiere->getObservations());
+        $content .= $this->getBalise(self::TAG_TD, number_format($BilanMatiere->getMoyenneDivision(), 2, ',', ''));
+      }
+      if ($BilanMatiere->getObservations()=='') {
+        $content .= $this->getCellNonSaisie(self::NOTIF_WARNING);
+      } else {
+        $content .= $this->getBalise(self::TAG_TD, $this->formatTextareaToHtml($BilanMatiere->getObservations()));
       }
       $content .= '</tr>';
     }

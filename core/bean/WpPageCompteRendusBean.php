@@ -67,6 +67,7 @@ class WpPageCompteRendusBean extends WpPageBean
       // On parcourt les Comptes Rendus existants pour cette Division
       while (!empty($CompteRendus)) {
         $CompteRendu = array_shift($CompteRendus);
+        // On recherche le premier Compte Rendu éditable ou correspondant au Trimestre passé en paramètre
         if (in_array($CompteRendu->getStatus(), array(self::STATUS_FUTURE, self::STATUS_WORKING, self::STATUS_PENDING)) || $CompteRendu->getTrimestre()==$trimestre) {
           $this->CompteRendu = $CompteRendu;
           $this->trimestre   = $CompteRendu->getTrimestre();
@@ -76,6 +77,9 @@ class WpPageCompteRendusBean extends WpPageBean
     }
 
     if (!$initDone) {
+      // C'est bizarre d'être ici. Ca voudrait dire qu'on n'a trouvé aucun Compte Rendu associé à la Division dans la boucle précédente
+      // Et donc, de fait, je vois mal comme $CompteRendu est défini ci-dessous.
+      // Il faudrait peut-être créer un nouveau CompteRendu associé à la Division, pour le premier Trimestre.
       $this->CompteRendu = $CompteRendu;
       $this->trimestre   = $CompteRendu->getTrimestre();
       $initDone = true;
@@ -244,42 +248,10 @@ class WpPageCompteRendusBean extends WpPageBean
 
       $BilanMatiere->getBean()->getBilanMatiere($strButtonMatieres, $strPanelMatieres, $isFirstButton);
     }
-
-
-
-    // On récupère la liste des EnseignantMatières associés à la Classe.
-
-    // On récupère la liste des Bilans Matières existants pour chaque EnseignantMatières
-
-
-
-    /*
-    if ($this->CompteRendu->getId()!='') {
-      $attributes = array(self::FIELD_COMPTERENDU_ID=>$this->CompteRendu->getId());
-      $BilanMatieres = $this->BilanMatiereServices->getBilanMatieresWithFilters($attributes);
-      if (!empty($BilanMatieres)) {
-        while (!empty($BilanMatieres)) {
-          $BilanMatiere = array_shift($BilanMatieres);
-          $BilanMatiere->getBean()->getBilanMatiere($strButtonMatieres, $strPanelMatieres, $isFirstButton);
-        }
-      } else {
-        $args = array(
-          self::FIELD_DIVISION_ID      => $this->CompteRendu->getDivisionId(),
-        );
-        $CompoClasses = $this->CompoDivisionServices->getCompoDivisionsWithFilters($args);
-        while (!empty($CompoClasses)) {
-          $CompoClasse = array_shift($CompoClasses);
-          $BilanMatiere = new BilanMatiere();
-          $BilanMatiere->setCompteRenduId($this->CompteRendu->getId());
-          $EnseignantMatiere = $this->EnseignantMatiereServices->selectLocal($CompoClasse->getEnseignantMatiereId());
-          $BilanMatiere->setMatiereId($EnseignantMatiere->getMatiereId());
-          $BilanMatiere->getBean()->getBilanMatiere($strButtonMatieres, $strPanelMatieres, $isFirstButton);
-        }
-      }
-    }
-    */
     //////////////////////////////////////////////////////////////////
 
+    //////////////////////////////////////////////////////////////////
+    // On enrichi le Template et on le restitue
     $args = array(
       // Bilan du Prof Principal - 1
       $this->getTextArea(self::FIELD_BILANPROFPRINCIPAL, true, true),

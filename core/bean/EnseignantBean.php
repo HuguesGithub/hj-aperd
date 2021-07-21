@@ -112,9 +112,9 @@ private function getProfPrincipal()
   /**
    * @param mixed $selectedId
    * @return string
-   * @version 1.00.00
-   * @since 1.00.00
+   * @version 1.21.07.20
+   * @since 1.21.06.01
    */
   public function getOption($selectedId=-1)
-  { return $this->getLocalOption($this->Enseignant->getNomEnseignant(), $this->Enseignant->getId(), $selectedId); }
+  { return $this->getLocalOption($this->Enseignant->getFullName(), $this->Enseignant->getId(), $selectedId); }
 }

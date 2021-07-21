@@ -21,6 +21,7 @@ class BilanMatiereBean extends LocalBean
   public function __construct($BilanMatiere='')
   {
     $this->BilanMatiere = ($BilanMatiere=='' ? new BilanMatiere() : $BilanMatiere);
+    $this->EnseignantServices = new EnseignantServices();
   }
   /**
    * @return string
@@ -79,9 +80,16 @@ class BilanMatiereBean extends LocalBean
     $status         = $this->BilanMatiere->getStatus();
     $matiereId      = $this->BilanMatiere->getMatiereId();
     $observations   = $this->BilanMatiere->getObservations();
-    if ($status=='') {
+    $moyenneDivision = $this->BilanMatiere->getMoyenneDivision();
+
+    $CompteRendu = $this->BilanMatiere->getCompteRendu();
+    $Division    = $CompteRendu->getDivision();
+    $Enseignants = $this->EnseignantServices->getEnseignantByMatiereAndDivision($matiereId, $Division->getId());
+    $Enseignant = array_shift($Enseignants);
+
+    if ($status=='' || $Enseignant->getId()=='') {
       $badgeStatus = 'danger';
-    } elseif ($observations=='') {
+    } elseif ($observations=='' || $moyenneDivision=='' || $moyenneDivision==0) {
       $badgeStatus = 'warning';
     } else {
       $badgeStatus = 'success';
@@ -91,61 +99,41 @@ class BilanMatiereBean extends LocalBean
 
     /////////////////////////////////////////////////////////////////////////
     // On construit l'élément Bouton en rapport avec la Matière
-    $strContentButton  = '<button class="btn btn-outline-secondary'.($isFirstButton?' active':'').'"';
-    $strContentButton .= ' id="v-pills-'.$matiereId.'-tab"';
-    $strContentButton .= ' data-bs-target="#v-pills-'.$matiereId.'"';
-    $strContentButton .= ' type="button" role="tab" aria-controls="v-pills-'.$matiereId.'"';
-    $strContentButton .= ' aria-selected="false">';
-    $strContentButton .= '<span class="badge-display '.$badgeStatus.'">';
-    $strContentButton .= '<span class="badge bg-danger">/!\</span>';
-    $strContentButton .= '<span class="badge bg-warning">/!\</span>';
-    $strContentButton .= '<span class="badge bg-success">/!\</span>';
-    $strContentButton .= '</span>';
-    $strContentButton .= $this->BilanMatiere->getMatiere()->getLabelMatiere().'</button>';
-
-    $strButtonMatieres .= $strContentButton;
+    $urlButtonBilanMatiere = 'web/pages/public/fragments/button-bilan-matiere.php';
+    $argsBbm = array(
+      // Est-ce le premier bouton ? - 1
+      ($isFirstButton?' active':''),
+      // Identifiant de la Matière - 2
+      $matiereId,
+      // Statut du Badge - 3
+      $badgeStatus,
+      // Libellé de la Matière - 4
+      $this->BilanMatiere->getMatiere()->getLabelMatiere(),
+    );
+    $strButtonMatieres .= $this->getRender($urlButtonBilanMatiere, $argsBbm);
     // Fin du Bouton
     /////////////////////////////////////////////////////////////////////////
 
     /////////////////////////////////////////////////////////////////////////
     // On construit l'élément Panel en rapport avec la Matière
-    $strContentPanel  = '<div class="tab-pane fade'.($isFirstButton?' show active':'').'" id="v-pills-'.$matiereId.'" role="tabpanel"';
-    $strContentPanel .= ' aria-labelledby="v-pills-'.$matiereId.'-tab" data-bilan-matiere-id="'.$bilanMatiereId.'">';
-    $strContentPanel .= '<div class="form-row">';
-
-    /////////////////////////////////////////////////////////////////////////
-    // On construit l'input caché de la Matière.
-    $strContentPanel .= '<input type="hidden" name="'.self::FIELD_MATIERE_ID.'s[]" value="'.$matiereId.'"/>';
-
-    /////////////////////////////////////////////////////////////////////////
-    // On construit le menu déroulant du statut.
-    $optionsSelectStatus  = $this->getDefaultOption();
-    $optionsSelectStatus .= $this->getLocalOption('Présent&bull;e', 'P', $status);
-    $optionsSelectStatus .= $this->getLocalOption('Absent&bull;e', 'A', $status);
-    $optionsSelectStatus .= $this->getLocalOption('Excusé&bull;e', 'E', $status);
-
-    $strContentPanel .= '<div class="form-group col-md-4">';
-    $strContentPanel .= '<label for="statut-'.$matiereId.'">Statut</label>';
-    $args = array(
-      self::ATTR_NAME=>'status[]',
-      self::ATTR_CLASS=>self::CST_MD_SELECT.' ajaxUpload',
-      self::ATTR_ID=>'statut-'.$matiereId
+    $urlPanelBilanMatiere = 'web/pages/public/fragments/panel-bilan-matiere.php';
+    $argsPbm = array(
+      // Est-ce le premier panel ? - 1
+      ($isFirstButton?' active':''),
+      // Identifiant de la Matière - 2
+      $matiereId,
+      // Identifiant du BilanMatière - 3
+      $bilanMatiereId,
+      // Liste déroulante des Enseignants - 4
+      $EnseignantBean->getSelect($argEnseignants),
+      // Liste déroulante des Statuts - 5
+      $this->getBalise(self::TAG_SELECT, $optionsSelectStatus, $argStatuts),
+      // Input des Moyennes - 6
+      $this->getBalise(self::TAG_INPUT, '', $argMoyennes),
+      // Textarea de l'observation - 7
+      $this->getBalise(self::TAG_TEXTAREA, $observations, $attributes),
     );
-    $strContentPanel .= $this->getBalise(self::TAG_SELECT, $optionsSelectStatus, $args).'</div>';
-
-    /////////////////////////////////////////////////////////////////////////
-    // Et on construit le Textarea
-    $strContentPanel .= '<div class="form-group col-md-12">';
-    $attributes = array(
-      self::ATTR_NAME  => self::FIELD_OBSERVATIONS.'[]',
-      self::ATTR_CLASS => self::CST_MD_TEXTAREA.' ajaxUpload',
-      self::ATTR_ROWS  => 3,
-    );
-    $strContentPanel .= $this->getBalise(self::TAG_TEXTAREA, $observations, $attributes);
-    $strContentPanel .= '<label class="'.($observations!=''?'active':'').'" for="observation-'.$matiereId.'">Observations</label>';
-    $strContentPanel .= '</div></div></div>';
-
-    $strPanelMatieres  .= $strContentPanel;
+    $strPanelMatieres  .= $this->getRender($urlPanelBilanMatiere, $argsPbm);
     // Fin du Panel
     /////////////////////////////////////////////////////////////////////////
 

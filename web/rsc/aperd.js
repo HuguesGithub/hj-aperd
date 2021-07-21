@@ -161,13 +161,14 @@ function addAjaxUploadEvent() {
     var bilanMatiereSelEns = '';
     var bilanMatiereSelStatus = '';
     var buttonForPanel = '';
-    if (name=='observations[]' || name=='status[]' || name=='enseignantIds[]') {
+    if (name=='observations[]' || name=='status[]' || name=='enseignantIds[]' || name=='moyennes[]') {
       bilanMatiereId = $hj(this).closest('.tab-pane').data('bilan-matiere-id');
       data = {'action': 'dealWithAjax', 'ajaxAction': 'ajaxUpload', 'value': value, 'name': name, 'crKey': crKey, 'bilanMatiereId': bilanMatiereId};
       extraTreats = true;
       bilanMatiereTextarea = $hj(this).closest('.tab-pane').find('textarea').val();
       bilanMatiereSelEns = $hj(this).closest('.tab-pane').find('select[name="enseignantIds[]"]').val();
       bilanMatiereSelStatus = $hj(this).closest('.tab-pane').find('select[name="status[]"]').val();
+      bilanMoyenneValue = $hj(this).closest('.tab-pane').find('input[name="moyennes[]"]').val();
       var id = $hj(this).closest('.tab-pane').attr('id');
       buttonForPanel = $hj('#'+id+'-tab');
     } else {
