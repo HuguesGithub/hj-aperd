@@ -117,9 +117,46 @@ class BilanMatiereBean extends LocalBean
     /////////////////////////////////////////////////////////////////////////
     // On construit l'élément Panel en rapport avec la Matière
     $urlPanelBilanMatiere = 'web/pages/public/fragments/panel-bilan-matiere.php';
+
+    // Initialisation des éléments à afficher dans le Panel
+    // Pour la liste déroulante Enseignant
+    $EnseignantBean = new EnseignantBean();
+    $argEnseignants = array(
+      self::ATTR_NAME  => 'enseignantIds[]',
+      self::ATTR_CLASS => self::CST_MD_SELECT, //.' ajaxUpload',
+      self::ATTR_ID    => 'enseignant-'.$matiereId,
+      self::ATTR_READONLY => '',
+      'selectedId'     => $Enseignant->getId(),
+    );
+    // Pour la liste déroulante des Statuts
+    $optionsSelectStatus  = $this->getDefaultOption();
+    $optionsSelectStatus .= $this->getLocalOption('Présent&bull;e', 'P', $status);
+    $optionsSelectStatus .= $this->getLocalOption('Absent&bull;e', 'A', $status);
+    $optionsSelectStatus .= $this->getLocalOption('Excusé&bull;e', 'E', $status);
+    $argStatuts = array(
+      self::ATTR_NAME=>'status[]',
+      self::ATTR_CLASS=>self::CST_MD_SELECT.self::CST_BLANK.self::AJAX_UPLOAD,
+      self::ATTR_ID=>'statut-'.$matiereId
+    );
+    // Pour l'input de la Moyenne
+    $argMoyennes = array(
+      self::ATTR_TYPE  => self::CST_TEXT,
+      self::ATTR_NAME  => 'moyennes[]',
+      self::ATTR_CLASS => self::CST_FORMCONTROL.self::CST_BLANK.self::AJAX_UPLOAD,
+      self::ATTR_ID    => 'moyenne-'.$matiereId,
+      self::ATTR_VALUE => number_format($this->BilanMatiere->getMoyenneDivision(), 2, '.', ''),
+    );
+    // Pour le Textarea
+    $attributes = array(
+      self::ATTR_NAME  => self::FIELD_OBSERVATIONS.'[]',
+      self::ATTR_CLASS => self::CST_MD_TEXTAREA.self::CST_BLANK.self::AJAX_UPLOAD,
+      self::ATTR_ROWS  => 3,
+    );
+    /////////////////////////////////////////////////////////////////////////
+
     $argsPbm = array(
       // Est-ce le premier panel ? - 1
-      ($isFirstButton?' active':''),
+      ($isFirstButton?' show active':''),
       // Identifiant de la Matière - 2
       $matiereId,
       // Identifiant du BilanMatière - 3
@@ -132,6 +169,8 @@ class BilanMatiereBean extends LocalBean
       $this->getBalise(self::TAG_INPUT, '', $argMoyennes),
       // Textarea de l'observation - 7
       $this->getBalise(self::TAG_TEXTAREA, $observations, $attributes),
+      // Classe sur le Textarea - 8
+      ($observations!=''?'active':''),
     );
     $strPanelMatieres  .= $this->getRender($urlPanelBilanMatiere, $argsPbm);
     // Fin du Panel
