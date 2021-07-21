@@ -82,6 +82,8 @@ function aperd_menu()
         'administration' => 'Administratifs',
         'annee-scolaire' => 'Années Scolaires',
         'compodivision'  => 'Composition Divisions',
+        'compte-rendu'   => 'Compte-Rendus',
+        'questionnaire'  => 'Config. Questionnaire',
         'division'       => 'Divisions',
         'eleve'          => 'Élèves',
         'enseignant'     => 'Enseignants',
@@ -90,8 +92,7 @@ function aperd_menu()
         'parent-delegue' => 'Parents Délégués',
         '-'              => '-----------------',
 
-        'compte-rendu'  => 'Compte-Rendus',
-        'questionnaire' => 'Questionnaire',
+        'data-question'  => 'Questionnaires',
         'schema-table'  => 'Adm : Schéma Base',
       );
       foreach ($arrUrlSubMenu as $key => $value) {

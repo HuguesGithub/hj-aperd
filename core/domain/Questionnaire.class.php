@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 /**
  * Classe Questionnaire
  * @author Hugues
- * @version 1.21.06.17
+ * @version 1.21.07.21
  * @since 1.21.06.09
  */
 class Questionnaire extends LocalDomain
@@ -23,6 +23,11 @@ class Questionnaire extends LocalDomain
    * @var string $configValue
    */
   protected $configValue;
+  /**
+   *
+   * @var int $displayOrder
+   */
+  protected $displayOrder;
 
   //////////////////////////////////////////////////
   // GETTERS & SETTERS
@@ -42,6 +47,13 @@ class Questionnaire extends LocalDomain
   public function getConfigValue()
   { return $this->configValue; }
   /**
+   * @return int
+   * @version 1.21.07.21
+   * @since 1.21.07.21
+   */
+  public function getDisplayOrder()
+  { return $this->displayOrder; }
+  /**
    * @param string $configKey
    * @version 1.21.06.09
    * @since 1.21.06.09
@@ -55,6 +67,13 @@ class Questionnaire extends LocalDomain
    */
   public function setConfigValue($configValue)
   { $this->configValue = $configValue; }
+  /**
+   * @param int $displayOrder
+   * @version 1.21.07.21
+   * @since 1.21.07.21
+   */
+  public function setDisplayOrder($displayOrder)
+  { $this->displayOrder = $displayOrder; }
 
   //////////////////////////////////////////////////
   // CONSTRUCT - CLASSVARS - CONVERT - BEAN
@@ -101,105 +120,98 @@ class Questionnaire extends LocalDomain
   /**
    * @param string $sep
    * @return string
-   * @version 1.21.06.09
+   * @version 1.21.07.21
    * @since 1.21.06.09
    */
   public function getCsvEntete($sep=self::SEP)
-  { return implode($sep, array(self::FIELD_CONFIG_KEY, self::FIELD_CONFIG_VALUE)); }
+  { return implode($sep, array(self::FIELD_CONFIG_KEY, self::FIELD_CONFIG_VALUE, self::FIELD_DISPLAY_ORDER)); }
   /**
    * @param string $sep
    * @return string
-   * @version 1.21.06.09
+   * @version 1.21.07.21
    * @since 1.21.06.09
    */
   public function toCsv($sep=self::SEP)
-  { return implode($sep, array($this->configKey, $this->configValue)); }
+  { return implode($sep, array($this->configKey, $this->configValue, $this->displayOrder)); }
   /**
    * @param string $rowContent
    * @param string $sep
    * @param string &$notif
    * @param string &$msg
    * @return boolean
-   * @version 1.21.06.17
+   * @version 1.21.07.21
    * @since 1.21.06.09
    */
   public function controleImportRow($rowContent, $sep, &$notif, &$msg)
   {
-    // TODO
-    /*
-    list($id, $labelDivision) = explode($sep, $rowContent);
-    $this->setId($id);
-    $labelDivision = trim(str_replace(self::EOL, '', $labelDivision));
-    $this->setLabelDivision($labelDivision);
+    list($configKey, $configValue, $displayOrder) = explode($sep, $rowContent);
+    $this->setConfigKey($configKey);
+    $this->setConfigValue($configValue);
+    $this->setDisplayOrder($displayOrder);
 
     if (!$this->controleDonnees($notif, $msg)) {
       $notif = self::NOTIF_WARNING;
       $msg  .= self::MSG_SUCCESS_PARTIEL_IMPORT;
       return true;
     }
-    // Si les contrôles sont okay, on peut insérer ou mettre à jour
-    if ($id=='') {
-      // Si id n'est pas renseigné. C'est une création. Il faut vérifier que le label n'existe pas déjà.
+
+    $Questionnaires = $this->Services->getQuestionnairesWithFilters(array(self::FIELD_CONFIG_KEY=>$configKey));
+    if (empty($Questionnaires)) {
       $this->Services->insertLocal($this);
     } else {
-      $DivisionInBase = $this->Services->selectLocal($id);
-      if ($DivisionInBase->getId()=='') {
-        // Sinon, si id n'existe pas, c'est une création. Cf au-dessus
-        $this->Services->insertLocal($this);
-      } else {
-        // Si id existe, c'est une édition, même contrôle que ci-dessus.
-        $this->setId($id);
-        $this->Services->updateLocal($this);
-      }
+      $this->Services->updateLocal($this);
     }
-    * */
+
     return false;
   }
   /**
    * @param string &$notif
    * @param string &$msg
-   * @version 1.21.06.09
+   * @version 1.21.07.21
    * @since 1.21.06.09
    */
   public function controleDonnees(&$notif, &$msg)
   {
+    $returned = true;
     // La clé doit être alphabétique sans accent
     $pattern = "/^[a-zA-Z]+$/";
     if (!preg_match($pattern, $this->configKey)) {
       $notif = self::NOTIF_DANGER;
       $msg   = sprintf(self::MSG_ERREUR_CONTROL_FORMAT, $pattern);
-      return false;
+      $returned = false;
+    } else {
+      // La clé doit être unique
+      $Questionnaires = $this->QuestionnaireServices->getQuestionnairesWithFilters(array(self::FIELD_CONFIG_KEY=>$this->configKey));
+      if (!empty($Questionnaires)) {
+        $notif = self::NOTIF_DANGER;
+        $msg   = self::MSG_ERREUR_CONTROL_UNICITE;
+        $returned = false;
+      } elseif (empty($this->configValue)) {
+      // La valeur de la config doit être renseignée
+        $notif = self::NOTIF_DANGER;
+        $msg   = self::MSG_ERREUR_CONTROL_EXISTENCE;
+        $returned = false;
+      } else {
+        // La valeur doit être unique
+        $Questionnaires = $this->QuestionnaireServices->getQuestionnairesWithFilters(array(self::FIELD_CONFIG_VALUE=>$this->configValue));
+        if (!empty($Questionnaires)) {
+          $notif = self::NOTIF_DANGER;
+          $msg   = self::MSG_ERREUR_CONTROL_UNICITE;
+          $returned = false;
+        }
+      }
     }
-    // La clé doit être unique
-    $Questionnaires = $this->QuestionnaireServices->getQuestionnairesWithFilters(array(self::FIELD_CONFIG_KEY=>$this->configKey));
-    if (!empty($Questionnaires)) {
-      $notif = self::NOTIF_DANGER;
-      $msg   = self::MSG_ERREUR_CONTROL_UNICITE;
-      return false;
-    }
-    // La valeur de la config doit être renseigné
-    if (empty($this->configValue)) {
-      $notif = self::NOTIF_DANGER;
-      $msg   = self::MSG_ERREUR_CONTROL_EXISTENCE;
-      return false;
-    }
-    // La valeur doit être unique
-    $Questionnaires = $this->QuestionnaireServices->getQuestionnairesWithFilters(array(self::FIELD_CONFIG_VALUE=>$this->configValue));
-    if (!empty($Questionnaires)) {
-      $notif = self::NOTIF_DANGER;
-      $msg   = self::MSG_ERREUR_CONTROL_UNICITE;
-      return false;
-    }
-    return true;
+    return $returned;
   }
   /**
    * @param string &$notif
    * @param string &$msg
+   * @param array $urlParams
    * @return boolean
-   * @version 1.21.06.08
+   * @version 1.21.07.21
    * @since 1.21.06.01
    */
-  public function update(&$notif, &$msg)
+  public function update(&$notif, &$msg, $urlParams=array())
   {
     if ($this->controleDonnees($notif, $msg)) {
       if ($this->configKey=='' || $this->configValue=='') {
@@ -222,9 +234,17 @@ class Questionnaire extends LocalDomain
    */
   public function delete(&$notif, &$msg)
   {
-    $this->Services->deleteIn("'".$this->configKey."'");
+    $this->Services->deleteIn($this->configKey);
     $notif = self::NOTIF_SUCCESS;
     $msg   = self::MSG_SUCCESS_DELETE;
   }
+
+  /**
+   * @return string
+   * @version 1.21.07.21
+   * @since 1.21.07.21
+   */
+  public function getFullName()
+  { return $this->getConfigKey(). ' - '.$this->getConfigValue(); }
 
 }

@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 /**
  * Classe QuestionnaireDaoImpl
  * @author Hugues
- * @version 1.21.06.09
+ * @version 1.21.07.21
  * @since 1.21.06.09
  */
 class QuestionnaireDaoImpl extends LocalDaoImpl
@@ -31,12 +31,13 @@ class QuestionnaireDaoImpl extends LocalDaoImpl
   }
   /**
    * @param string $ins
+   * @version 1.21.07.21
+   * @since 1.21.06.09
    */
   public function deleteIn($ins)
   {
-    $request = $this->delete.$this->fromRequest.'WHERE configKey IN ('.$ins.');';
+    $request = $this->delete.$this->fromRequest."WHERE configKey IN ('".str_replace(',', "', '", $ins)."');";
     MySQL::wpdbQuery($request);
-    echo "[".MySQL::wpdbLastQuery()."]]";
   }
   /**
    * @param string $file

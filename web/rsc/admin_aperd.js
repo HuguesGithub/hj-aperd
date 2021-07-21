@@ -154,8 +154,6 @@ function sendFileToServer(formData,status)
                 }
               });
             }
-
-            //$("#status1").append("File upload Done<br>");
         }
     });
 

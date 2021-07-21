@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 /**
  * ImportActions
  * @author Hugues
- * @version 1.21.07.15
+ * @version 1.21.07.21
  * @since 1.21.06.01
  */
 class ImportActions extends LocalActions
@@ -30,7 +30,7 @@ class ImportActions extends LocalActions
    * @param string $importType
    * @param string &$notif
    * @param string &$msg
-   * @version 1.21.07.15
+   * @version 1.21.07.21
    * @since 1.21.06.01
    */
   public static function dealWithStaticImport($importType, &$notif, &$msg)
@@ -48,6 +48,11 @@ class ImportActions extends LocalActions
       break;
       case self::PAGE_COMPO_DIVISION :
         $theList = CompoDivisionActions::dealWithStatic(self::CST_IMPORT, $params);
+        $notif = $params['notif'];
+        $msg   = $params['msg'];
+      break;
+      case self::PAGE_DATA_QUESTIONS :
+        $theList = DataQuestionnaireActions::dealWithStatic(self::CST_IMPORT, $params);
         $notif = $params['notif'];
         $msg   = $params['msg'];
       break;
@@ -78,6 +83,11 @@ class ImportActions extends LocalActions
       break;
       case self::PAGE_PARENT_DELEGUE :
         $theList = ParentDelegueActions::dealWithStatic(self::CST_IMPORT, $params);
+        $notif = $params['notif'];
+        $msg   = $params['msg'];
+      break;
+      case self::PAGE_QUESTIONNAIRE :
+        $theList = QuestionnaireActions::dealWithStatic(self::CST_IMPORT, $params);
         $notif = $params['notif'];
         $msg   = $params['msg'];
       break;

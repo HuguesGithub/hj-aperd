@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 /**
  * Classe AdminPageBean
  * @author Hugues
- * @version 1.21.07.07
+ * @version 1.21.07.21
  * @since 1.21.06.01
  */
 class AdminPageBean extends MainPageBean
@@ -67,7 +67,7 @@ class AdminPageBean extends MainPageBean
 
   /**
    * @return string
-   * @version 1.21.06.10
+   * @version 1.21.07.21
    * @since 1.21.06.01
    */
   public function getContentPage()
@@ -89,6 +89,9 @@ class AdminPageBean extends MainPageBean
           break;
           case self::PAGE_CONFIGURATION :
             $returned = AdminPageConfigurationsBean::getStaticContentPage($this->urlParams);
+          break;
+          case self::PAGE_DATA_QUESTIONS :
+            $returned = AdminPageDataQuestionnairesBean::getStaticContentPage($this->urlParams);
           break;
           case self::PAGE_DIVISION   :
             $returned = AdminPageDivisionsBean::getStaticContentPage($this->urlParams);

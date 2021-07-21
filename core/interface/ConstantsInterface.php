@@ -62,6 +62,7 @@ interface ConstantsInterface
   const CST_SUPPRESSION      = 'Suppression';
   const CST_TEXT             = 'text';
   const CST_TRASH            = 'trash';
+  const CST_VIEW             = 'view';
 
   /////////////////////////////////////////////////
   // Fields
@@ -79,10 +80,12 @@ interface ConstantsInterface
   const FIELD_CONFIG_KEY          = 'configKey';
   const FIELD_CONFIG_VALUE        = 'configValue';
   const FIELD_CRKEY               = 'crKey';
+  const FIELD_DATA                = 'data';
   const FIELD_DATECONSEIL         = 'dateConseil';
   const FIELD_DATEREDACTION       = 'dateRedaction';
   const FIELD_DELEGUE             = 'delegue';
   const FIELD_DIVISION_ID         = 'divisionId';
+  const FIELD_DISPLAY_ORDER       = 'displayOrder';
   const FIELD_ENFANT1             = 'delegueEleve1Id';
   const FIELD_ENFANT2             = 'delegueEleve2Id';
   const FIELD_ENSEIGNANT_ID       = 'enseignantId';
@@ -136,6 +139,8 @@ interface ConstantsInterface
   const MSG_CONFIRM_SUPPR_COMPO_DIVISION  = 'Voulez-vous vraiment <strong>supprimer</strong> l\'assignation "Enseignant/Division" <strong>%s</strong> ?';
   const MSG_CONFIRM_SUPPR_COMPTE_RENDU    = 'Voulez-vous vraiment <strong>supprimer</strong> le Compte Rendu <strong>%s</strong> ?';
   const MSG_CONFIRM_SUPPR_COMPTE_RENDUS   = 'Voulez-vous vraiment <strong>supprimer</strong> les Comptes Rendus <strong>%s</strong> ?';
+  const MSG_CONFIRM_SUPPR_DATA_QUESTIONS = 'Voulez-vous vraiment <strong>supprimer</strong> les Questionnaires <strong>%s</strong> ?';
+  const MSG_CONFIRM_SUPPR_DATA_QUESTION  = 'Voulez-vous vraiment <strong>supprimer</strong> le Questionnaire <strong>%s</strong> ?';
   const MSG_CONFIRM_SUPPR_DIVISIONS = 'Voulez-vous vraiment <strong>supprimer</strong> les Division <strong>%s</strong> ?';
   const MSG_CONFIRM_SUPPR_DIVISION  = 'Voulez-vous vraiment <strong>supprimer</strong> la Division <strong>%s</strong> ?';
   const MSG_CONFIRM_SUPPR_ELEVES    = 'Voulez-vous vraiment <strong>supprimer</strong> les Elèves <strong>%s</strong> ?';
@@ -180,6 +185,7 @@ interface ConstantsInterface
   const PAGE_COMPO_DIVISION    = 'compodivision';
   const PAGE_COMPTE_RENDU      = 'compte-rendu';
   const PAGE_CONFIGURATION     = 'configuration';
+  const PAGE_DATA_QUESTIONS    = 'data-question';
   const PAGE_DIVISION          = 'division';
   const PAGE_ELEVE             = 'eleve';
   const PAGE_ENSEIGNANT        = 'enseignant';

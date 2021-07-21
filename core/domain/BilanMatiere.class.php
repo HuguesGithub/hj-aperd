@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 /**
  * Classe BilanMatiere
  * @author Hugues
- * @version 1.21.07.17
+ * @version 1.21.07.21
  * @since 1.21.06.04
  */
 class BilanMatiere extends LocalDomain
@@ -190,7 +190,7 @@ class BilanMatiere extends LocalDomain
   //////////////////////////////////////////////////
   /**
    * @return string
-   * @version 1.21.06.04
+   * @version 1.21.07.21
    * @since 1.21.06.04
    */
   public function getStrStatut()
@@ -209,11 +209,6 @@ class BilanMatiere extends LocalDomain
         $strStatus = '';
       break;
     }
-    /*
-    if ($strStatus!='' && $this->getEnseignant()->getGenre()=='Mme') {
-      $strStatus .= 'e';
-    }
-    */
     return $strStatus;
   }
 

@@ -26,13 +26,6 @@ where="WHERE compteRenduId LIKE '%s' AND matiereId LIKE '%s' "
 insert="INSERT INTO wp_14_aperd_bilan_matiere (compteRenduId, matiereId, status, moyenneDivision, observations) VALUES ('%s', '%s', '%s', '%s', '%s');"
 update="UPDATE wp_14_aperd_bilan_matiere SET compteRenduId='%s', matiereId='%s', status='%s', moyenneDivision='%s', observations='%s' "
 
-[Division]
-select="SELECT id, labelDivision, crKey "
-from="FROM wp_14_aperd_division "
-where="WHERE labelDivision LIKE '%s' AND crKey LIKE '%s' "
-insert="INSERT INTO wp_14_aperd_division (labelDivision, crKey) VALUES ('%s', '%s');"
-update="UPDATE wp_14_aperd_division SET labelDivision='%s', crKey='%s' "
-
 [CompoDivision]
 select="SELECT id, divisionId, enseignantMatiereId "
 from="FROM wp_14_aperd_compo_division "
@@ -46,6 +39,20 @@ from="FROM wp_14_aperd_compte_rendu "
 where="WHERE trimestre LIKE '%s' AND divisionId LIKE '%s' AND status LIKE '%s' "
 insert="INSERT INTO wp_14_aperd_compte_rendu (trimestre, divisionId, nbEleves, dateConseil, administrationId, profPrincId, delegueEleve1Id, delegueEleve2Id, delegueParent1Id, delegueParent2Id, bilanProfPrincipal, bilanEleves, bilanParents, nbEncouragements, nbCompliments, nbFelicitations, nbMgComportement, nbMgTravail, nbMgComportementTravail, dateRedaction, auteurRedaction, status) VALUES ('%s',    '%s',       '%s',       '%s',       '%s',             '%s',         '%s',           '%s',           '%s',               '%s',             '%s',               '%s',       '%s',         '%s',             '%s',           '%s',           '%s',             '%s',         '%s',                     '%s',           '%s',           '%s');"
 update="UPDATE wp_14_aperd_compte_rendu SET trimestre='%s', divisionId='%s', nbEleves='%s', dateConseil='%s', administrationId='%s', profPrincId='%s', delegueEleve1Id='%s', delegueEleve2Id='%s', delegueParent1Id='%s', delegueParent2Id='%s', bilanProfPrincipal='%s', bilanEleves='%s', bilanParents='%s', nbEncouragements='%s', nbCompliments='%s', nbFelicitations='%s', nbMgComportement='%s', nbMgTravail='%s', nbMgComportementTravail='%s', dateRedaction='%s', auteurRedaction='%s', status='%s' "
+
+[DataQuestionnaire]
+select="SELECT id, data "
+from="FROM wp_14_aperd_questionnaire "
+where="WHERE data LIKE '%s' "
+insert="INSERT INTO wp_14_aperd_questionnaire (data) VALUES ('%s');"
+update="UPDATE wp_14_aperd_questionnaire SET data='%s' "
+
+[Division]
+select="SELECT id, labelDivision, crKey "
+from="FROM wp_14_aperd_division "
+where="WHERE labelDivision LIKE '%s' AND crKey LIKE '%s' "
+insert="INSERT INTO wp_14_aperd_division (labelDivision, crKey) VALUES ('%s', '%s');"
+update="UPDATE wp_14_aperd_division SET labelDivision='%s', crKey='%s' "
 
 [Eleve]
 select="SELECT id, nomEleve, prenomEleve, divisionId, delegue "
@@ -91,11 +98,11 @@ insert="INSERT INTO wp_14_aperd_prof_princ (divisionId, enseignantId) VALUES ('%
 update="UPDATE wp_14_aperd_prof_princ SET divisionId='%s', enseignantId='%s' "
 
 [Questionnaire]
-select="SELECT configKey, configValue "
+select="SELECT configKey, configValue, displayOrder "
 from="FROM wp_14_aperd_config_questionnaire "
 where="WHERE configKey LIKE '%s' AND configValue LIKE '%s' "
-insert="INSERT INTO wp_14_aperd_config_questionnaire (configKey, configValue) VALUES ('%s', '%s');"
-update="UPDATE wp_14_aperd_config_questionnaire SET configKey='%s', configValue='%s' "
+insert="INSERT INTO wp_14_aperd_config_questionnaire (configKey, configValue, displayOrder) VALUES ('%s', '%s', '%s');"
+update="UPDATE wp_14_aperd_config_questionnaire SET configKey='%s', configValue='%s', displayOrder='%s' "
 
 
 

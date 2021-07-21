@@ -115,17 +115,7 @@ function closeStep(index) {
 
 function checkStep(index) {
   var isValid = true;
-  $hj('.stepper li:nth-child('+(index+1)+') textarea[required=""]').each(
-    function(){
-      if ($hj(this).val()=='') {
-        isValid = false;
-        $hj(this).addClass('is-invalid');
-      } else {
-        $hj(this).removeClass('is-invalid');
-      }
-    }
-  );
-  $hj('.stepper li:nth-child('+(index+1)+') input[required=""]').each(
+  $hj('.stepper li:nth-child('+(index+1)+') textarea[required=""], .stepper li:nth-child('+(index+1)+') input[required=""]').each(
     function(){
       if ($hj(this).val()=='') {
         isValid = false;
@@ -160,6 +150,7 @@ function addAjaxUploadEvent() {
     var bilanMatiereTextarea = '';
     var bilanMatiereSelEns = '';
     var bilanMatiereSelStatus = '';
+    var bilanMoyenneValue = '';
     var buttonForPanel = '';
     if (name=='observations[]' || name=='status[]' || name=='enseignantIds[]' || name=='moyennes[]') {
       bilanMatiereId = $hj(this).closest('.tab-pane').data('bilan-matiere-id');

@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 /**
  * ExportActions
  * @author Hugues
- * @version 1.21.06.21
+ * @version 1.21.07.21
  * @since 1.21.06.01
  */
 class ExportActions extends LocalActions
@@ -28,7 +28,7 @@ class ExportActions extends LocalActions
   /**
    * @param string $exportType
    * @param mixed $ids
-   * @version 1.21.06.21
+   * @version 1.21.07.21
    * @since 1.21.06.01
    */
   public static function dealWithStaticExport($exportType, $ids)
@@ -58,6 +58,9 @@ class ExportActions extends LocalActions
       break;
       case self::PAGE_PARENT_DELEGUE :
         $returned = ParentDelegueActions::dealWithStatic(self::CST_EXPORT, $ids);
+      break;
+      case self::PAGE_QUESTIONNAIRE :
+        $returned = QuestionnaireActions::dealWithStatic(self::CST_EXPORT, $ids);
       break;
 
 
